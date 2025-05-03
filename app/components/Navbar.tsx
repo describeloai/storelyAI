@@ -4,11 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useUser, useClerk } from "@clerk/nextjs";
 import AuthAwareButton from "@/components/AuthAwareButton";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const { isSignedIn } = useUser();
+  const { signOut } = useClerk();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -102,48 +106,87 @@ export default function Navbar() {
 
       {/* Acciones (desktop) */}
       <div className="nav-actions" style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
-        <AuthAwareButton action="login">
-          {(handleClick) => (
-            <span
-              onClick={handleClick}
+        {!isSignedIn ? (
+          <>
+            <AuthAwareButton action="login">
+              {(handleClick) => (
+                <span
+                  onClick={handleClick}
+                  style={{
+                    color: "white",
+                    fontWeight: 500,
+                    fontSize: isScrolled ? "1rem" : "0.95rem",
+                    cursor: "pointer",
+                    transform: isScrolled ? "scale(1.07)" : "scale(1)",
+                    transition: "all 0.4s ease",
+                  }}
+                >
+                  Acceder
+                </span>
+              )}
+            </AuthAwareButton>
+
+            <AuthAwareButton action="signup">
+              {(handleClick) => (
+                <motion.button
+                  onClick={handleClick}
+                  whileHover={{ scale: 1.07 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{
+                    backgroundColor: "white",
+                    color: "#7b2ff7",
+                    borderRadius: "999px",
+                    padding: isScrolled ? "0.75rem 1.75rem" : "0.65rem 1.6rem",
+                    fontWeight: 600,
+                    fontSize: isScrolled ? "1rem" : "0.95rem",
+                    border: "none",
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    transform: isScrolled ? "scale(1.07)" : "scale(1)",
+                    transition: "all 0.4s ease",
+                  }}
+                >
+                  Empezar ahora
+                </motion.button>
+              )}
+            </AuthAwareButton>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => signOut({ redirectUrl: "/" })}
               style={{
                 color: "white",
                 fontWeight: 500,
                 fontSize: isScrolled ? "1rem" : "0.95rem",
-                cursor: "pointer",
-                transform: isScrolled ? "scale(1.07)" : "scale(1)",
-                transition: "all 0.4s ease",
-              }}
-            >
-              Acceder
-            </span>
-          )}
-        </AuthAwareButton>
-
-        <AuthAwareButton action="signup">
-          {(handleClick) => (
-            <motion.button
-              onClick={handleClick}
-              whileHover={{ scale: 1.07 }}
-              whileTap={{ scale: 0.98 }}
-              style={{
-                backgroundColor: "white",
-                color: "#7b2ff7",
-                borderRadius: "999px",
-                padding: isScrolled ? "0.75rem 1.75rem" : "0.65rem 1.6rem",
-                fontWeight: 600,
-                fontSize: isScrolled ? "1rem" : "0.95rem",
+                background: "none",
                 border: "none",
                 cursor: "pointer",
-                whiteSpace: "nowrap",
-                transform: isScrolled ? "scale(1.07)" : "scale(1)",
-                transition: "all 0.4s ease",
               }}
             >
-              Empezar ahora
-            </motion.button>
-          )}
-        </AuthAwareButton>
+              Cerrar sesión
+            </button>
+            <Link href="/dashboard">
+              <motion.button
+                whileHover={{ scale: 1.07 }}
+                whileTap={{ scale: 0.98 }}
+                style={{
+                  backgroundColor: "white",
+                  color: "#7b2ff7",
+                  borderRadius: "999px",
+                  padding: "0.7rem 1.5rem",
+                  fontWeight: 600,
+                  fontSize: isScrolled ? "1rem" : "0.95rem",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 0.4s ease",
+                }}
+              >
+                Dashboard
+              </motion.button>
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Menú desplegable para móviles */}
@@ -169,52 +212,86 @@ export default function Navbar() {
             Precios
           </Link>
 
-          <AuthAwareButton action="login">
-            {(handleClick) => (
-              <span
+          {!isSignedIn ? (
+            <>
+              <AuthAwareButton action="login">
+                {(handleClick) => (
+                  <span
+                    onClick={() => {
+                      handleClick();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    style={{
+                      color: "white",
+                      fontWeight: 500,
+                      fontSize: "1rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Acceder
+                  </span>
+                )}
+              </AuthAwareButton>
+
+              <AuthAwareButton action="signup">
+                {(handleClick) => (
+                  <motion.button
+                    onClick={() => {
+                      handleClick();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    whileTap={{ scale: 0.96 }}
+                    style={{
+                      backgroundColor: "white",
+                      color: "#7b2ff7",
+                      borderRadius: "999px",
+                      padding: "0.6rem 1.4rem",
+                      fontWeight: 600,
+                      fontSize: "0.95rem",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    ¡Empezar Gratis!
+                  </motion.button>
+                )}
+              </AuthAwareButton>
+            </>
+          ) : (
+            <>
+              <button
                 onClick={() => {
-                  handleClick();
+                  signOut({ redirectUrl: "/" });
                   setIsMobileMenuOpen(false);
                 }}
                 style={{
                   color: "white",
                   fontWeight: 500,
                   fontSize: "1rem",
-                  cursor: "pointer",
-                }}
-              >
-                Acceder
-              </span>
-            )}
-          </AuthAwareButton>
-
-          <AuthAwareButton action="signup">
-            {(handleClick) => (
-              <motion.button
-                onClick={() => {
-                  handleClick();
-                  setIsMobileMenuOpen(false);
-                }}
-                whileTap={{ scale: 0.96 }}
-                style={{
-                  backgroundColor: "white",
-                  color: "#7b2ff7",
-                  borderRadius: "999px",
-                  padding: "0.6rem 1.4rem",
-                  fontWeight: 600,
-                  fontSize: "0.95rem",
+                  background: "none",
                   border: "none",
                   cursor: "pointer",
                 }}
               >
-                ¡Empezar Gratis!
-              </motion.button>
-            )}
-          </AuthAwareButton>
+                Cerrar sesión
+              </button>
+              <Link
+                href="/dashboard"
+                style={{
+                  color: "white",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  fontSize: "1rem",
+                }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+            </>
+          )}
         </div>
       )}
 
-      {/* Estilos responsive embebidos */}
       <style jsx>{`
         @media (max-width: 768px) {
           .nav-desktop {

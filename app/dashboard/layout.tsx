@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
-import Sidebar from "./components/Sidebar";
+import React, { useState, useEffect } from 'react';
+import Sidebar from './components/Sidebar';
+import { UserButton } from '@clerk/nextjs';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function DashboardLayout({
   children,
@@ -13,13 +16,11 @@ export default function DashboardLayout({
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768); // Pantallas menores a 768px
+      setIsMobile(window.innerWidth < 768);
     };
-
-    handleResize(); // Llamarlo al cargar
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const toggleSidebar = () => {
@@ -27,48 +28,84 @@ export default function DashboardLayout({
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        background: "linear-gradient(to bottom, #a78bfa, #ffffff)", // Gradiente morado a blanco
-      }}
-    >
-      {/* Sidebar */}
-      <Sidebar isSidebarOpen={isSidebarOpen} />
-
-      {/* Main content */}
-      <div
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {/* Navbar superior */}
+      <header
         style={{
-          marginLeft: isSidebarOpen ? "250px" : "0",
-          flexGrow: 1,
-          padding: "2rem",
-          transition: "margin-left 0.3s ease",
-          width: "100%",
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: '#111827',
+          borderBottom: '1px solid #1F2937',
+          padding: '1rem 2rem',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
         }}
       >
-        {/* Botón hamburguesa */}
-        {isMobile && (
-          <button
-            onClick={toggleSidebar}
-            style={{
-              backgroundColor: "#9F7AEA",
-              color: "white",
-              border: "none",
-              padding: "0.8rem 1.2rem",
-              borderRadius: "0.5rem",
-              fontSize: "1.2rem",
-              cursor: "pointer",
-              marginBottom: "2rem",
-              display: "inline-block",
-            }}
-          >
-            ☰
-          </button>
-        )}
+        <Link
+          href="/"
+          style={{
+            fontSize: '1.25rem',
+            fontWeight: 700,
+            color: 'white',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}
+        >
+          <Image
+            src="/logo-feather.svg"
+            alt="Storely Logo"
+            width={22}
+            height={22}
+            style={{ color: 'white', marginTop: '2px' }}
+          />
+          <span style={{ color: 'white' }}>Storely</span>
+        </Link>
 
-        {/* Contenido de la página */}
-        {children}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <UserButton afterSignOutUrl="/" />
+        </div>
+      </header>
+
+      {/* Contenedor principal con sidebar + contenido */}
+      <div style={{ display: 'flex', flex: 1 }}>
+        <Sidebar isSidebarOpen={isSidebarOpen} />
+
+        <main
+          style={{
+            flexGrow: 1,
+            padding: '2rem',
+            transition: 'margin-left 0.3s ease',
+            backgroundColor: '#f4f4f5',
+            color: '#111827',
+            minHeight: 'calc(100vh - 64px)',
+          }}
+        >
+          {isMobile && (
+            <button
+              onClick={toggleSidebar}
+              style={{
+                backgroundColor: '#9F7AEA',
+                color: 'white',
+                border: 'none',
+                padding: '0.8rem 1.2rem',
+                borderRadius: '0.5rem',
+                fontSize: '1.2rem',
+                cursor: 'pointer',
+                marginBottom: '2rem',
+                display: 'inline-block',
+              }}
+            >
+              ☰
+            </button>
+          )}
+
+          {children}
+        </main>
       </div>
     </div>
   );

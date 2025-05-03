@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 
@@ -9,66 +9,54 @@ export default function Sidebar({ isSidebarOpen }: { isSidebarOpen: boolean }) {
     <aside
       style={{
         width: "250px",
-        backgroundColor: "#B794F4", // Morado pastel
-        color: "white",
-        display: "flex",
-        flexDirection: "column",
-        padding: "2rem 1rem",
-        position: "fixed",
-        top: 0,
-        left: 0,
+        backgroundColor: "#F3F4F6", // Gris claro
+        padding: "2rem 1.5rem",
         height: "100vh",
-        zIndex: 10,
+        borderRight: "1px solid #E5E7EB",
+        boxSizing: "border-box",
       }}
     >
-      <div style={{ marginBottom: "3rem", fontWeight: "bold", fontSize: "1.8rem", textAlign: "center" }}>
-        StorelyAI
-      </div>
-
-      <nav style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-        <Link href="/dashboard" style={{ color: "white", textDecoration: "none", fontSize: "1.1rem" }}>
+      <nav style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <p style={{ fontSize: "0.75rem", color: "#6B7280", textTransform: "uppercase", marginBottom: "0.5rem" }}>
           Panel Principal
-        </Link>
+        </p>
 
-        <div style={{ marginTop: "2rem", fontSize: "0.9rem", opacity: 0.8 }}>Herramientas</div>
+        <SidebarLink href="/dashboard/products">Buscar Productos</SidebarLink>
+        <SidebarLink href="/dashboard/descriptions">Generador de Descripciones</SidebarLink>
+        <SidebarLink href="/dashboard/tools">Kit de Herramientas</SidebarLink>
+        <SidebarLink href="/dashboard/product-check">¿Ya se vende esto?</SidebarLink>
+        <SidebarLink href="/dashboard/page-generator">Generador de Páginas</SidebarLink>
+        <SidebarLink href="/dashboard/tracker">Tracker Avanzado</SidebarLink>
+        <SidebarLink href="/dashboard/chatbot">Chatbot Inteligente</SidebarLink>
+        <SidebarLink href="/dashboard/social-copies">Copys para Redes Sociales</SidebarLink>
 
-        <Link href="/dashboard/products" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          Buscar Productos
-        </Link>
-        <Link href="/dashboard/descriptions" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          Generador de Descripciones
-        </Link>
-        <Link href="/dashboard/tools" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          Kit de Herramientas
-        </Link>
-        <Link href="/dashboard/product-check" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          ¿Ya se vende esto?
-        </Link>
-        <Link href="/dashboard/page-generator" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          Generador de Páginas
-        </Link>
-        <Link href="/dashboard/tracker" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          Tracker Avanzado
-        </Link>
-        <Link href="/dashboard/chatbot" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          Chatbot Inteligente
-        </Link>
-        <Link href="/dashboard/social-copies" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          Copys para Redes Sociales
-        </Link>
+        <p style={{ fontSize: "0.75rem", color: "#6B7280", textTransform: "uppercase", margin: "2rem 0 0.5rem" }}>
+          Gestión
+        </p>
 
-        <div style={{ marginTop: "2rem", fontSize: "0.9rem", opacity: 0.8 }}>Gestión</div>
-
-        <Link href="/dashboard/analytics" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          Análisis de Ventas
-        </Link>
-        <Link href="/dashboard/account" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          Mi Cuenta
-        </Link>
-        <Link href="/dashboard/plans" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          Planes
-        </Link>
+        <SidebarLink href="/dashboard/analytics">Análisis de Ventas</SidebarLink>
+        <SidebarLink href="/dashboard/account">Mi Cuenta</SidebarLink>
+        <SidebarLink href="/dashboard/plans">Planes</SidebarLink>
       </nav>
     </aside>
+  );
+}
+
+function SidebarLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      style={{
+        color: "#111827",
+        fontWeight: 500,
+        fontSize: "0.95rem",
+        textDecoration: "none",
+        padding: "0.25rem 0.5rem",
+        borderRadius: "0.375rem",
+        transition: "background 0.2s",
+      }}
+    >
+      {children}
+    </Link>
   );
 }
