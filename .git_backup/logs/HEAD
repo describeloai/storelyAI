@@ -1,0 +1,51 @@
+0000000000000000000000000000000000000000 12526a4463246775d71a5010b92314206bf1656d describeloai <victorgvobregon@gmail.com> 1745087796 +0200	clone: from https://github.com/describeloai/nextjs-boilerplate.git
+12526a4463246775d71a5010b92314206bf1656d 0bf28745b269c423a0770726c866da863af7e8cf describeloai <victorgvobregon@gmail.com> 1745435954 +0200	commit: first commit
+0bf28745b269c423a0770726c866da863af7e8cf 0000000000000000000000000000000000000000 describeloai <victorgvobregon@gmail.com> 1745435954 +0200	Branch: renamed refs/heads/main to refs/heads/main
+0bf28745b269c423a0770726c866da863af7e8cf 0bf28745b269c423a0770726c866da863af7e8cf describeloai <victorgvobregon@gmail.com> 1745435954 +0200	Branch: renamed refs/heads/main to refs/heads/main
+0bf28745b269c423a0770726c866da863af7e8cf 81cb8aaa5fb3439d42b0c44010d2db6a86e718ab describeloai <victorgvobregon@gmail.com> 1745436241 +0200	commit: first commit
+81cb8aaa5fb3439d42b0c44010d2db6a86e718ab 0000000000000000000000000000000000000000 describeloai <victorgvobregon@gmail.com> 1745436241 +0200	Branch: renamed refs/heads/main to refs/heads/main
+81cb8aaa5fb3439d42b0c44010d2db6a86e718ab 81cb8aaa5fb3439d42b0c44010d2db6a86e718ab describeloai <victorgvobregon@gmail.com> 1745436241 +0200	Branch: renamed refs/heads/main to refs/heads/main
+81cb8aaa5fb3439d42b0c44010d2db6a86e718ab c20e5d7f585500da45ce02f3ea6fa409105155c9 describeloai <victorgvobregon@gmail.com> 1745438285 +0200	commit: Primer commit del proyecto fuera de OneDrive
+c20e5d7f585500da45ce02f3ea6fa409105155c9 8b8721942360703862a8c35ada3358d649f21d0c describeloai <victorgvobregon@gmail.com> 1745571828 +0200	commit: actualiza navbar con diseño responsive
+8b8721942360703862a8c35ada3358d649f21d0c 035a6cb79b74d4be2d9c06489e01d32014a9229c describeloai <victorgvobregon@gmail.com> 1745572538 +0200	commit: fix: error en operación matemática en ToolKitSection
+035a6cb79b74d4be2d9c06489e01d32014a9229c 09c43882c2a8323f0ff69c5e1d7b7bfb67713a6f describeloai <victorgvobregon@gmail.com> 1745573016 +0200	commit: feat: cerrar menú móvil automáticamente al hacer clic
+09c43882c2a8323f0ff69c5e1d7b7bfb67713a6f 02fc68af83dc32e135ab6049efa79fb2a661f09a describeloai <victorgvobregon@gmail.com> 1745593894 +0200	commit: fix: sección PoweredBy con imágenes corregidas
+02fc68af83dc32e135ab6049efa79fb2a661f09a 0000000000000000000000000000000000000000 describeloai <victorgvobregon@gmail.com> 1745670236 +0200	Branch: renamed refs/heads/main to refs/heads/main
+02fc68af83dc32e135ab6049efa79fb2a661f09a 02fc68af83dc32e135ab6049efa79fb2a661f09a describeloai <victorgvobregon@gmail.com> 1745670236 +0200	Branch: renamed refs/heads/main to refs/heads/main
+02fc68af83dc32e135ab6049efa79fb2a661f09a dfb0789f8ba198ea053e41f5dd88c64ad1df243a describeloai <victorgvobregon@gmail.com> 1745670353 +0200	commit: Actualización: dashboard con layout responsive y funcional
+dfb0789f8ba198ea053e41f5dd88c64ad1df243a 74eb9c404bd0c33f6c262a626e6da2b1d019ba77 describeloai <victorgvobregon@gmail.com> 1745677456 +0200	commit: Fix: Layout y Sidebar corregidos para Next.js 15.3.1 + Turbopack
+74eb9c404bd0c33f6c262a626e6da2b1d019ba77 a4b1fc0666910c849a8d9bedd31053a6b9968eb1 describeloai <victorgvobregon@gmail.com> 1745678198 +0200	commit: Fix: Layout y Sidebar corregidos para Next.js 15.3.1 + Turbopack
+a4b1fc0666910c849a8d9bedd31053a6b9968eb1 5fce8588e708c2f6818603dd07b24c4af02e4519 describeloai <victorgvobregon@gmail.com> 1745680289 +0200	commit: Fix: Estructura completa de dashboard con módulos base (products, analytics, descriptions, tools)
+5fce8588e708c2f6818603dd07b24c4af02e4519 026a91d523aa24cd7dd6fa69dcbb3669e16d61d1 describeloai <victorgvobregon@gmail.com> 1745681417 +0200	commit: Update: Sidebar completo con todas las herramientas StorelyAI
+026a91d523aa24cd7dd6fa69dcbb3669e16d61d1 580f3a84bad49d4553a6248ef8a04238e4e27456 describeloai <victorgvobregon@gmail.com> 1745688352 +0200	commit: Subida completa: Fix Stripe + Sidebar actualizado + Dashboard mejorado
+580f3a84bad49d4553a6248ef8a04238e4e27456 319364cce5950544efe40dd1f5ce0e9f4232bdbd describeloai <victorgvobregon@gmail.com> 1745749062 +0200	commit: Fix product-check and social-copies pages
+319364cce5950544efe40dd1f5ce0e9f4232bdbd 22a70f435fb9242ae55094be54a7b7aaa88e4dd7 describeloai <victorgvobregon@gmail.com> 1745749445 +0200	commit: Fix dashboard page metadata and remove client directive
+22a70f435fb9242ae55094be54a7b7aaa88e4dd7 c55a1ebff3da1a2434bbf8477de0b5ca952944c2 describeloai <victorgvobregon@gmail.com> 1745749950 +0200	commit: Fix all dashboard mini pages with React import and client directive
+c55a1ebff3da1a2434bbf8477de0b5ca952944c2 caac86cd8e6e9c6807fabf4a2aa7491471785e8d describeloai <victorgvobregon@gmail.com> 1745750183 +0200	commit: Fix all mini pages to return plain text only
+caac86cd8e6e9c6807fabf4a2aa7491471785e8d c08e2295fc4a0db3071f62b4a32fb97cb5c3ef76 describeloai <victorgvobregon@gmail.com> 1745750684 +0200	commit: Fix chatbot page to plain text again
+c08e2295fc4a0db3071f62b4a32fb97cb5c3ef76 4b1fafae8b668309a361ded17ae0871a277cb54b describeloai <victorgvobregon@gmail.com> 1745831071 +0200	commit: Fix: force dynamic route for Stripe checkout session
+4b1fafae8b668309a361ded17ae0871a277cb54b 2328c0ba3696625a07ab108d42e462ce7818e69b describeloai <victorgvobregon@gmail.com> 1745832059 +0200	commit: Fix: Correct Stripe initialization and apiVersion placement
+2328c0ba3696625a07ab108d42e462ce7818e69b 293fd7b3ea4e1d4a9de1c1857ebc7c7c48de6d84 describeloai <victorgvobregon@gmail.com> 1745834202 +0200	commit: Fix: add use server to create-checkout-session route
+293fd7b3ea4e1d4a9de1c1857ebc7c7c48de6d84 514c6366c3c85d53c8781b5e38e9ace8cdea3248 describeloai <victorgvobregon@gmail.com> 1745834811 +0200	commit: Temp: comment out Stripe API for successful deployment
+514c6366c3c85d53c8781b5e38e9ace8cdea3248 828e069565cee8c47d7141386b04e93832c9f30e describeloai <victorgvobregon@gmail.com> 1745835058 +0200	commit: Temp fix: comment Stripe import for successful deploy
+828e069565cee8c47d7141386b04e93832c9f30e 2534a69213117ba1fae887947af4a3a3daa61c15 describeloai <victorgvobregon@gmail.com> 1745835431 +0200	commit: Temp: delete create-checkout-session route to fix deployment
+2534a69213117ba1fae887947af4a3a3daa61c15 efd2e6a61364e9598b2889ebb52746f268959454 describeloai <victorgvobregon@gmail.com> 1745922882 +0200	commit: Integración Stripe completa con botón de checkout, backend y redirecciones
+efd2e6a61364e9598b2889ebb52746f268959454 99cdb5eaf39045df660ff4974b1c5e5c3f74e7d9 describeloai <victorgvobregon@gmail.com> 1746036422 +0200	commit: Implementación de secciones animadas y refactor de Hero/ToolKit
+99cdb5eaf39045df660ff4974b1c5e5c3f74e7d9 c42ace8160bca2ddd2a203daf6d6e97c57fe6286 describeloai <victorgvobregon@gmail.com> 1746175903 +0200	commit: Versión estable de Storely con secciones animadas
+c42ace8160bca2ddd2a203daf6d6e97c57fe6286 63473d36d7d6ec72d6d9e67427cd78f9563ab5d7 describeloai <victorgvobregon@gmail.com> 1746176468 +0200	commit: Fix: corregida versión de API Stripe
+63473d36d7d6ec72d6d9e67427cd78f9563ab5d7 b048a79784bac0402dd664665c893e8d72307c99 describeloai <victorgvobregon@gmail.com> 1746176749 +0200	commit: Fix: corregida versión de API Stripe
+b048a79784bac0402dd664665c893e8d72307c99 cda18ce5e5e419ef5b89f437151e1240f1b9234a describeloai <victorgvobregon@gmail.com> 1746205212 +0200	commit: feat(navbar): mejora de presencia general y eliminación de animación inicial
+cda18ce5e5e419ef5b89f437151e1240f1b9234a 4862a6ab3912972d4cd708efa8aaa559b154cf9b describeloai <victorgvobregon@gmail.com> 1746206450 +0200	commit: fix(hero): mejora de responsividad en móvil manteniendo estilo de desktop
+4862a6ab3912972d4cd708efa8aaa559b154cf9b 5c6acc4aaa92bf62640983f9c431be86a5389e63 describeloai <victorgvobregon@gmail.com> 1746206836 +0200	commit: fix(hero): mejora de responsividad en móvil manteniendo estilo de desktop
+5c6acc4aaa92bf62640983f9c431be86a5389e63 5faa5cc3d84190ded77b97ca83b524937bb14b91 describeloai <victorgvobregon@gmail.com> 1746207256 +0200	commit: fix(hero): mejora de responsividad en móvil manteniendo estilo de desktop
+5faa5cc3d84190ded77b97ca83b524937bb14b91 c786821d1b4b500cfdb8066f40a904b065fa5809 describeloai <victorgvobregon@gmail.com> 1746267091 +0200	commit: 🔥 Integración completa de Clerk con protección de rutas, botones reactivos y autenticación funcional
+c786821d1b4b500cfdb8066f40a904b065fa5809 077f615987bcfd9d6b9fea9c51813a185b1d07fb describeloai <victorgvobregon@gmail.com> 1746268097 +0200	commit: ✅ Fix botones móviles y redirecciones inteligentes con Clerk
+077f615987bcfd9d6b9fea9c51813a185b1d07fb c786821d1b4b500cfdb8066f40a904b065fa5809 describeloai <victorgvobregon@gmail.com> 1746269660 +0200	reset: moving to HEAD~1
+c786821d1b4b500cfdb8066f40a904b065fa5809 5faa5cc3d84190ded77b97ca83b524937bb14b91 describeloai <victorgvobregon@gmail.com> 1746269934 +0200	reset: moving to HEAD~1
+5faa5cc3d84190ded77b97ca83b524937bb14b91 fd6ebbfbdfacca6f642d8100d7b8d61d88d6e1d0 describeloai <victorgvobregon@gmail.com> 1746269934 +0200	commit: fix: remove sensitive key
+fd6ebbfbdfacca6f642d8100d7b8d61d88d6e1d0 5faa5cc3d84190ded77b97ca83b524937bb14b91 describeloai <victorgvobregon@gmail.com> 1746270383 +0200	reset: moving to HEAD~1
+5faa5cc3d84190ded77b97ca83b524937bb14b91 697b21dae222e8622e05e3a907e8a1f417fff71d describeloai <victorgvobregon@gmail.com> 1746270529 +0200	commit: fix: remove exposed Stripe keys from code
+697b21dae222e8622e05e3a907e8a1f417fff71d eec9007a4ba11581c2f9a2793a1f5f27a2fb6050 describeloai <victorgvobregon@gmail.com> 1746270755 +0200	commit: fix: cleaned history to remove secrets
+eec9007a4ba11581c2f9a2793a1f5f27a2fb6050 b713413274cb781e185af02504b89b41be214f0d describeloai <victorgvobregon@gmail.com> 1746286059 +0200	commit: 💡 Mejoras visuales: texto blanco puro en todas las secciones, fondo animado ajustado, secciones descensuradas
+b713413274cb781e185af02504b89b41be214f0d b713413274cb781e185af02504b89b41be214f0d describeloai <victorgvobregon@gmail.com> 1746286798 +0200	reset: moving to HEAD
+b713413274cb781e185af02504b89b41be214f0d b713413274cb781e185af02504b89b41be214f0d describeloai <victorgvobregon@gmail.com> 1746291242 +0200	reset: moving to HEAD

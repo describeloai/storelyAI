@@ -1,0 +1,158 @@
+/* =======================
+   Fuente: Satoshi
+======================= */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi/Satoshi-Light.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* =======================
+   Global scroll
+======================= */
+html {
+  scroll-behavior: smooth;
+  font-family: 'Satoshi', sans-serif;
+}
+
+/* =======================
+   Variables globales
+======================= */
+:root {
+  --background: linear-gradient(
+    to bottom,
+    #805ad5 0%,
+    #6b46c1 30%,
+    #371866 60%,
+    #190033 90%
+  );
+  --foreground: #f1f1f1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: linear-gradient(
+      to bottom,
+      #1a1a1a 0%,
+      #333333 50%,
+      #555555 100%
+    );
+    --foreground: #f1f1f1;
+  }
+}
+
+/* =======================
+   Reset básico y body
+======================= */
+body {
+  background: transparent;
+  color: var(--foreground);
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  overflow-x: hidden;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* =======================
+   Tipografía
+======================= */
+h1, h2, h3 {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+p {
+  font-weight: 400;
+  margin: 0 0 1em;
+}
+
+/* =======================
+   Botones
+======================= */
+button {
+  background: white;
+  color: #6b46c1;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  transition: background 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f3f3f3;
+}
+
+/* =======================
+   Grid responsivo
+======================= */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .responsive-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+/* =======================
+   Fondo animado (opcional)
+======================= */
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background: linear-gradient(120deg, #805ad5, #6b46c1, #371866);
+  background-size: 400% 400%;
+  animation: moveGradient 20s ease infinite;
+  opacity: 0.4;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+@keyframes moveGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* =======================
+   Sección completamente oscura
+======================= */
+.section-dark {
+  background-color: #0a0012; /* tono púrpura-negro */
+  color: #f1f1f1;
+  position: relative;
+  z-index: 2;
+}
