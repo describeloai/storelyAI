@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import { UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
-import FeatherIcon from '@/components/FeatherIcon'; // ✅ Pluma SVG como componente
+import FeatherIcon from '@/components/FeatherIcon';
 
 export default function DashboardLayout({
   children,
@@ -16,7 +16,9 @@ export default function DashboardLayout({
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      setIsSidebarOpen(!mobile);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -24,12 +26,12 @@ export default function DashboardLayout({
   }, []);
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    setIsSidebarOpen((prev) => !prev);
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Navbar superior */}
+      {/* Navbar superior más fino */}
       <header
         style={{
           display: 'flex',
@@ -37,11 +39,13 @@ export default function DashboardLayout({
           alignItems: 'center',
           backgroundColor: '#111827',
           borderBottom: '1px solid #1F2937',
-          padding: '1rem 2rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-          position: 'sticky',
+          padding: '0.5rem 1.5rem',
+          position: 'fixed',
           top: 0,
-          zIndex: 50,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          height: '48px',
         }}
       >
         <Link
@@ -56,8 +60,8 @@ export default function DashboardLayout({
             gap: '0.5rem',
           }}
         >
-          <FeatherIcon size={28} color="white" /> {/* ✅ Pluma aumentada */}
-          <span style={{ color: 'white' }}>Storely</span>
+          <FeatherIcon size={24} color="white" />
+          <span>Storely</span>
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -65,18 +69,45 @@ export default function DashboardLayout({
         </div>
       </header>
 
-      {/* Contenedor principal con sidebar + contenido */}
-      <div style={{ display: 'flex', flex: 1 }}>
-        <Sidebar isSidebarOpen={isSidebarOpen} />
+      <div style={{ display: 'flex', flex: 1, marginTop: '48px', position: 'relative' }}>
+        {/* Overlay móvil */}
+        {isMobile && isSidebarOpen && (
+          <div
+            onClick={toggleSidebar}
+            style={{
+              position: 'fixed',
+              top: 48,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              zIndex: 50,
+            }}
+          />
+        )}
 
+        {/* Sidebar */}
+        <div
+          style={{
+            position: isMobile ? 'fixed' : 'relative',
+            top: isMobile ? 48 : undefined,
+            left: 0,
+            zIndex: 60,
+            height: '100%',
+          }}
+        >
+          <Sidebar isSidebarOpen={isSidebarOpen} />
+        </div>
+
+        {/* Contenido */}
         <main
           style={{
             flexGrow: 1,
             padding: '2rem',
-            transition: 'margin-left 0.3s ease',
             backgroundColor: '#f4f4f5',
             color: '#111827',
-            minHeight: 'calc(100vh - 64px)',
+            minHeight: 'calc(100vh - 48px)',
+            width: '100%',
           }}
         >
           {isMobile && (
@@ -91,10 +122,9 @@ export default function DashboardLayout({
                 fontSize: '1.2rem',
                 cursor: 'pointer',
                 marginBottom: '2rem',
-                display: 'inline-block',
               }}
             >
-              ☰
+              ☰ Menú
             </button>
           )}
 
