@@ -18,7 +18,7 @@ export default function DashboardLayout({
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      setIsSidebarOpen(!mobile);
+      setIsSidebarOpen(!mobile); // oculta sidebar si es móvil
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -28,6 +28,8 @@ export default function DashboardLayout({
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
+
+  const closeSidebar = () => setIsSidebarOpen(false);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -96,7 +98,7 @@ export default function DashboardLayout({
             height: '100%',
           }}
         >
-          <Sidebar isSidebarOpen={isSidebarOpen} />
+          <Sidebar isSidebarOpen={isSidebarOpen} onClose={closeSidebar} />
         </div>
 
         {/* Contenido */}
