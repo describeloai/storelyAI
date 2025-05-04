@@ -1,28 +1,25 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-
-// Rutas protegidas (puedes modificar esto según necesites)
-const isProtectedRoute = createRouteMatcher([
-  "/((?!.*\\..*|_next).*)", // todo excepto estáticos
-  "/",                      // home
-  "/(api)(.*)"              // API
-]);
 
 export default clerkMiddleware((auth, req) => {
   try {
-    if (!isProtectedRoute(req)) {
-      return NextResponse.next(); // No aplicar middleware
-    }
+    // Puedes agregar lógica aquí si el usuario no está autenticado
+    // Ejemplo:
+    // if (!auth().userId && req.nextUrl.pathname !== "/sign-in") {
+    //   return NextResponse.redirect(new URL("/sign-in", req.url));
+    // }
 
-    // Aquí puedes usar auth().protect() si lo deseas, o hacer validaciones adicionales
     return NextResponse.next();
-  } catch (err) {
-    console.error("Error en middleware Clerk (mobile):", err);
-    return NextResponse.next(); // No romper la app móvil
+  } catch (error) {
+    console.error("Middleware Clerk falló en móvil:", error);
+    return NextResponse.next(); // Evita error 500
   }
 });
 
-// Configuración para Vercel (Next.js)
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api)(.*)"],
+  matcher: [
+    "/((?!.*\\..*|_next).*)", // todo menos archivos estáticos
+    "/",
+    "/(api)(.*)"
+  ],
 };
