@@ -14,29 +14,37 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{ baseTheme: undefined }}
+      localization={{
+        socialButtonsBlockButton: "Continuar con {{provider|titleize}}",
+        formFieldLabel__emailAddress: "Correo electrónico",
+        formFieldLabel__password: "Contraseña",
+        signIn: { start: { title: "Inicia sesión en tu cuenta" } },
+        signUp: { start: { title: "Crea tu cuenta" } },
+        // Puedes personalizar más textos si lo deseas
+      }}
+    >
       <html lang="es">
         <body
           suppressHydrationWarning={true}
           style={{
             margin: 0,
             padding: 0,
-            background: "transparent", // evita fondo blanco
-            color: "white", // texto legible sobre fondo oscuro
+            background: "transparent",
+            color: "white",
             overflowX: "hidden",
             minHeight: "100%",
           }}
         >
-          {/* Fondo animado global */}
           <AnimatedGlobalBackground />
 
-          {/* Contenido principal sobre el fondo */}
           <div
             style={{
               minHeight: "100vh",
-              background: "transparent", // evita cubrir el fondo
+              background: "transparent",
               position: "relative",
-              zIndex: 1, // por encima del fondo
+              zIndex: 1,
             }}
           >
             {children}

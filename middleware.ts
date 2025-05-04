@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-import { authMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export default authMiddleware({
+export default clerkMiddleware({
   publicRoutes: ["/", "/sign-in", "/sign-up"],
   afterAuth(auth, req) {
     if (!auth.userId && !auth.isPublicRoute) {
