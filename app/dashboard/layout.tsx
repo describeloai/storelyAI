@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import { UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
-import Image from 'next/image';
+import FeatherIcon from '@/components/FeatherIcon'; // ✅ Pluma SVG como componente
 
 export default function DashboardLayout({
   children,
@@ -56,13 +56,7 @@ export default function DashboardLayout({
             gap: '0.5rem',
           }}
         >
-          <Image
-            src="/logo-feather.svg"
-            alt="Storely Logo"
-            width={22}
-            height={22}
-            style={{ color: 'white', marginTop: '2px' }}
-          />
+          <FeatherIcon size={28} color="white" /> {/* ✅ Pluma aumentada */}
           <span style={{ color: 'white' }}>Storely</span>
         </Link>
 

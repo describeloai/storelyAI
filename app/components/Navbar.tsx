@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useUser, useClerk } from "@clerk/nextjs";
 import AuthAwareButton from "@/components/AuthAwareButton";
+import FeatherIcon from "@/components/FeatherIcon"; // ✅ Icono pluma
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -24,7 +24,7 @@ export default function Navbar() {
   }, []);
 
   const scale = isScrolled ? 1.08 : 1.02;
-  const logoSize = isScrolled ? 44 : 40;
+  const logoSize = isScrolled ? 36 : 32; // ✅ Tamaño más pequeño
   const fontSize = isScrolled ? "1.75rem" : "1.5rem";
 
   return (
@@ -53,13 +53,7 @@ export default function Navbar() {
     >
       {/* Logo + Texto + Link Precios */}
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-        <Image
-          src="/feather-white.png"
-          alt="Pluma"
-          width={logoSize}
-          height={logoSize}
-          style={{ transition: "all 0.4s ease" }}
-        />
+        <FeatherIcon size={logoSize} color="white" />
         <span
           style={{
             fontSize,
