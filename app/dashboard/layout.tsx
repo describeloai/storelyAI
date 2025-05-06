@@ -1,84 +1,48 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar';
-import { UserButton } from '@clerk/nextjs';
-import Link from 'next/link';
-import FeatherIcon from '@/components/FeatherIcon';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import DashboardNavbar from './components/DashboardNavbar';
+import DashboardSidebar from './components/DashboardSidebar';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { isLoaded, isSignedIn } = useAuth();
+  const router = useRouter();
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push('/sign-in');
+    }
+  }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      setIsSidebarOpen(!mobile); // oculta sidebar si es móvil
+      setIsSidebarOpen(!mobile);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
-
-  const closeSidebar = () => setIsSidebarOpen(false);
+  if (!isLoaded || !isSignedIn) return null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Navbar superior más fino */}
-      <header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          backgroundColor: '#111827',
-          borderBottom: '1px solid #1F2937',
-          padding: '0.5rem 1.5rem',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 100,
-          height: '48px',
-        }}
-      >
-        <Link
-          href="/"
-          style={{
-            fontSize: '1.25rem',
-            fontWeight: 700,
-            color: 'white',
-            textDecoration: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          <FeatherIcon size={24} color="white" />
-          <span>Storely</span>
-        </Link>
+      <DashboardNavbar />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <UserButton afterSignOutUrl="/" />
-        </div>
-      </header>
-
-      <div style={{ display: 'flex', flex: 1, marginTop: '48px', position: 'relative' }}>
-        {/* Overlay móvil */}
+      <div style={{ display: 'flex', flex: 1, marginTop: '44px', position: 'relative' }}>
         {isMobile && isSidebarOpen && (
           <div
-            onClick={toggleSidebar}
+            onClick={() => setIsSidebarOpen(false)}
             style={{
               position: 'fixed',
-              top: 48,
+              top: 44,
               left: 0,
               width: '100%',
               height: '100%',
@@ -88,33 +52,22 @@ export default function DashboardLayout({
           />
         )}
 
-        {/* Sidebar */}
-        <div
-          style={{
-            position: isMobile ? 'fixed' : 'relative',
-            top: isMobile ? 48 : undefined,
-            left: 0,
-            zIndex: 60,
-            height: '100%',
-          }}
-        >
-          <Sidebar isSidebarOpen={isSidebarOpen} onClose={closeSidebar} />
-        </div>
+        <DashboardSidebar isSidebarOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-        {/* Contenido */}
         <main
           style={{
             flexGrow: 1,
             padding: '2rem',
+            paddingLeft: '220px',
             backgroundColor: '#f4f4f5',
             color: '#111827',
-            minHeight: 'calc(100vh - 48px)',
+            minHeight: 'calc(100vh - 44px)',
             width: '100%',
           }}
         >
           {isMobile && (
             <button
-              onClick={toggleSidebar}
+              onClick={() => setIsSidebarOpen(true)}
               style={{
                 backgroundColor: '#9F7AEA',
                 color: 'white',
@@ -129,7 +82,6 @@ export default function DashboardLayout({
               ☰ Menú
             </button>
           )}
-
           {children}
         </main>
       </div>

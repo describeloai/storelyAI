@@ -21,14 +21,15 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
+export default function DashboardSidebar({ isSidebarOpen, onClose }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -70,6 +71,7 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
         <span>Configuración</span>
       </SidebarLink>
 
+      {/* Navegación principal */}
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
         <SidebarLink href="/dashboard" pathname={pathname} onClick={handleClick}>
           <Home size={16} />
