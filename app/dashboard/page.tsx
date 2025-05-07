@@ -1,8 +1,41 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
+
+type SalesData = {
+  date: string;
+  sales: number;
+};
 
 export default function DashboardHome() {
+  const [data, setData] = useState<SalesData[]>([]);
+
+  useEffect(() => {
+    // Aquí puedes traer los datos reales del usuario conectado
+    // Por ahora se usan datos mock de ejemplo
+    const fetchData = async () => {
+      const mockData = [
+        { date: '01 May', sales: 240 },
+        { date: '02 May', sales: 320 },
+        { date: '03 May', sales: 180 },
+        { date: '04 May', sales: 290 },
+        { date: '05 May', sales: 400 },
+      ];
+      setData(mockData);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div
       style={{
@@ -28,16 +61,20 @@ export default function DashboardHome() {
           style={{
             height: '250px',
             backgroundColor: '#F9FAFB',
-            border: '1px dashed #D1D5DB',
+            border: '1px solid #E5E7EB',
             borderRadius: '0.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#9CA3AF',
-            fontSize: '0.95rem',
+            padding: '1rem',
           }}
         >
-          Aquí irá el gráfico de ventas con IA 📈
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="sales" stroke="#6366F1" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </section>
 

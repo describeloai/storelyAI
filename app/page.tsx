@@ -146,8 +146,9 @@ export default function LandingPage() {
 
         <section style={{ backgroundColor: "transparent", position: "relative", zIndex: 1, color: "white", padding: "4rem 1rem" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "3rem" }}>
-            <FinalCTASection />
             <PoweredBySection />
+            <FinalCTASection />
+        
           </div>
         </section>
       </div>

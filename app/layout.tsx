@@ -22,7 +22,6 @@ export default function RootLayout({
         formFieldLabel__password: "Contraseña",
         signIn: { start: { title: "Inicia sesión en tu cuenta" } },
         signUp: { start: { title: "Crea tu cuenta" } },
-        // Puedes personalizar más textos si lo deseas
       }}
     >
       <html lang="es">
@@ -31,10 +30,12 @@ export default function RootLayout({
           style={{
             margin: 0,
             padding: 0,
-            background: "transparent",
-            color: "white",
+            backgroundColor: "#0a0012", // Fondo base oscuro
+            color: "#f3f4f6",             // Texto claro
             overflowX: "hidden",
-            minHeight: "100%",
+            minHeight: "100vh",
+            fontFamily: "'Inter', sans-serif",
+            position: "relative",
           }}
         >
           <AnimatedGlobalBackground />
@@ -42,9 +43,9 @@ export default function RootLayout({
           <div
             style={{
               minHeight: "100vh",
-              background: "transparent",
               position: "relative",
               zIndex: 1,
+              background: "transparent",
             }}
           >
             {children}
