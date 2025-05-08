@@ -23,7 +23,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
-  const pathname = (usePathname() ?? '') as string;
+  const pathname = usePathname() ?? '';
   const router = useRouter();
 
   useEffect(() => {
@@ -120,7 +120,7 @@ function SidebarLink({
 }: {
   href: string;
   children: React.ReactNode;
-  pathname: string | null;
+  pathname: string; // ✅ Aquí corregido
   onClick: (href: string) => void;
 }) {
   const isActive = pathname === href;
