@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -21,15 +20,14 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-export default function DashboardSidebar({ isSidebarOpen, onClose }: SidebarProps) {
+export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
-  const pathname = usePathname();
   const router = useRouter();
+  const pathname = usePathname() ?? '';
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
+      setIsMobile(window.innerWidth < 768);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -42,6 +40,19 @@ export default function DashboardSidebar({ isSidebarOpen, onClose }: SidebarProp
   };
 
   if (!isSidebarOpen) return null;
+
+  const links = [
+    { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
+    { href: '/dashboard', label: 'Inicio', icon: Home },
+    { href: '/dashboard/products', label: 'Buscar Productos', icon: Search },
+    { href: '/dashboard/descriptions', label: 'Generador de Descripciones', icon: FileText },
+    { href: '/dashboard/tools', label: 'Kit de Herramientas', icon: Box },
+    { href: '/dashboard/product-check', label: '¿Ya se vende esto?', icon: ScanLine },
+    { href: '/dashboard/page-generator', label: 'Generador de Páginas', icon: Layout },
+    { href: '/dashboard/tracker', label: 'Tracker Avanzado', icon: BarChart },
+    { href: '/dashboard/chatbot', label: 'Chatbot Inteligente', icon: MessageCircle },
+    { href: '/dashboard/social-copies', label: 'Copys para Redes Sociales', icon: MessageSquareText },
+  ];
 
   return (
     <aside
@@ -60,91 +71,38 @@ export default function DashboardSidebar({ isSidebarOpen, onClose }: SidebarProp
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-start',
         gap: '1.5rem',
         zIndex: 60,
       }}
     >
-      {/* Configuración arriba */}
-      <SidebarLink href="/dashboard/settings" pathname={pathname} onClick={handleClick}>
-        <Settings size={16} />
-        <span>Configuración</span>
-      </SidebarLink>
-
-      {/* Navegación principal */}
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-        <SidebarLink href="/dashboard" pathname={pathname} onClick={handleClick}>
-          <Home size={16} />
-          <span>Inicio</span>
-        </SidebarLink>
-        <SidebarLink href="/dashboard/products" pathname={pathname} onClick={handleClick}>
-          <Search size={16} />
-          <span>Buscar Productos</span>
-        </SidebarLink>
-        <SidebarLink href="/dashboard/descriptions" pathname={pathname} onClick={handleClick}>
-          <FileText size={16} />
-          <span>Generador de Descripciones</span>
-        </SidebarLink>
-        <SidebarLink href="/dashboard/tools" pathname={pathname} onClick={handleClick}>
-          <Box size={16} />
-          <span>Kit de Herramientas</span>
-        </SidebarLink>
-        <SidebarLink href="/dashboard/product-check" pathname={pathname} onClick={handleClick}>
-          <ScanLine size={16} />
-          <span>¿Ya se vende esto?</span>
-        </SidebarLink>
-        <SidebarLink href="/dashboard/page-generator" pathname={pathname} onClick={handleClick}>
-          <Layout size={16} />
-          <span>Generador de Páginas</span>
-        </SidebarLink>
-        <SidebarLink href="/dashboard/tracker" pathname={pathname} onClick={handleClick}>
-          <BarChart size={16} />
-          <span>Tracker Avanzado</span>
-        </SidebarLink>
-        <SidebarLink href="/dashboard/chatbot" pathname={pathname} onClick={handleClick}>
-          <MessageCircle size={16} />
-          <span>Chatbot Inteligente</span>
-        </SidebarLink>
-        <SidebarLink href="/dashboard/social-copies" pathname={pathname} onClick={handleClick}>
-          <MessageSquareText size={16} />
-          <span>Copys para Redes Sociales</span>
-        </SidebarLink>
+        {links.map(({ href, label, icon: Icon }) => (
+          <div
+            key={href}
+            onClick={() => handleClick(href)}
+            style={getLinkStyle(pathname === href)}
+          >
+            <Icon size={16} />
+            <span>{label}</span>
+          </div>
+        ))}
       </nav>
     </aside>
   );
 }
 
-function SidebarLink({
-  href,
-  children,
-  pathname,
-  onClick,
-}: {
-  href: string;
-  children: React.ReactNode;
-  pathname: string;
-  onClick: (href: string) => void;
-}) {
-  const isActive = pathname === href;
-
-  return (
-    <div
-      onClick={() => onClick(href)}
-      style={{
-        color: isActive ? '#4F46E5' : '#111827',
-        backgroundColor: isActive ? '#E0E7FF' : 'transparent',
-        fontWeight: 500,
-        fontSize: '0.9rem',
-        padding: '0.45rem 0.6rem',
-        borderRadius: '0.5rem',
-        transition: 'all 0.2s ease',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-      }}
-    >
-      {children}
-    </div>
-  );
+function getLinkStyle(isActive: boolean) {
+  return {
+    color: isActive ? '#4F46E5' : '#111827',
+    backgroundColor: isActive ? '#E0E7FF' : 'transparent',
+    fontWeight: 500,
+    fontSize: '0.9rem',
+    padding: '0.45rem 0.6rem',
+    borderRadius: '0.5rem',
+    transition: 'all 0.2s ease',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+  };
 }
