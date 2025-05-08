@@ -1,16 +1,30 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { SignIn } from "@clerk/nextjs";
+'use client';
 
-export default async function SignInPage() {
-  const { userId } = await auth();
+import { SignIn } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-  if (userId) {
-    redirect("/dashboard"); // Ya logueado: ir directo
-  }
+export default function SignInPage() {
+  const { user } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard');
+    }
+  }, [user]);
 
   return (
-    <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "linear-gradient(to bottom right, #4B0082, #8A2BE2)" }}>
+    <div
+      style={{
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: 'linear-gradient(to bottom right, #4B0082, #8A2BE2)',
+      }}
+    >
       <SignIn redirectUrl="/dashboard" />
     </div>
   );
