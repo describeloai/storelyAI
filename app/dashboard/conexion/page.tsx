@@ -1,52 +1,66 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
 import { useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useAuth } from '@clerk/nextjs';
 
-export default function ConexionPage() {
-  const { user, isLoaded } = useUser();
+export default function ShopifyConexionPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { userId } = useAuth();
 
   useEffect(() => {
-    if (!isLoaded || !user) return;
+    const shop = searchParams.get('shop');
+    const token = searchParams.get('token');
 
-    const shop = getCookie('shopifyShop');
-    const token = getCookie('shopifyToken');
-
-    if (shop && token) {
-      fetch('/api/user/saveShopifyToken', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          shop,
-          accessToken: token,
-        }),
-      })
-        .then(() => {
-          // Limpiar cookies
-          document.cookie = 'shopifyShop=; Max-Age=0; path=/';
-          document.cookie = 'shopifyToken=; Max-Age=0; path=/';
-
-          // Redirigir al dashboard
-          window.location.href = '/dashboard';
-        })
-        .catch((err) => {
-          console.error('Error guardando token en Clerk:', err);
-        });
+    if (!shop || !token || !userId) {
+      console.warn('Faltan datos para guardar Shopify');
+      return;
     }
-  }, [user, isLoaded]);
+
+    // 1. Guardar cookies manualmente (opcional pero útil para reutilizar)
+    document.cookie = `shopifyShop=${shop}; path=/; max-age=300`;
+    document.cookie = `shopifyToken=${token}; path=/; max-age=300`;
+
+    // 2. Llamar al endpoint para guardar en Clerk
+    fetch('/api/user/saveShopifyToken', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+      },
+      body: JSON.stringify({
+        shop,
+        accessToken: token,
+      }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          console.log('✅ Shopify guardado en Clerk');
+        } else {
+          console.error('❌ No se pudo guardar en Clerk');
+        }
+        // 3. Redirigir al dashboard
+        router.push('/dashboard');
+      })
+      .catch((err) => {
+        console.error('Error al conectar con API:', err);
+        router.push('/dashboard');
+      });
+  }, [searchParams, router, userId]);
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Conectando tu tienda Shopify...</h2>
-      <p>Por favor espera unos segundos mientras completamos la vinculación.</p>
+    <div
+      style={{
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: '1.1rem',
+        fontWeight: 500,
+      }}
+    >
+      Conectando con Shopify...
     </div>
   );
-}
-
-function getCookie(name: string): string | null {
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  return match ? decodeURIComponent(match[2]) : null;
 }

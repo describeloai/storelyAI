@@ -1,12 +1,11 @@
+// pages/api/shopify/callback.ts
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { serialize } from 'cookie';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { shop, code } = req.query;
 
   if (!shop || !code || typeof shop !== 'string' || typeof code !== 'string') {
-    console.warn('Faltan parámetros en callback:', { shop, code });
     return res.status(400).send('Faltan parámetros');
   }
 
@@ -27,33 +26,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const accessToken = tokenResponse.data.access_token;
 
-    // Guardar cookies con opciones válidas en producción
-    res.setHeader('Set-Cookie', [
-      serialize('shopifyShop', shop, {
-        path: '/',
-        maxAge: 300, // 5 minutos
-        httpOnly: false,
-        secure: true,
-        sameSite: 'lax',
-      }),
-      serialize('shopifyToken', accessToken, {
-        path: '/',
-        maxAge: 300,
-        httpOnly: false,
-        secure: true,
-        sameSite: 'lax',
-      }),
-    ]);
-
-    console.log('🔐 Shopify Access Token recibido y cookies establecidas');
-    return res.redirect('/dashboard/conexion');
+    // 🔁 Redirige al frontend con los datos como query params
+    return res.redirect(
+      `/dashboard/conexion?shop=${encodeURIComponent(shop)}&token=${accessToken}`
+    );
   } catch (error) {
-    const err = error as any;
-    console.error('❌ Error en Shopify callback:', {
-      message: err?.message,
-      status: err?.response?.status,
-      responseData: err?.response?.data,
-    });
+    console.error('❌ Error en callback:', error);
     return res.status(500).send('Error conectando con Shopify');
   }
 }
