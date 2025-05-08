@@ -7,28 +7,48 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { shop, code } = req.query;
 
   if (!shop || !code || typeof shop !== 'string' || typeof code !== 'string') {
+    console.warn('Faltan parámetros en callback:', { shop, code });
     return res.status(400).send('Faltan parámetros');
   }
 
   try {
-    const result = await axios.post(`https://${shop}/admin/oauth/access_token`, {
+    // Llamada al endpoint oficial de Shopify para obtener el access_token
+    const tokenResponse = await axios.post(`https://${shop}/admin/oauth/access_token`, {
       client_id: process.env.SHOPIFY_API_KEY,
       client_secret: process.env.SHOPIFY_API_SECRET,
       code,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
-    const { access_token } = result.data;
+    const accessToken = tokenResponse.data.access_token;
 
-    // Guardar en cookie temporal (httpOnly = false para que sea accesible desde el cliente)
+    // Guardar en cookies temporales (visibles desde el cliente solo si httpOnly: false)
     res.setHeader('Set-Cookie', [
-      serialize('shopifyShop', shop, { path: '/', maxAge: 300 }),
-      serialize('shopifyToken', access_token, { path: '/', maxAge: 300 }),
+      serialize('shopifyShop', shop, {
+        path: '/',
+        maxAge: 300,
+        httpOnly: false,
+      }),
+      serialize('shopifyToken', accessToken, {
+        path: '/',
+        maxAge: 300,
+        httpOnly: false,
+      }),
     ]);
 
-    // Redirigir a página que completará el guardado en Clerk desde el frontend
-    res.redirect('/dashboard/conexion');
+    console.log('🔐 Shopify Access Token recibido y cookies establecidas');
+    return res.redirect('/dashboard/conexion');
+
   } catch (error) {
-    console.error('Error en Shopify callback:', error);
-    res.status(500).send('Error conectando con Shopify');
+    const err = error as any;
+    console.error('❌ Error en Shopify callback:', {
+      message: err?.message,
+      status: err?.response?.status,
+      responseData: err?.response?.data,
+    });
+    return res.status(500).send('Error conectando con Shopify');
   }
 }
