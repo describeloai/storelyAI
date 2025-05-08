@@ -8,7 +8,6 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 import Navbar from "@/components/Navbar";
 import PoweredBySection from "@/components/PoweredBySection";
 import FeatureSection from "@/components/FeatureSection";
-import PlanesSection from "@/components/PlanesSection";
 import FinalCTASection from "@/components/FinalCTASection";
 
 import AnimatedToolCard from "@/components/AnimatedToolCard";
@@ -141,7 +140,7 @@ export default function LandingPage() {
 
         <section style={{ backgroundColor: "transparent", position: "relative", zIndex: 1 }}>
           <FeatureSection />
-          <PlanesSection />
+        
         </section>
 
         <section style={{ backgroundColor: "transparent", position: "relative", zIndex: 1, color: "white", padding: "4rem 1rem" }}>
