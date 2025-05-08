@@ -121,7 +121,7 @@ function SidebarLink({
 }: {
   href: string;
   children: React.ReactNode;
-  pathname: string; // ✅ Aquí corregido
+  pathname: string; // ✅ Esto es lo que soluciona el error
   onClick: (href: string) => void;
 }) {
   const isActive = pathname === href;
