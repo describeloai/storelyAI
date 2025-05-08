@@ -23,7 +23,8 @@ interface SidebarProps {
 
 export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
-  const pathname = usePathname() ?? '';
+  const rawPathname = usePathname();
+  const pathname = (rawPathname ?? '') as string;
   const router = useRouter();
 
   useEffect(() => {
