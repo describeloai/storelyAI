@@ -1,4 +1,4 @@
-// /api/shopify/auth.ts
+// /pages/api/shopify/auth.ts
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -8,7 +8,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).send('Missing shop parameter')
   }
 
-  const redirectUri = `${process.env.SHOPIFY_APP_URL}/api/shopify/callback`
+  const redirectUri = encodeURIComponent(`${process.env.SHOPIFY_APP_URL}/api/shopify/callback`)
   const installUrl = `https://${shop}/admin/oauth/authorize` +
     `?client_id=${process.env.SHOPIFY_API_KEY}` +
     `&scope=${process.env.SHOPIFY_SCOPES}` +

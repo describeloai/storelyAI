@@ -13,7 +13,9 @@ import {
   BarChart,
   MessageCircle,
   MessageSquareText,
+  Link,
 } from 'lucide-react';
+import Image from 'next/image';
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -42,7 +44,6 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
   if (!isSidebarOpen) return null;
 
   const links = [
-    { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
     { href: '/dashboard', label: 'Inicio', icon: Home },
     { href: '/dashboard/products', label: 'Buscar Productos', icon: Search },
     { href: '/dashboard/descriptions', label: 'Generador de Descripciones', icon: FileText },
@@ -52,6 +53,8 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
     { href: '/dashboard/tracker', label: 'Tracker Avanzado', icon: BarChart },
     { href: '/dashboard/chatbot', label: 'Chatbot Inteligente', icon: MessageCircle },
     { href: '/dashboard/social-copies', label: 'Copys para Redes Sociales', icon: MessageSquareText },
+    { href: '/dashboard/connect-shopify', label: 'Conectar Shopify', icon: Link, custom: true }, // pestaña especial
+    { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
   ];
 
   return (
@@ -75,14 +78,34 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
         zIndex: 60,
       }}
     >
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-        {links.map(({ href, label, icon: Icon }) => (
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1 }}>
+        {links.map(({ href, label, icon: Icon, custom }) => (
           <div
             key={href}
             onClick={() => handleClick(href)}
-            style={getLinkStyle(pathname === href)}
+            style={{
+              ...getLinkStyle(pathname === href),
+              ...(custom && {
+                backgroundColor: '#30C75D',
+                color: '#ffffff',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }),
+            }}
           >
-            <Icon size={16} />
+            {href === '/dashboard/connect-shopify' ? (
+              <Image
+                src="/logos/shopify.png"
+                alt="Shopify"
+                width={16}
+                height={16}
+                style={{ borderRadius: 2 }}
+              />
+            ) : (
+              <Icon size={16} />
+            )}
             <span>{label}</span>
           </div>
         ))}

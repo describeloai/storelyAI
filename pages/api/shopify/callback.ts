@@ -1,32 +1,34 @@
-// /api/shopify/callback.ts
-import type { NextApiRequest, NextApiResponse } from 'next'
-import axios from 'axios'
+// pages/api/shopify/callback.ts
+import axios from 'axios';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { serialize } from 'cookie';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { shop, code } = req.query
+  const { shop, code } = req.query;
 
   if (!shop || !code || typeof shop !== 'string' || typeof code !== 'string') {
-    return res.status(400).send('Missing shop or code')
+    return res.status(400).send('Faltan parámetros');
   }
 
   try {
-    const accessTokenResponse = await axios.post(`https://${shop}/admin/oauth/access_token`, {
+    const result = await axios.post(`https://${shop}/admin/oauth/access_token`, {
       client_id: process.env.SHOPIFY_API_KEY,
       client_secret: process.env.SHOPIFY_API_SECRET,
       code,
-    })
+    });
 
-    const accessToken = accessTokenResponse.data.access_token
+    const { access_token } = result.data;
 
-    // 🔐 Aquí puedes guardar el token en Clerk metadata si estás autenticado
-    // O simplemente responderlo por ahora (solo para desarrollo)
-    return res.status(200).json({
-      success: true,
-      shop,
-      accessToken,
-    })
+    // Guardar en cookie temporal (httpOnly = false para que sea accesible desde el cliente)
+    res.setHeader('Set-Cookie', [
+      serialize('shopifyShop', shop, { path: '/', maxAge: 300 }),
+      serialize('shopifyToken', access_token, { path: '/', maxAge: 300 }),
+    ]);
+
+    // Redirigir a página que completará el guardado en Clerk desde el frontend
+    res.redirect('/dashboard/conexion');
   } catch (error) {
-    console.error('Error obteniendo el token de Shopify:', error)
-    return res.status(500).json({ error: 'Error al obtener el token de acceso' })
+    console.error('Error en Shopify callback:', error);
+    res.status(500).send('Error conectando con Shopify');
   }
 }
