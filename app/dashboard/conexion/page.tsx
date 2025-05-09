@@ -30,7 +30,11 @@ export default function ShopifyConexionPage() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ shop, accessToken: token }),
+      body: JSON.stringify({
+        shop,
+        accessToken: token,
+        userId, // ✅ AÑADIDO AQUÍ
+      }),
     })
       .then((res) => {
         if (res.ok) {
