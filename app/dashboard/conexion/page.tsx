@@ -10,8 +10,8 @@ export default function ShopifyConexionPage() {
   const { userId } = useAuth();
 
   useEffect(() => {
-    const shop = searchParams.get('shop');
-    const token = searchParams.get('token');
+    const shop = searchParams?.get('shop') ?? null;
+    const token = searchParams?.get('token') ?? null;
 
     console.log("🔍 Entrando a useEffect de ShopifyConexionPage");
     console.log("➡️ shop:", shop);
