@@ -1,18 +1,19 @@
 // app/api/user/saveShopifyToken/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
+import { getAuth } from '@clerk/nextjs/server';
 
 export async function POST(req: NextRequest) {
+  const { userId } = getAuth(req);
+  const body = await req.json();
+  const { shop, accessToken } = body;
+
+  if (!userId || !shop || !accessToken) {
+    return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
+  }
+
   try {
-    const body = await req.json();
-    const { userId, shop, accessToken } = body;
-
-    if (!userId || !shop || !accessToken) {
-      console.warn('🚫 Datos incompletos en la solicitud:', { userId, shop, accessToken });
-      return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
-    }
-
-    const response = await axios.patch(
+    await axios.patch(
       `https://api.clerk.com/v1/users/${userId}/metadata`,
       {
         private_metadata: {
@@ -28,7 +29,6 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    console.log('✅ Token guardado correctamente en Clerk para el usuario', userId);
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error('❌ Error al guardar token en Clerk:', {
