@@ -10,23 +10,25 @@ export default function ShopifyConexionPage() {
   const { userId } = useAuth();
 
   useEffect(() => {
-    const shop = searchParams!.get('shop');
-    const token = searchParams!.get('token');
+    const shop = searchParams.get('shop');
+    const token = searchParams.get('token');
 
+    console.log("🔍 Entrando a useEffect de ShopifyConexionPage");
+    console.log("➡️ shop:", shop);
+    console.log("➡️ token:", token);
+    console.log("➡️ userId:", userId);
 
     if (!shop || !token || !userId) {
       console.warn('❌ Faltan datos para guardar Shopify. No se redirige.');
-      return; // ❌ IMPORTANTE: evitar redirigir
+      return;
     }
 
-    // Guardar cookies
+    console.log("✅ Ejecutando fetch con:", { shop, token, userId });
 
-    // Guardar en Clerk
     fetch('/api/user/saveShopifyToken', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-user-id': userId,
       },
       body: JSON.stringify({ shop, accessToken: token }),
     })
@@ -39,7 +41,7 @@ export default function ShopifyConexionPage() {
         router.push('/dashboard');
       })
       .catch((err) => {
-        console.error('Error al guardar:', err);
+        console.error('❌ Error al guardar:', err);
         router.push('/dashboard');
       });
   }, [searchParams, router, userId]);
