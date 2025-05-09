@@ -20,8 +20,6 @@ export default function ShopifyConexionPage() {
     }
 
     // Guardar cookies
-    document.cookie = `shopifyShop=${shop}; path=/; max-age=300`;
-    document.cookie = `shopifyToken=${token}; path=/; max-age=300`;
 
     // Guardar en Clerk
     fetch('/api/user/saveShopifyToken', {

@@ -1,11 +1,13 @@
 // pages/api/user/saveShopifyToken.ts
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { getAuth } from '@clerk/nextjs/server';
 import axios from 'axios';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { userId, shop, accessToken } = req.body;
+  const { userId } = getAuth(req); // Clerk detecta al usuario autenticado
+  const { shop, accessToken } = req.body;
 
   if (!userId || !shop || !accessToken) {
     return res.status(400).json({ error: 'Datos incompletos' });
