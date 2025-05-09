@@ -1,15 +1,15 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+// app/api/user/saveShopifyToken/route.ts
+import { NextRequest, NextResponse } from 'next/server';
 import { getAuth } from '@clerk/nextjs/server';
 import axios from 'axios';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') return res.status(405).end(); // ← ⚠️ Esto causa el 405 si no es POST
-
+export async function POST(req: NextRequest) {
   const { userId } = getAuth(req);
-  const { shop, accessToken } = req.body;
+  const body = await req.json();
+  const { shop, accessToken } = body;
 
   if (!userId || !shop || !accessToken) {
-    return res.status(400).json({ error: 'Datos incompletos' });
+    return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
   }
 
   try {
@@ -29,9 +29,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     );
 
-    return res.status(200).json({ success: true });
+    return NextResponse.json({ success: true });
   } catch (err) {
     console.error('❌ Error al guardar token en Clerk:', err);
-    return res.status(500).json({ error: 'No se pudo guardar el token' });
+    return NextResponse.json({ error: 'No se pudo guardar el token' }, { status: 500 });
   }
 }
