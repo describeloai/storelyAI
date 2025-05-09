@@ -1,12 +1,10 @@
 // app/api/user/saveShopifyToken/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuth } from '@clerk/nextjs/server';
 import axios from 'axios';
 
 export async function POST(req: NextRequest) {
-  const { userId } = getAuth(req);
   const body = await req.json();
-  const { shop, accessToken } = body;
+  const { userId, shop, accessToken } = body;
 
   if (!userId || !shop || !accessToken) {
     return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
