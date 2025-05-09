@@ -30,8 +30,16 @@ export async function POST(req: NextRequest) {
     );
 
     return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error('❌ Error al guardar token en Clerk:', err);
-    return NextResponse.json({ error: 'No se pudo guardar el token' }, { status: 500 });
+  } catch (err: any) {
+    console.error('❌ Error al guardar token en Clerk:', {
+      message: err.message,
+      response: err.response?.data,
+      status: err.response?.status,
+    });
+
+    return NextResponse.json(
+      { error: err.response?.data || 'No se pudo guardar el token' },
+      { status: 500 }
+    );
   }
 }
