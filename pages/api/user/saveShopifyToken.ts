@@ -3,15 +3,13 @@ import { getAuth } from '@clerk/nextjs/server';
 import axios from 'axios';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Solo permite POST
-  if (req.method !== 'POST') return res.status(405).end();
+  if (req.method !== 'POST') return res.status(405).end(); // ← ⚠️ Esto causa el 405 si no es POST
 
-  // Obtiene userId desde Clerk usando getAuth (seguro y sin pasarlo desde el frontend)
   const { userId } = getAuth(req);
   const { shop, accessToken } = req.body;
 
   if (!userId || !shop || !accessToken) {
-    return res.status(400).json({ error: '❌ Datos incompletos para guardar en Clerk' });
+    return res.status(400).json({ error: 'Datos incompletos' });
   }
 
   try {
@@ -33,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(200).json({ success: true });
   } catch (err) {
-    console.error('❌ Error al guardar en Clerk:', err);
-    return res.status(500).json({ error: 'No se pudo guardar el token en Clerk' });
+    console.error('❌ Error al guardar token en Clerk:', err);
+    return res.status(500).json({ error: 'No se pudo guardar el token' });
   }
 }
