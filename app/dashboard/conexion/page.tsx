@@ -39,12 +39,20 @@ export default function ShopifyConexionPage() {
       .then((res) => {
         if (res.ok) {
           console.log('✅ Shopify guardado en Clerk');
+
+          // ✅ Fallback por si Clerk no actualiza de inmediato en el cliente
+          localStorage.setItem('storelyShopifyConnected', 'true');
+
+          router.refresh();
+
+          // Esperamos a que router.refresh() surta efecto
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 300);
         } else {
           console.error('❌ No se pudo guardar en Clerk');
+          router.push('/dashboard');
         }
-
-        router.refresh(); // 🔁 fuerza que Clerk recargue los datos del usuario
-        router.push('/dashboard');
       })
       .catch((err) => {
         console.error('❌ Error al guardar:', err);
