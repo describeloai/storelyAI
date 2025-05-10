@@ -17,7 +17,6 @@ import {
   PlugZap,
 } from 'lucide-react';
 import Image from 'next/image';
-import { useUser } from '@clerk/nextjs';
 import { useShopifyConnectionStatus } from '@/lib/useShopifyConnectionStatus';
 
 interface SidebarProps {
@@ -29,12 +28,10 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
   const pathname = usePathname() ?? '';
-  const { isConnected, shopDomain } = useShopifyConnectionStatus();
+  const { isConnected, shopDomain, isLoaded } = useShopifyConnectionStatus();
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -45,7 +42,8 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
     if (isMobile) onClose();
   };
 
-  if (!isSidebarOpen) return null;
+  // Evitar renderizar el sidebar si los datos aún no están listos
+  if (!isSidebarOpen || !isLoaded) return null;
 
   const links = [
     { href: '/dashboard', label: 'Inicio', icon: Home },
@@ -57,8 +55,7 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
     { href: '/dashboard/tracker', label: 'Tracker Avanzado', icon: BarChart },
     { href: '/dashboard/chatbot', label: 'Chatbot Inteligente', icon: MessageCircle },
     { href: '/dashboard/social-copies', label: 'Copys para Redes Sociales', icon: MessageSquareText },
-
-    // Mostrar "Conectar Shopify" solo si NO está conectada
+    // Solo mostrar si no está conectada la tienda
     ...(!isConnected
       ? [{
           href: '/dashboard/connect-shopify',
@@ -67,10 +64,7 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
           custom: true,
         }]
       : []),
-
-    // Mostrar "Integraciones" siempre
     { href: '/dashboard/integrations', label: 'Integraciones', icon: PlugZap },
-
     { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
   ];
 

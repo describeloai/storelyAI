@@ -1,12 +1,10 @@
-// lib/useShopifyConnectionStatus.ts
-
 'use client';
 
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 
 export function useShopifyConnectionStatus() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser(); // <--- ¡Incluido aquí!
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [shopDomain, setShopDomain] = useState<string | null>(null);
 
@@ -26,5 +24,9 @@ export function useShopifyConnectionStatus() {
     setShopDomain(shop ?? null);
   }, [user]);
 
-  return { isConnected, shopDomain };
+  return {
+    isConnected,
+    shopDomain,
+    isLoaded, // <--- ¡Agregado al return!
+  };
 }
