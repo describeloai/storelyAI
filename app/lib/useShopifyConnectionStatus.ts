@@ -3,33 +3,30 @@
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 
-// ✅ Interfaz para los datos privados guardados en Clerk
-interface ShopifyMetadata {
-  shop?: string;
-  accessToken?: string;
-}
-
 export function useShopifyConnectionStatus() {
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded } = useUser(); // <--- ¡Incluido aquí!
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [shopDomain, setShopDomain] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isLoaded) return;
-      //@ts-ignore
-    const metadata = user?.privateMetadata as ShopifyMetadata | undefined;
+    // Clerk metadata
+    // @ts-ignore
+    const shop = user?.privateMetadata?.shop as string | undefined;
+    // @ts-ignore
+    const token = user?.privateMetadata?.accessToken as string | undefined;
 
-    const shop = metadata?.shop;
-    const token = metadata?.accessToken;
+    // Local fallback
+    const localOverride =
+      typeof window !== 'undefined' && localStorage.getItem('storelyShopifyConnected') === 'true';
 
-    const connected = !!shop && !!token;
+    const connected = (!!shop && !!token) || localOverride;
     setIsConnected(connected);
     setShopDomain(shop ?? null);
-  }, [user, isLoaded]);
+  }, [user]);
 
   return {
     isConnected,
     shopDomain,
-    isLoaded,
+    isLoaded, // <--- ¡Agregado al return!
   };
 }
