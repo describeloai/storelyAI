@@ -28,21 +28,19 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
   const pathname = usePathname() ?? '';
-  const { user } = useUser();
-
-  // Acceso directo sin fallback localStorage
+  const { user, isLoaded } = useUser();
+// @ts-ignore
+  const shop = isLoaded ? (user?.privateMetadata?.shop as string | undefined) : undefined;
   // @ts-ignore
-  const shop = user?.privateMetadata?.shop as string | undefined;
-  // @ts-ignore
-  const token = user?.privateMetadata?.accessToken as string | undefined;
-
+  const token = isLoaded ? (user?.privateMetadata?.accessToken as string | undefined) : undefined;
   const isShopifyConnected = !!(shop && token);
 
-  // Debug de metadata
+  // Debug en consola
   useEffect(() => {
+    console.log("🧪 isLoaded:", isLoaded);
     // @ts-ignore
     console.log("🧪 USER METADATA:", user?.privateMetadata);
-  }, [user]);
+  }, [isLoaded, user]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -71,7 +69,7 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
     { href: '/dashboard/chatbot', label: 'Chatbot Inteligente', icon: MessageCircle },
     { href: '/dashboard/social-copies', label: 'Copys para Redes Sociales', icon: MessageSquareText },
 
-    // Mostrar "Conectar Shopify" solo si no está conectada
+    // Mostrar "Conectar Shopify" solo si NO está conectada
     ...(!isShopifyConnected
       ? [{
           href: '/dashboard/connect-shopify',
@@ -81,7 +79,7 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
         }]
       : []),
 
-    // Mostrar "Integraciones" siempre
+    // Mostrar "Integraciones" SIEMPRE
     { href: '/dashboard/integrations', label: 'Integraciones', icon: PlugZap },
 
     { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
@@ -141,6 +139,7 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
         ))}
       </nav>
 
+      {/* Mostrar tienda si está conectada */}
       {isShopifyConnected && shop && (
         <div
           style={{
