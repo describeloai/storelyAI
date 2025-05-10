@@ -25,17 +25,17 @@ export default function ShopifyConexionPage() {
 
     console.log("✅ Ejecutando fetch con:", { shop, token, userId });
 
-    fetch('/api/user/saveShopifyToken', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        shop,
-        accessToken: token,
-        userId,
-      }),
-    })
+    fetch('/api/shopify/save-token', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    shop,
+    accessToken: token,
+    userId,
+  }),
+})
       .then((res) => {
         if (res.ok) {
           console.log('✅ Shopify guardado en Clerk');
