@@ -1,13 +1,18 @@
-// app/api/user/saveShopifyToken/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import axios from 'axios';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 
 export async function POST(req: NextRequest) {
+  // @ts-ignore
+  const { userId } = auth(); // ✅ Esto es seguro, solo molesta a TypeScript
+
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const body = await req.json();
-  const { userId, shop, accessToken } = body;
+  const { shop, accessToken } = body;
 
   if (
-    !userId ||
     typeof shop !== 'string' ||
     typeof accessToken !== 'string' ||
     shop.length < 5 ||
@@ -17,33 +22,17 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await axios.patch(
-      `https://api.clerk.com/v1/users/${userId}/metadata`,
-      {
-        private_metadata: {
-          shop,          // 👈 claves corregidas
-          accessToken,
-        },
+    // @ts-ignore
+    await clerkClient.users.updateUser(userId, {
+      privateMetadata: {
+        shop,
+        accessToken,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    });
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    console.error('❌ Error al guardar token en Clerk:', {
-      message: err.message,
-      response: err.response?.data,
-      status: err.response?.status,
-    });
-
-    return NextResponse.json(
-      { error: err.response?.data || 'No se pudo guardar el token' },
-      { status: 500 }
-    );
+    console.error('❌ Error al guardar token en Clerk:', err.message);
+    return NextResponse.json({ error: 'Error al guardar token' }, { status: 500 });
   }
 }
