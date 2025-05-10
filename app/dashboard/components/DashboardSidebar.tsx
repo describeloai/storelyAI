@@ -30,15 +30,19 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
   const pathname = usePathname() ?? '';
   const { user } = useUser();
 
+  // Acceso directo sin fallback localStorage
   // @ts-ignore
   const shop = user?.privateMetadata?.shop as string | undefined;
   // @ts-ignore
   const token = user?.privateMetadata?.accessToken as string | undefined;
 
-  // Fallback en localStorage por si Clerk aún no entrega los datos actualizados
-  const localOverride = typeof window !== 'undefined' && localStorage.getItem('storelyShopifyConnected') === 'true';
+  const isShopifyConnected = !!(shop && token);
 
-  const isShopifyConnected = !!(shop && token) || localOverride;
+  // Debug de metadata
+  useEffect(() => {
+    // @ts-ignore
+    console.log("🧪 USER METADATA:", user?.privateMetadata);
+  }, [user]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -67,7 +71,7 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
     { href: '/dashboard/chatbot', label: 'Chatbot Inteligente', icon: MessageCircle },
     { href: '/dashboard/social-copies', label: 'Copys para Redes Sociales', icon: MessageSquareText },
 
-    // Solo si NO está conectada la tienda
+    // Mostrar "Conectar Shopify" solo si no está conectada
     ...(!isShopifyConnected
       ? [{
           href: '/dashboard/connect-shopify',
@@ -77,14 +81,8 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
         }]
       : []),
 
-    // Solo si SÍ está conectada
-    ...(isShopifyConnected
-      ? [{
-          href: '/dashboard/integrations',
-          label: 'Integraciones',
-          icon: PlugZap,
-        }]
-      : []),
+    // Mostrar "Integraciones" siempre
+    { href: '/dashboard/integrations', label: 'Integraciones', icon: PlugZap },
 
     { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
   ];
