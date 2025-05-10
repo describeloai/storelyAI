@@ -1,9 +1,12 @@
+export const runtime = "nodejs";
+
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 
+// @ts-ignore
 export async function POST(req: NextRequest) {
   // @ts-ignore
-  const { userId } = auth(); // ✅ Esto es seguro, solo molesta a TypeScript
+  const { userId } = auth();
 
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
