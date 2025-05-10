@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useUser } from '@clerk/nextjs';
+import { useShopifyConnectionStatus } from '@/lib/useShopifyConnectionStatus';
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -28,17 +29,7 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
   const pathname = usePathname() ?? '';
-  const { user } = useUser();
-
-  // @ts-ignore
-  const shop = user?.privateMetadata?.shop as string | undefined;
-  // @ts-ignore
-  const token = user?.privateMetadata?.accessToken as string | undefined;
-
-  // Fallback en localStorage por si Clerk aún no entrega los datos actualizados
-  const localOverride = typeof window !== 'undefined' && localStorage.getItem('storelyShopifyConnected') === 'true';
-
-  const isShopifyConnected = !!(shop && token) || localOverride;
+  const { isConnected, shopDomain } = useShopifyConnectionStatus();
 
   useEffect(() => {
     const handleResize = () => {
@@ -67,8 +58,8 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
     { href: '/dashboard/chatbot', label: 'Chatbot Inteligente', icon: MessageCircle },
     { href: '/dashboard/social-copies', label: 'Copys para Redes Sociales', icon: MessageSquareText },
 
-    // Solo si NO está conectada la tienda
-    ...(!isShopifyConnected
+    // Mostrar "Conectar Shopify" solo si NO está conectada
+    ...(!isConnected
       ? [{
           href: '/dashboard/connect-shopify',
           label: 'Conectar Shopify',
@@ -77,14 +68,8 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
         }]
       : []),
 
-    // Solo si SÍ está conectada
-    ...(isShopifyConnected
-      ? [{
-          href: '/dashboard/integrations',
-          label: 'Integraciones',
-          icon: PlugZap,
-        }]
-      : []),
+    // Mostrar "Integraciones" siempre
+    { href: '/dashboard/integrations', label: 'Integraciones', icon: PlugZap },
 
     { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
   ];
@@ -143,7 +128,7 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
         ))}
       </nav>
 
-      {isShopifyConnected && shop && (
+      {isConnected && shopDomain && (
         <div
           style={{
             marginTop: '2rem',
@@ -155,7 +140,7 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
         >
           <span style={{ fontWeight: 600 }}>Tienda conectada:</span>
           <br />
-          {shop}
+          {shopDomain}
         </div>
       )}
     </aside>

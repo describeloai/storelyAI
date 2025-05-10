@@ -1,86 +1,59 @@
 'use client';
 
-import { useState } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useShopifyConnectionStatus } from '@/lib/useShopifyConnectionStatus';
+import { useState } from 'react';
 
 export default function IntegrationsPage() {
-  const { user } = useUser();
   const router = useRouter();
+  const { isConnected, shopDomain } = useShopifyConnectionStatus();
 
-  // @ts-ignore
-  const shop = user?.privateMetadata?.shop as string | undefined;
-  // @ts-ignore
-  const accessToken = user?.privateMetadata?.accessToken as string | undefined;
-
-  const [disconnected, setDisconnected] = useState(false);
-  const isConnected = !!(shop && accessToken) && !disconnected;
-
-  const handleDisconnect = async () => {
-    try {
-      const res = await fetch('/api/user/saveShopifyToken', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user?.id,
-          shop: '',
-          accessToken: '',
-        }),
-      });
-
-      if (res.ok) {
-        setDisconnected(true);
-      } else {
-        console.error('❌ No se pudo desconectar');
-      }
-    } catch (err) {
-      console.error('❌ Error al desconectar:', err);
-    }
-  };
-
-  const handleReconnect = () => {
+  const handleConnect = () => {
     router.push('/dashboard/connect-shopify');
   };
 
+  const handleDisconnect = () => {
+    localStorage.removeItem('storelyShopifyConnected');
+    router.refresh();
+  };
+
   return (
-    <div style={{ padding: '3rem', maxWidth: '640px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 'bold', marginBottom: '2rem' }}>
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <h1 style={{ fontSize: '1.8rem', fontWeight: 'bold', marginBottom: '1rem' }}>
         Integraciones con Shopify
-      </h2>
+      </h1>
 
       {isConnected ? (
         <>
-          <p style={{ marginBottom: '1.5rem', fontSize: '1.1rem' }}>
-            <strong>Tienda conectada:</strong> {shop}
+          <p style={{ marginBottom: '0.5rem' }}>
+            <strong>Tienda conectada:</strong> {shopDomain}
           </p>
-
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
             <button
               onClick={handleDisconnect}
               style={{
-                padding: '0.8rem 1.4rem',
-                background: '#ef4444',
+                backgroundColor: '#E11D48',
                 color: '#fff',
                 border: 'none',
+                padding: '0.5rem 1.2rem',
                 borderRadius: '0.5rem',
-                fontWeight: 600,
-                cursor: 'pointer',
+                fontWeight: 500,
+                cursor: 'pointer'
               }}
             >
               Desconectar tienda
             </button>
-
             <button
-              onClick={handleReconnect}
+              onClick={handleConnect}
               style={{
-                padding: '0.8rem 1.4rem',
-                background: '#6366f1',
+                backgroundColor: '#4F46E5',
                 color: '#fff',
                 border: 'none',
+                padding: '0.5rem 1.2rem',
                 borderRadius: '0.5rem',
-                fontWeight: 600,
-                cursor: 'pointer',
+                fontWeight: 500,
+                cursor: 'pointer'
               }}
             >
               Cambiar cuenta de Shopify
@@ -88,30 +61,28 @@ export default function IntegrationsPage() {
           </div>
         </>
       ) : (
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ marginBottom: '1rem' }}>
-            No hay ninguna tienda conectada actualmente.
-          </p>
+        <>
+          <p style={{ marginBottom: '1rem' }}>No hay ninguna tienda conectada actualmente.</p>
           <button
-            onClick={handleReconnect}
+            onClick={handleConnect}
             style={{
-              padding: '0.8rem 1.4rem',
-              background: '#30C75D',
+              backgroundColor: '#30C75D',
               color: '#fff',
               border: 'none',
+              padding: '0.6rem 1.4rem',
               borderRadius: '0.5rem',
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '0.5rem',
-              marginTop: '1rem',
+              margin: '0 auto'
             }}
           >
             <Image src="/logos/shopify.png" alt="Shopify" width={20} height={20} />
             Conectar Shopify
           </button>
-        </div>
+        </>
       )}
     </div>
   );
