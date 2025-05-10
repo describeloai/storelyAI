@@ -8,14 +8,32 @@ import { useState } from 'react';
 export default function IntegrationsPage() {
   const router = useRouter();
   const { isConnected, shopDomain } = useShopifyConnectionStatus();
+  const [loading, setLoading] = useState(false);
 
   const handleConnect = () => {
     router.push('/dashboard/connect-shopify');
   };
 
-  const handleDisconnect = () => {
-    localStorage.removeItem('storelyShopifyConnected');
-    router.refresh();
+  const handleDisconnect = async () => {
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/shopify/disconnect', {
+        method: 'POST',
+      });
+
+      if (res.ok) {
+        setTimeout(() => {
+          router.refresh();
+        }, 500);
+      } else {
+        console.error('Error al desconectar tienda');
+      }
+    } catch (err) {
+      console.error('Error al hacer la petición:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -29,9 +47,10 @@ export default function IntegrationsPage() {
           <p style={{ marginBottom: '0.5rem' }}>
             <strong>Tienda conectada:</strong> {shopDomain}
           </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             <button
               onClick={handleDisconnect}
+              disabled={loading}
               style={{
                 backgroundColor: '#E11D48',
                 color: '#fff',
@@ -39,24 +58,11 @@ export default function IntegrationsPage() {
                 padding: '0.5rem 1.2rem',
                 borderRadius: '0.5rem',
                 fontWeight: 500,
-                cursor: 'pointer'
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.7 : 1
               }}
             >
-              Desconectar tienda
-            </button>
-            <button
-              onClick={handleConnect}
-              style={{
-                backgroundColor: '#4F46E5',
-                color: '#fff',
-                border: 'none',
-                padding: '0.5rem 1.2rem',
-                borderRadius: '0.5rem',
-                fontWeight: 500,
-                cursor: 'pointer'
-              }}
-            >
-              Cambiar cuenta de Shopify
+              {loading ? 'Desconectando...' : 'Desconectar tienda'}
             </button>
           </div>
         </>
