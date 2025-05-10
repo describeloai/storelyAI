@@ -33,7 +33,7 @@ export default function ShopifyConexionPage() {
       body: JSON.stringify({
         shop,
         accessToken: token,
-        userId, // ✅ AÑADIDO AQUÍ
+        userId,
       }),
     })
       .then((res) => {
@@ -42,6 +42,8 @@ export default function ShopifyConexionPage() {
         } else {
           console.error('❌ No se pudo guardar en Clerk');
         }
+
+        router.refresh(); // 🔁 fuerza que Clerk recargue los datos del usuario
         router.push('/dashboard');
       })
       .catch((err) => {

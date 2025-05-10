@@ -6,8 +6,14 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { userId, shop, accessToken } = body;
 
-  if (!userId || !shop || !accessToken) {
-    return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
+  if (
+    !userId ||
+    typeof shop !== 'string' ||
+    typeof accessToken !== 'string' ||
+    shop.length < 5 ||
+    accessToken.length < 10
+  ) {
+    return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
   }
 
   try {
@@ -15,8 +21,8 @@ export async function POST(req: NextRequest) {
       `https://api.clerk.com/v1/users/${userId}/metadata`,
       {
         private_metadata: {
-          shopifyShop: shop,
-          shopifyAccessToken: accessToken,
+          shop,          // 👈 claves corregidas
+          accessToken,
         },
       },
       {

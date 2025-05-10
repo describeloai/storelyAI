@@ -16,6 +16,7 @@ import {
   Link,
 } from 'lucide-react';
 import Image from 'next/image';
+import { useUser } from '@clerk/nextjs';
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -26,6 +27,14 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
   const pathname = usePathname() ?? '';
+
+  const { user, isLoaded } = useUser();
+
+  // @ts-ignore
+  const shop = user?.privateMetadata?.shop as string | undefined;
+  // @ts-ignore
+  const token = user?.privateMetadata?.accessToken as string | undefined;
+  const isShopifyConnected = !!(shop && token);
 
   useEffect(() => {
     const handleResize = () => {
@@ -53,7 +62,17 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
     { href: '/dashboard/tracker', label: 'Tracker Avanzado', icon: BarChart },
     { href: '/dashboard/chatbot', label: 'Chatbot Inteligente', icon: MessageCircle },
     { href: '/dashboard/social-copies', label: 'Copys para Redes Sociales', icon: MessageSquareText },
-    { href: '/dashboard/connect-shopify', label: 'Conectar Shopify', icon: Link, custom: true }, // pestaña especial
+    // Mostrar "Conectar Shopify" solo si no está conectada la tienda
+    ...(!isShopifyConnected
+      ? [
+          {
+            href: '/dashboard/connect-shopify',
+            label: 'Conectar Shopify',
+            icon: Link,
+            custom: true,
+          },
+        ]
+      : []),
     { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
   ];
 
@@ -74,11 +93,11 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        gap: '1.5rem',
+        justifyContent: 'space-between',
         zIndex: 60,
       }}
     >
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1 }}>
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
         {links.map(({ href, label, icon: Icon, custom }) => (
           <div
             key={href}
@@ -110,6 +129,23 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
           </div>
         ))}
       </nav>
+
+      {/* Mostrar tienda conectada abajo si está disponible */}
+      {isShopifyConnected && (
+        <div
+          style={{
+            marginTop: '2rem',
+            fontSize: '0.8rem',
+            color: '#555',
+            textAlign: 'center',
+            wordBreak: 'break-word',
+          }}
+        >
+          <span style={{ fontWeight: 600 }}>Tienda conectada:</span>
+          <br />
+          {shop}
+        </div>
+      )}
     </aside>
   );
 }
