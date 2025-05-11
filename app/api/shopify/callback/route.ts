@@ -1,3 +1,4 @@
+// app/api/shopify/callback/route.ts
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
@@ -7,7 +8,7 @@ export async function GET(req: Request) {
   const code = searchParams.get('code');
 
   if (!shop || !code) {
-    return new Response('Faltan parámetros', { status: 400 });
+    return NextResponse.json({ error: 'Faltan parámetros' }, { status: 400 });
   }
 
   try {
@@ -21,19 +22,20 @@ export async function GET(req: Request) {
       {
         headers: {
           'Content-Type': 'application/json',
-        },
+        }
       }
     );
 
     const accessToken = tokenResponse.data.access_token;
 
-    const redirectUrl = `/dashboard/conexion?shop=${encodeURIComponent(
-      shop
-    )}&token=${accessToken}`;
-
-    return NextResponse.redirect(new URL(redirectUrl, process.env.NEXT_PUBLIC_BASE_URL));
-  } catch (error: any) {
-    console.error('❌ [callback] Error obteniendo access token:', error.message);
-    return new Response('Error conectando con Shopify', { status: 500 });
+    return NextResponse.redirect(
+      new URL(
+        `/dashboard/shopify-conexion?shop=${shop}&token=${accessToken}`,
+        process.env.NEXT_PUBLIC_BASE_URL
+      )
+    );
+  } catch (error) {
+    console.error('❌ Error en callback Shopify:', error);
+    return NextResponse.json({ error: 'Error conectando con Shopify' }, { status: 500 });
   }
 }
