@@ -2,7 +2,7 @@
 
 import { UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
-import FeatherIcon from '@/components/FeatherIcon';
+import FeatherIcon from '@/components/landing/FeatherIcon';
 
 export default function DashboardNavbar() {
   return (

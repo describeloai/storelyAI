@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import DashboardNavbar from './components/DashboardNavbar';
-import DashboardSidebar from './components/DashboardSidebar';
+import DashboardNavbar from '@/components/dashboard/DashboardNavbar';
+import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
+import AnimatedBackground from "@/components/landing/AnimatedBackground";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isLoaded, isSignedIn } = useAuth();

@@ -17,7 +17,7 @@ import {
   cardBodyStyle,
   titleStyle,
   descriptionStyle,
-} from "./CardStyles";
+} from "@/components/landing/CardStyles";
 
 const features = [
   {

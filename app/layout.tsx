@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
-import AnimatedGlobalBackground from "@/components/AnimatedGlobalBackground";
+import PoweredBySection from "@/components/landing/PoweredBySection";
+import AnimatedGlobalBackground from "@/components/landing/AnimatedGlobalBackground";
+
 
 export const metadata: Metadata = {
   title: "StorelyAI",

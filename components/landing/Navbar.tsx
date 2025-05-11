@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useUser, useClerk } from "@clerk/nextjs";
-import AuthAwareButton from "@/components/AuthAwareButton";
-import FeatherIcon from "@/components/FeatherIcon"; // ✅ Icono pluma
+import AuthAwareButton from "@/components/landing/AuthAwareButton";
+import FeatherIcon from "@/components/landing/FeatherIcon";
+ // ✅ Icono pluma
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@nextui-org/react";
-import AuthAwareButton from "@/components/AuthAwareButton";
+import AuthAwareButton from "@/components/landing/AuthAwareButton";
 import { motion } from "framer-motion";
 
 export default function FinalCTASection() {

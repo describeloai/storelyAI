@@ -3,20 +3,21 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-import HeroSection from "@/components/HeroSection";
-import AnimatedBackground from "@/components/AnimatedBackground";
-import Navbar from "@/components/Navbar";
-import PoweredBySection from "@/components/PoweredBySection";
-import FeatureSection from "@/components/FeatureSection";
-import FinalCTASection from "@/components/FinalCTASection";
+import HeroSection from "@/components/landing/HeroSection";
+import AnimatedBackground from "@/components/landing/AnimatedBackground";
+import Navbar from "@/components/landing/Navbar";
+import PoweredBySection from "@/components/landing/PoweredBySection";
+import FeatureSection from "@/components/landing/FeatureSection";
+import FinalCTASection from "@/components/landing/FinalCTASection";
 
-import AnimatedToolCard from "@/components/AnimatedToolCard";
-import AnimatedDescriptionCard from "@/components/AnimatedDescriptionCard";
-import AnimatedStorelyTrackCard from "@/components/AnimatedStorelyTrackCard";
-import AnimatedStorelyChatCard from "@/components/AnimatedStorelyChatCard";
-import AnimatedStorelyPagesCard from "@/components/AnimatedStorelyPagesCard";
-import AnimatedStorelyInsightsCard from "@/components/AnimatedStorelyInsightsCard";
-import AnimatedSocialAdsCard from "@/components/AnimatedSocialAdsCard";
+import AnimatedToolCard from "@/components/landing/AnimatedToolCard";
+import AnimatedDescriptionCard from "@/components/landing/AnimatedDescriptionCard";
+import AnimatedStorelyTrackCard from "@/components/landing/AnimatedStorelyTrackCard";
+import AnimatedStorelyChatCard from "@/components/landing/AnimatedStorelyChatCard";
+import AnimatedStorelyPagesCard from "@/components/landing/AnimatedStorelyPagesCard";
+import AnimatedStorelyInsightsCard from "@/components/landing/AnimatedStorelyInsightsCard";
+import AnimatedSocialAdsCard from "@/components/landing/AnimatedSocialAdsCard";
+
 
 export default function LandingPage() {
   const sectionStyle: React.CSSProperties = {
