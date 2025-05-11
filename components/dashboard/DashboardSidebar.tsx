@@ -13,10 +13,8 @@ import {
   BarChart,
   MessageCircle,
   MessageSquareText,
-  Link,
   PlugZap,
 } from 'lucide-react';
-import Image from 'next/image';
 import { useShopifyConnectionStatus } from '@/lib/useShopifyConnectionStatus';
 
 interface SidebarProps {
@@ -42,7 +40,6 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
     if (isMobile) onClose();
   };
 
-  // Evitar renderizar el sidebar si los datos aún no están listos
   if (!isSidebarOpen || !isLoaded) return null;
 
   const links = [
@@ -55,15 +52,6 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
     { href: '/dashboard/tracker', label: 'Tracker Avanzado', icon: BarChart },
     { href: '/dashboard/chatbot', label: 'Chatbot Inteligente', icon: MessageCircle },
     { href: '/dashboard/social-copies', label: 'Copys para Redes Sociales', icon: MessageSquareText },
-    // Solo mostrar si no está conectada la tienda
-    ...(!isConnected
-      ? [{
-          href: '/dashboard/connect-shopify',
-          label: 'Conectar Shopify',
-          icon: Link,
-          custom: true,
-        }]
-      : []),
     { href: '/dashboard/integrations', label: 'Integraciones', icon: PlugZap },
     { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
   ];
@@ -90,33 +78,13 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
       }}
     >
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-        {links.map(({ href, label, icon: Icon, custom }) => (
+        {links.map(({ href, label, icon: Icon }) => (
           <div
             key={href}
             onClick={() => handleClick(href)}
-            style={{
-              ...getLinkStyle(pathname === href),
-              ...(custom && {
-                backgroundColor: '#30C75D',
-                color: '#ffffff',
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }),
-            }}
+            style={getLinkStyle(pathname === href)}
           >
-            {href === '/dashboard/connect-shopify' ? (
-              <Image
-                src="/logos/shopify.png"
-                alt="Shopify"
-                width={16}
-                height={16}
-                style={{ borderRadius: 2 }}
-              />
-            ) : (
-              <Icon size={16} />
-            )}
+            <Icon size={16} />
             <span>{label}</span>
           </div>
         ))}

@@ -4,22 +4,19 @@ import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 
 export function useShopifyConnectionStatus() {
-  const { user, isLoaded } = useUser(); // <--- ¡Incluido aquí!
-  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const { user, isLoaded } = useUser();
+  const [isConnected, setIsConnected] = useState(false);
   const [shopDomain, setShopDomain] = useState<string | null>(null);
 
   useEffect(() => {
-    // Clerk metadata
+    if (!user) return;
+
     // @ts-ignore
     const shop = user?.privateMetadata?.shop as string | undefined;
     // @ts-ignore
     const token = user?.privateMetadata?.accessToken as string | undefined;
 
-    // Local fallback
-    const localOverride =
-      typeof window !== 'undefined' && localStorage.getItem('storelyShopifyConnected') === 'true';
-
-    const connected = (!!shop && !!token) || localOverride;
+    const connected = !!shop && !!token;
     setIsConnected(connected);
     setShopDomain(shop ?? null);
   }, [user]);
@@ -27,6 +24,6 @@ export function useShopifyConnectionStatus() {
   return {
     isConnected,
     shopDomain,
-    isLoaded, // <--- ¡Agregado al return!
+    isLoaded,
   };
 }

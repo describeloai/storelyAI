@@ -1,12 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
 
 export default function ShopifyConexionPage() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const { getToken } = useAuth();
 
   const [estado, setEstado] = useState<'cargando' | 'redirigiendo' | 'fallo'>('cargando');
@@ -30,6 +29,8 @@ export default function ShopifyConexionPage() {
           return;
         }
 
+        console.log('🛠 Enviando a /api/shopify/save-token:', { shop, accessToken });
+
         const res = await fetch('/api/shopify/save-token', {
           method: 'POST',
           headers: {
@@ -42,9 +43,11 @@ export default function ShopifyConexionPage() {
         if (res.ok) {
           localStorage.setItem('storelyShopifyConnected', 'true');
           setEstado('redirigiendo');
-          setTimeout(() => router.push('/dashboard'), 300);
+          setTimeout(() => {
+            window.location.href = '/dashboard'; // 🔁 recarga completa con Clerk actualizado
+          }, 300);
         } else {
-          console.error('❌ Error al guardar en Clerk');
+          console.error('❌ Error al guardar en Clerk:', await res.json());
           setEstado('fallo');
         }
       } catch (err) {
@@ -54,7 +57,7 @@ export default function ShopifyConexionPage() {
     };
 
     connect();
-  }, [searchParams, router, getToken]);
+  }, [searchParams, getToken]);
 
   return (
     <div

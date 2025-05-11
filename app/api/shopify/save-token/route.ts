@@ -1,48 +1,56 @@
-import { clerkClient } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { jwtVerify, importSPKI } from 'jose';
 
 export async function POST(req: Request) {
-  const authHeader = req.headers.get('Authorization');
-  const token = authHeader?.replace('Bearer ', '');
+  try {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'No autorizado: faltan headers' }, { status: 401 });
+    }
 
-  console.log('🔍 [save-token] Token recibido:', token);
+    const token = authHeader.split(' ')[1];
+    const { shop, accessToken } = await req.json();
 
-  if (!token) {
-    return NextResponse.json({ error: 'Token no proporcionado' }, { status: 401 });
+    if (!shop || !accessToken) {
+      return NextResponse.json({ error: 'Faltan datos en el body' }, { status: 400 });
+    }
+
+    // ✅ Importar la clave pública como CryptoKey (formato SPKI)
+    const publicKey = await importSPKI(process.env.CLERK_JWT_PUBLIC_KEY!, 'RS256');
+
+    const { payload } = await jwtVerify(token, publicKey, {
+      algorithms: ['RS256'],
+    });
+
+    const userId = payload.sub;
+    if (!userId) {
+      return NextResponse.json({ error: 'No se pudo extraer userId del token' }, { status: 401 });
+    }
+
+    // ✅ Guardar en Clerk
+    const updateRes = await fetch(`https://api.clerk.com/v1/users/${userId}/metadata`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        private_metadata: {
+          shop,
+          accessToken,
+        },
+      }),
+    });
+
+    if (!updateRes.ok) {
+      const errorDetail = await updateRes.text();
+      console.error('❌ Error al guardar en Clerk:', errorDetail);
+      return NextResponse.json({ error: 'Error al guardar en Clerk', detail: errorDetail }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('❌ Error general en /api/shopify/save-token:', error);
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
-
-  // ✅ Validamos el token contra Clerk directamente (remotamente)
-  const clerkRes = await fetch('https://api.clerk.dev/v1/sessions/me', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'Clerk-Secret-Key': process.env.CLERK_SECRET_KEY!,
-    },
-  });
-
-  if (!clerkRes.ok) {
-    return NextResponse.json({ error: 'Token inválido o expirado' }, { status: 401 });
-  }
-
-  const session = await clerkRes.json();
-  const userId = session.user_id;
-
-  const { shop, accessToken } = await req.json();
-
-  if (
-    typeof shop !== 'string' ||
-    typeof accessToken !== 'string' ||
-    shop.length < 5 ||
-    accessToken.length < 10
-  ) {
-    return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
-  }
-
-  // @ts-ignore
-  await clerkClient.users.updateUser(userId, {
-    privateMetadata: { shop, accessToken },
-  });
-
-  console.log(`✅ [save-token] Shopify conectado para usuario ${userId}`);
-  return NextResponse.json({ success: true });
 }

@@ -1,36 +1,42 @@
-import { clerkClient } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
 
 export async function POST(req: Request) {
   const authHeader = req.headers.get('Authorization');
-  const token = authHeader?.replace('Bearer ', '');
-
-  console.log('🔍 [disconnect] Token recibido:', token);
-
-  if (!token) {
-    return NextResponse.json({ error: 'Token no proporcionado' }, { status: 401 });
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
-  const clerkRes = await fetch('https://api.clerk.dev/v1/sessions/me', {
+  const token = authHeader.split(' ')[1];
+  let decoded: any;
+
+  try {
+    decoded = jwt.verify(token, process.env.CLERK_JWT_PUBLIC_KEY!, {
+      algorithms: ['RS256'],
+    });
+  } catch (error) {
+    return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
+  }
+
+  const userId = decoded.sub;
+
+  const res = await fetch(`https://api.clerk.com/v1/users/${userId}/metadata`, {
+    method: 'PATCH',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
       'Content-Type': 'application/json',
-      'Clerk-Secret-Key': process.env.CLERK_SECRET_KEY!,
     },
+    body: JSON.stringify({
+      private_metadata: {
+        shop: null,
+        accessToken: null,
+      },
+    }),
   });
 
-  if (!clerkRes.ok) {
-    return NextResponse.json({ error: 'Token inválido o expirado' }, { status: 401 });
+  if (!res.ok) {
+    return NextResponse.json({ error: 'Error al desconectar tienda' }, { status: 500 });
   }
 
-  const session = await clerkRes.json();
-  const userId = session.user_id;
-
-  // @ts-ignore
-  await clerkClient.users.updateUser(userId, {
-    privateMetadata: { shop: null, accessToken: null },
-  });
-
-  console.log(`✅ [disconnect] Shopify desconectado para usuario ${userId}`);
   return NextResponse.json({ success: true });
 }

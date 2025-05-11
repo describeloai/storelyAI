@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
   const shop = searchParams.get('shop');
   const code = searchParams.get('code');
 
@@ -26,14 +27,17 @@ export async function GET(req: Request) {
     );
 
     const accessToken = tokenResponse.data.access_token;
+// @ts-ignore
+    const { userId } = auth();
+    if (!userId) {
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/sign-in`);
+    }
+// @ts-ignore
+    await clerkClient.users.updateUserMetadata(userId, {
+      privateMetadata: { shop, accessToken },
+    });
 
-    // 👇 Redirección corregida a /dashboard/conexion
-    return NextResponse.redirect(
-      new URL(
-        `/dashboard/conexion?shop=${shop}&token=${accessToken}`,
-        process.env.NEXT_PUBLIC_BASE_URL
-      )
-    );
+    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
   } catch (error) {
     console.error('❌ Error en callback Shopify:', error);
     return NextResponse.json({ error: 'Error conectando con Shopify' }, { status: 500 });
