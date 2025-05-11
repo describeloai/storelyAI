@@ -18,6 +18,7 @@ export default function ShopifyConexionPage() {
         console.warn('❌ Faltan datos para guardar Shopify. No se redirige.');
         return;
       }
+      console.log('🔄 Despliegue forzado');
 
       const token = await getToken();
       console.log('🔐 Clerk token:', token);
