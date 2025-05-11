@@ -6,18 +6,26 @@ export async function POST(req: Request) {
   const authHeader = req.headers.get('Authorization');
   const token = authHeader?.replace('Bearer ', '');
 
+  console.log('🔍 [disconnect] Token recibido:', token);
+
   if (!token) {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    return NextResponse.json({ error: 'Token no proporcionado' }, { status: 401 });
   }
 
   try {
-    const { payload } = await verifyToken(token, {
+    const verified = await verifyToken(token, {
       secretKey: process.env.CLERK_SECRET_KEY!,
     });
-// @ts-ignore: el tipo real de verified sí tiene payload.sub pero TypeScript no lo reconoce
-    const userId = payload.sub;
 
-    // @ts-ignore: updateUser funciona aunque Clerk no tipa bien esta API aún
+    console.log('🔐 [disconnect] Payload recibido:', verified?.payload);
+
+    if (!verified || !('payload' in verified) || typeof verified.payload !== 'object') {
+      return NextResponse.json({ error: 'Token inválido o sin payload' }, { status: 401 });
+    }
+
+    const userId = (verified.payload as any).sub;
+
+    // @ts-ignore
     await clerkClient.users.updateUser(userId, {
       privateMetadata: {
         shop: null,
@@ -25,9 +33,10 @@ export async function POST(req: Request) {
       },
     });
 
+    console.log(`✅ [disconnect] Shopify desconectado para usuario ${userId}`);
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    console.error('❌ Error al desconectar Shopify:', err.message);
+    console.error('❌ [disconnect] Verificación o desconexión fallida:', err.message);
     return NextResponse.json({ error: 'Error de autenticación o servidor' }, { status: 500 });
   }
 }

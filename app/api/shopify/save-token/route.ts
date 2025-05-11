@@ -6,16 +6,24 @@ export async function POST(req: Request) {
   const authHeader = req.headers.get('Authorization');
   const token = authHeader?.replace('Bearer ', '');
 
+  console.log('🔍 [save-token] Token recibido:', token);
+
   if (!token) {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    return NextResponse.json({ error: 'Token no proporcionado' }, { status: 401 });
   }
 
   try {
-    const { payload } = await verifyToken(token, {
+    const verified = await verifyToken(token, {
       secretKey: process.env.CLERK_SECRET_KEY!,
     });
 
-    const userId = (payload as any).sub;
+    console.log('🔐 [save-token] Payload recibido:', verified?.payload);
+
+    if (!verified || !('payload' in verified) || typeof verified.payload !== 'object') {
+      return NextResponse.json({ error: 'Token inválido o sin payload' }, { status: 401 });
+    }
+
+    const userId = (verified.payload as any).sub;
 
     const { shop, accessToken } = await req.json();
 
@@ -28,14 +36,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
     }
 
-    // @ts-ignore: updateUser está funcionando aunque Clerk no lo tipa bien
+    // @ts-ignore: API funciona aunque Clerk no tipa bien
     await clerkClient.users.updateUser(userId, {
       privateMetadata: { shop, accessToken },
     });
 
+    console.log(`✅ [save-token] Shopify guardado para usuario ${userId}`);
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    console.error('❌ Verificación fallida o error al guardar:', err.message);
+    console.error('❌ [save-token] Verificación o guardado fallido:', err.message);
     return NextResponse.json({ error: 'Error de autenticación o servidor' }, { status: 500 });
   }
 }
