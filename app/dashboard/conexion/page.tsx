@@ -2,47 +2,54 @@
 
 import { useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useAuth } from '@clerk/nextjs';
 
 export default function ShopifyConexionPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { getToken } = useAuth();
 
   useEffect(() => {
-    const shop = searchParams?.get('shop') ?? null;
-    const token = searchParams?.get('token') ?? null;
+    const connect = async () => {
+      const shop = searchParams?.get('shop') ?? null;
+      const accessToken = searchParams?.get('token') ?? null; // token de Shopify
 
-    if (!shop || !token) {
-      console.warn('❌ Faltan datos para guardar Shopify. No se redirige.');
-      return;
-    }
+      if (!shop || !accessToken) {
+        console.warn('❌ Faltan datos para guardar Shopify. No se redirige.');
+        return;
+      }
 
-    fetch('/api/shopify/save-token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        shop,
-        accessToken: token,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          localStorage.setItem('storelyShopifyConnected', 'true');
-          router.refresh();
-          setTimeout(() => {
-            router.push('/dashboard');
-          }, 300);
-        } else {
-          console.error('❌ No se pudo guardar en Clerk');
-          router.push('/dashboard');
-        }
-      })
-      .catch((err) => {
-        console.error('❌ Error al guardar:', err);
-        router.push('/dashboard');
+      const clerkToken = await getToken(); // 🔐 token de autenticación
+
+      const res = await fetch('/api/shopify/save-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${clerkToken}`, // ✅ Aquí pasamos el token de Clerk
+        },
+        body: JSON.stringify({
+          shop,
+          accessToken, // ✅ Token de Shopify
+        }),
       });
-  }, [searchParams, router]);
+
+      if (res.ok) {
+        localStorage.setItem('storelyShopifyConnected', 'true');
+        router.refresh();
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 300);
+      } else {
+        console.error('❌ No se pudo guardar en Clerk');
+        router.push('/dashboard');
+      }
+    };
+
+    connect().catch((err) => {
+      console.error('❌ Error al guardar:', err);
+      router.push('/dashboard');
+    });
+  }, [searchParams, router, getToken]);
 
   return (
     <div
