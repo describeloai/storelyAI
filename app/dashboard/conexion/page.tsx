@@ -12,24 +12,25 @@ export default function ShopifyConexionPage() {
   useEffect(() => {
     const connect = async () => {
       const shop = searchParams?.get('shop') ?? null;
-      const accessToken = searchParams?.get('token') ?? null; // token de Shopify
+      const accessToken = searchParams?.get('token') ?? null;
 
       if (!shop || !accessToken) {
         console.warn('❌ Faltan datos para guardar Shopify. No se redirige.');
         return;
       }
 
-      const clerkToken = await getToken(); // 🔐 token de autenticación
+      const token = await getToken();
+      console.log('🔐 Clerk token:', token);
 
       const res = await fetch('/api/shopify/save-token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${clerkToken}`, // ✅ Aquí pasamos el token de Clerk
+          Authorization: `Bearer ${token}`, // ✅ token de Clerk
         },
         body: JSON.stringify({
           shop,
-          accessToken, // ✅ Token de Shopify
+          accessToken, // ✅ token de Shopify
         }),
       });
 
