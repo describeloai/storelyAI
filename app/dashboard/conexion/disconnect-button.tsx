@@ -31,6 +31,8 @@ export function DisconnectShopifyButton() {
       console.error('❌ Error en la desconexión:', err);
     }
   };
+  <p style={{ marginTop: 30, fontWeight: 'bold' }}>🚀 Conectando con Shopify...</p>
+
 
   return (
     <button
