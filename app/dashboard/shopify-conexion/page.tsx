@@ -26,11 +26,11 @@ export default function ShopifyConexionPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // ✅ token de Clerk
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           shop,
-          accessToken, // ✅ token de Shopify
+          accessToken,
         }),
       });
 
@@ -61,9 +61,10 @@ export default function ShopifyConexionPage() {
         alignItems: 'center',
         fontSize: '1.1rem',
         fontWeight: 500,
+        textAlign: 'center',
       }}
     >
-      Conectando con Shopify...
+      🚀 Conectando tu tienda Shopify con StorelyAI...
     </div>
   );
 }
