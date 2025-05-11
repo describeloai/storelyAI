@@ -1,4 +1,3 @@
-// app/api/shopify/callback/route.ts
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
@@ -22,15 +21,16 @@ export async function GET(req: Request) {
       {
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
       }
     );
 
     const accessToken = tokenResponse.data.access_token;
 
+    // 👇 Redirección corregida a /dashboard/conexion
     return NextResponse.redirect(
       new URL(
-        `/dashboard/shopify-conexion?shop=${shop}&token=${accessToken}`,
+        `/dashboard/conexion?shop=${shop}&token=${accessToken}`,
         process.env.NEXT_PUBLIC_BASE_URL
       )
     );
