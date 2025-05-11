@@ -7,7 +7,7 @@ import {
   cardStyle,
   cardBodyStyle,
   descriptionStyle,
-} from "@/components/CardStyles";
+} from "@/components/landing/CardStyles";
 
 interface ProductCheckSectionProps {
   selectedFile: File | null;
