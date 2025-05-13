@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 export default function IntegrationsPage() {
+  const router = useRouter();
   const [shopDomain, setShopDomain] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -15,7 +17,7 @@ export default function IntegrationsPage() {
       : `${shopDomain}.myshopify.com`;
 
     setLoading(true);
-    window.location.href = `/api/shopify/auth?shop=${formattedShop}`;
+    router.push(`/api/shopify/auth?shop=${formattedShop}`);
   };
 
   return (
@@ -100,7 +102,15 @@ export default function IntegrationsPage() {
         </div>
 
         <p style={{ fontSize: '0.95rem', color: '#aaa' }}>
-          ¿No tienes una tienda aún? <a href="https://www.shopify.com" target="_blank" style={{ color: '#30C75D', textDecoration: 'none' }}>Crea una gratis</a>.
+          ¿No tienes una tienda aún?{' '}
+          <a
+            href="https://www.shopify.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#30C75D', textDecoration: 'none' }}
+          >
+            Crea una gratis
+          </a>.
         </p>
       </div>
     </div>

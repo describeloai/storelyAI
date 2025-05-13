@@ -1,6 +1,8 @@
+// @ts-ignore
+import { registerShopifyWebhooks } from '@/lib/shopify/registerShopifyWebhooks';
 import { NextRequest, NextResponse } from 'next/server';
-import axios from 'axios';
 import { auth, clerkClient } from '@clerk/nextjs/server';
+import axios from 'axios';
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -19,27 +21,27 @@ export async function GET(req: NextRequest) {
         client_secret: process.env.SHOPIFY_API_SECRET,
         code,
       },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+      { headers: { 'Content-Type': 'application/json' } }
     );
 
     const accessToken = tokenResponse.data.access_token;
-// @ts-ignore
+
+    // @ts-ignore
     const { userId } = auth();
     if (!userId) {
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/sign-in`);
     }
-// @ts-ignore
+
+    // @ts-ignore
     await clerkClient.users.updateUserMetadata(userId, {
       privateMetadata: { shop, accessToken },
     });
 
+    await registerShopifyWebhooks(shop, accessToken);
+
     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
   } catch (error) {
-    console.error('❌ Error en callback Shopify:', error);
-    return NextResponse.json({ error: 'Error conectando con Shopify' }, { status: 500 });
+    console.error('❌ Error en Shopify callback:', error);
+    return NextResponse.json({ error: 'Error en callback' }, { status: 500 });
   }
 }
