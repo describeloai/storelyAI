@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 
     const accessToken = tokenResponse.data.access_token;
     console.log('🔐 Access token obtenido:', accessToken);
-// @ts-ignore
+//@ts-ignore
     const { userId } = auth();
     if (!userId) {
       console.error('⚠️ Usuario no autenticado con Clerk');
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 📝 Guardar token y tienda en Clerk
-    // @ts-ignore
+    //@ts-ignore
     await clerkClient.users.updateUserMetadata(userId, {
       privateMetadata: { shop, accessToken },
     });
@@ -48,10 +48,10 @@ export async function GET(req: NextRequest) {
     // 🔔 Registrar Webhooks (opcional)
     await registerShopifyWebhooks(shop, accessToken);
 
-    // ✅ Redirigir al dashboard con host incluido
+    // ✅ Redirigir al dashboard con `host` (ESENCIAL)
     const redirectUrl = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
     redirectUrl.searchParams.set('shop', shop);
-    redirectUrl.searchParams.set('host', host); // 👈 NECESARIO PARA APP BRIDGE
+    redirectUrl.searchParams.set('host', host); // 👈 CLAVE
     redirectUrl.searchParams.set('embedded', '1');
 
     console.log('🚀 Redirigiendo a:', redirectUrl.toString());
