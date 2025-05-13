@@ -19,8 +19,9 @@ export default function AppBridgeProvider({ children }: { children: React.ReactN
       getSessionToken(app).then(async (token: string) => {
         console.log('🪪 Token de sesión obtenido:', token);
 
-        // Enviar token al backend para validarlo
+        // Usar GET en lugar de POST para que coincida con route.ts
         const res = await fetch('/api/secure', {
+          method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
           },
