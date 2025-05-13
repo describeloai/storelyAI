@@ -1,10 +1,21 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import FeatherIcon from '@/components/landing/FeatherIcon';
 
 export default function DashboardNavbar() {
+  const [isEmbedded, setIsEmbedded] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const embedded = params.get('embedded');
+    if (embedded === '1') {
+      setIsEmbedded(true);
+    }
+  }, []);
+
   return (
     <header
       style={{
@@ -22,21 +33,38 @@ export default function DashboardNavbar() {
         height: '44px',
       }}
     >
-      <Link
-        href="/"
-        style={{
-          fontSize: '1rem',
-          fontWeight: 700,
-          color: 'white',
-          textDecoration: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-        }}
-      >
-        <FeatherIcon size={20} color="white" />
-        <span>Storely</span>
-      </Link>
+      {isEmbedded ? (
+        <div
+          style={{
+            fontSize: '1rem',
+            fontWeight: 700,
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            cursor: 'default',
+          }}
+        >
+          <FeatherIcon size={20} color="white" />
+          <span>Storely</span>
+        </div>
+      ) : (
+        <Link
+          href="/"
+          style={{
+            fontSize: '1rem',
+            fontWeight: 700,
+            color: 'white',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}
+        >
+          <FeatherIcon size={20} color="white" />
+          <span>Storely</span>
+        </Link>
+      )}
 
       <div
         style={{
