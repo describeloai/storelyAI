@@ -1,7 +1,9 @@
-"use client";
+'use client';
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
+import { useAuth } from '@clerk/nextjs';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import HeroSection from "@/components/landing/HeroSection";
 import AnimatedBackground from "@/components/landing/AnimatedBackground";
@@ -18,8 +20,20 @@ import AnimatedStorelyPagesCard from "@/components/landing/AnimatedStorelyPagesC
 import AnimatedStorelyInsightsCard from "@/components/landing/AnimatedStorelyInsightsCard";
 import AnimatedSocialAdsCard from "@/components/landing/AnimatedSocialAdsCard";
 
-
 export default function LandingPage() {
+  const { isSignedIn, isLoaded } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const embedded = searchParams.get('embedded');
+    const host = searchParams.get('host');
+
+    if (isLoaded && isSignedIn && embedded && host) {
+      router.replace('/dashboard');
+    }
+  }, [isLoaded, isSignedIn]);
+
   const sectionStyle: React.CSSProperties = {
     display: "flex",
     alignItems: "center",
@@ -141,18 +155,15 @@ export default function LandingPage() {
 
         <section style={{ backgroundColor: "transparent", position: "relative", zIndex: 1 }}>
           <FeatureSection />
-        
         </section>
 
         <section style={{ backgroundColor: "transparent", position: "relative", zIndex: 1, color: "white", padding: "4rem 1rem" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "3rem" }}>
             <PoweredBySection />
             <FinalCTASection />
-        
           </div>
         </section>
       </div>
     </>
   );
 }
-
