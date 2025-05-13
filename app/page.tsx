@@ -23,14 +23,18 @@ import AnimatedSocialAdsCard from "@/components/landing/AnimatedSocialAdsCard";
 export default function LandingPage() {
   const { isSignedIn, isLoaded } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const embedded = searchParams.get('embedded');
-    const host = searchParams.get('host');
+    if (!isLoaded || !isSignedIn) return;
 
-    if (isLoaded && isSignedIn && embedded && host) {
-      router.replace('/dashboard');
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      const embedded = url.searchParams.get('embedded');
+      const host = url.searchParams.get('host');
+
+      if (embedded && host) {
+        router.replace('/dashboard');
+      }
     }
   }, [isLoaded, isSignedIn]);
 
