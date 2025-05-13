@@ -16,10 +16,13 @@ export default function AppBridgeProvider({ children }: { children: React.ReactN
         forceRedirect: true,
       });
 
+      // ✅ Exponer la instancia globalmente para que Shopify la detecte
+      (window as any).app = app;
+
+      // Solo como ejemplo: token de sesión para proteger rutas
       getSessionToken(app).then(async (token: string) => {
         console.log('🪪 Token de sesión obtenido:', token);
 
-        // Usar GET en lugar de POST para que coincida con route.ts
         const res = await fetch('/api/secure', {
           method: 'GET',
           headers: {
