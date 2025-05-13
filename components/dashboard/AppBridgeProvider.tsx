@@ -17,7 +17,7 @@ export default function AppBridgeProvider({ children }: { children: React.ReactN
       });
 
       // ✅ Exponer la instancia globalmente para que Shopify la detecte
-      (window as any).app = app;
+      (window as any).shopifyApp = app;
 
       // Solo como ejemplo: token de sesión para proteger rutas
       getSessionToken(app).then(async (token: string) => {
