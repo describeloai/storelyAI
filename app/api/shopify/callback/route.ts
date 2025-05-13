@@ -1,14 +1,13 @@
-// @ts-ignore
-import { registerShopifyWebhooks } from '@/lib/shopify/registerShopifyWebhooks';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import axios from 'axios';
+import { registerShopifyWebhooks } from '@/lib/shopify/registerShopifyWebhooks';
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const shop = searchParams.get('shop');
   const code = searchParams.get('code');
-  const host = searchParams.get('host'); // ✅ importante
+  const host = searchParams.get('host'); // ✅
 
   if (!shop || !code || !host) {
     return NextResponse.json({ error: 'Faltan parámetros' }, { status: 400 });
@@ -26,21 +25,19 @@ export async function GET(req: NextRequest) {
     );
 
     const accessToken = tokenResponse.data.access_token;
-
-    // @ts-ignore
+// @ts-ignore
     const { userId } = auth();
     if (!userId) {
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/sign-in`);
     }
-
-    // @ts-ignore
+// @ts-ignore
     await clerkClient.users.updateUserMetadata(userId, {
       privateMetadata: { shop, accessToken },
     });
 
     await registerShopifyWebhooks(shop, accessToken);
 
-    // ✅ Redirigir al dashboard incluyendo `host` (clave para App Bridge)
+    // ✅ Redirigir al dashboard con host
     const redirectUrl = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
     redirectUrl.searchParams.set('shop', shop);
     redirectUrl.searchParams.set('host', host);
