@@ -1,19 +1,25 @@
+// @ts-ignore
+import { registerShopifyWebhooks } from '@/lib/shopify/registerShopifyWebhooks';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import axios from 'axios';
-import { registerShopifyWebhooks } from '@/lib/shopify/registerShopifyWebhooks';
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const shop = searchParams.get('shop');
   const code = searchParams.get('code');
-  const host = searchParams.get('host'); // ✅
+  const host = searchParams.get('host'); // ✅ CLAVE PARA APP BRIDGE
 
+  console.log('🧭 CALLBACK PARAMS:', { shop, code, host });
+
+  // 🔒 Validar parámetros esenciales
   if (!shop || !code || !host) {
-    return NextResponse.json({ error: 'Faltan parámetros' }, { status: 400 });
+    console.error('❌ Faltan parámetros en el callback', { shop, code, host });
+    return NextResponse.json({ error: 'Faltan parámetros en la URL' }, { status: 400 });
   }
 
   try {
+    // 🔑 Intercambiar code por access_token
     const tokenResponse = await axios.post(
       `https://${shop}/admin/oauth/access_token`,
       {
@@ -25,23 +31,30 @@ export async function GET(req: NextRequest) {
     );
 
     const accessToken = tokenResponse.data.access_token;
+    console.log('🔐 Access token obtenido:', accessToken);
 // @ts-ignore
     const { userId } = auth();
     if (!userId) {
+      console.error('⚠️ Usuario no autenticado con Clerk');
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/sign-in`);
     }
-// @ts-ignore
+
+    // 📝 Guardar token y tienda en Clerk
+    // @ts-ignore
     await clerkClient.users.updateUserMetadata(userId, {
       privateMetadata: { shop, accessToken },
     });
 
+    // 🔔 Registrar Webhooks (opcional)
     await registerShopifyWebhooks(shop, accessToken);
 
-    // ✅ Redirigir al dashboard con host
+    // ✅ Redirigir al dashboard con host incluido
     const redirectUrl = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
     redirectUrl.searchParams.set('shop', shop);
-    redirectUrl.searchParams.set('host', host);
+    redirectUrl.searchParams.set('host', host); // 👈 NECESARIO PARA APP BRIDGE
     redirectUrl.searchParams.set('embedded', '1');
+
+    console.log('🚀 Redirigiendo a:', redirectUrl.toString());
 
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
