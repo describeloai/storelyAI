@@ -9,6 +9,8 @@ export default function AppBridgeProvider({ children }: { children: React.ReactN
     const query = new URLSearchParams(window.location.search);
     const host = query.get('host');
 
+    console.log('🔎 HOST en AppBridgeProvider:', host);
+
     if (host) {
       const app = createApp({
         apiKey: process.env.NEXT_PUBLIC_SHOPIFY_API_KEY!,
@@ -16,23 +18,16 @@ export default function AppBridgeProvider({ children }: { children: React.ReactN
         forceRedirect: true,
       });
 
-      // ✅ Exponer la instancia globalmente para que Shopify la detecte
+      // ✅ Exponer app globalmente
       (window as any).shopifyApp = app;
+      console.log('✅ App Bridge creado y asignado a window.shopifyApp');
 
-      // Solo como ejemplo: token de sesión para proteger rutas
-      getSessionToken(app).then(async (token: string) => {
-        console.log('🪪 Token de sesión obtenido:', token);
-
-        const res = await fetch('/api/secure', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const json = await res.json();
-        console.log('🔐 Respuesta del backend:', json);
+      // Puedes probar el token también
+      getSessionToken(app).then(token => {
+        console.log('🪪 Token de sesión:', token);
       });
+    } else {
+      console.warn('⚠️ No se detectó "host" en la URL, App Bridge no inicializado.');
     }
   }, []);
 
