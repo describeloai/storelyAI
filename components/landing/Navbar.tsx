@@ -25,8 +25,8 @@ export default function Navbar() {
   }, []);
 
   const scale = isScrolled ? 1.08 : 1.02;
-  const logoSize = isScrolled ? 36 : 32; // ✅ Tamaño más pequeño
-  const fontSize = isScrolled ? "1.75rem" : "1.5rem";
+  const logoSize = isScrolled ? 80 : 70; // ✅ Tamaño más pequeño
+  const fontSize = isScrolled ? "1.90rem" : "1.73rem";
 
   return (
     <motion.nav
@@ -54,7 +54,7 @@ export default function Navbar() {
     >
       {/* Logo + Texto + Link Precios */}
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-        <FeatherIcon size={logoSize} color="white" />
+        <FeatherIcon size={logoSize} />
         <span
           style={{
             fontSize,
