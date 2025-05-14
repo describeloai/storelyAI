@@ -7,9 +7,16 @@ import { getSessionToken } from '@shopify/app-bridge-utils';
 export default function AppBridgeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
-    const host = query.get('host');
+    let host = query.get('host');
 
-    console.log('🔎 HOST en AppBridgeProvider:', host);
+    // Guardar en sessionStorage si viene en la URL
+    if (host) {
+      sessionStorage.setItem('shopify-host', host);
+    } else {
+      host = sessionStorage.getItem('shopify-host') || '';
+    }
+
+    console.log('🧩 HOST en AppBridgeProvider:', host);
 
     if (host) {
       const app = createApp({
@@ -18,16 +25,16 @@ export default function AppBridgeProvider({ children }: { children: React.ReactN
         forceRedirect: true,
       });
 
-      // ✅ Exponer app globalmente
       (window as any).shopifyApp = app;
       console.log('✅ App Bridge creado y asignado a window.shopifyApp');
 
-      // Puedes probar el token también
       getSessionToken(app).then(token => {
-        console.log('🪪 Token de sesión:', token);
+        console.log('🔑 Token de sesión:', token);
       });
     } else {
-      console.warn('⚠️ No se detectó "host" en la URL, App Bridge no inicializado.');
+      console.warn('⚠️ No se detectó "host", redirigiendo al flujo de entrada para recuperar el parámetro...');
+      const currentUrl = window.location.href;
+      window.location.href = `/api/redirect-entry?redirectTo=${encodeURIComponent(currentUrl)}`;
     }
   }, []);
 

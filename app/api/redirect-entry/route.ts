@@ -5,14 +5,18 @@ export async function GET(req: NextRequest) {
   const host = searchParams.get('host');
   const shop = searchParams.get('shop');
   const embedded = searchParams.get('embedded');
+  const redirectTo = searchParams.get('redirectTo');
 
   if (!host || !shop || !embedded) {
-    // ⚠️ Redirección a raíz si faltan parámetros
+    // ⚠️ Redirección a la raíz si faltan parámetros importantes
     return NextResponse.redirect(new URL('/', req.url));
   }
 
-  // ✅ Redirigir al dashboard con los datos necesarios
-  const redirectUrl = new URL('/dashboard', process.env.NEXT_PUBLIC_BASE_URL);
+  // ✅ Usar la URL original si fue enviada desde AppBridgeProvider
+  const finalPath = redirectTo || '/dashboard';
+  const redirectUrl = new URL(finalPath, process.env.NEXT_PUBLIC_BASE_URL);
+
+  // Asegurar que lleva los parámetros necesarios para App Bridge
   redirectUrl.searchParams.set('host', host);
   redirectUrl.searchParams.set('shop', shop);
   redirectUrl.searchParams.set('embedded', embedded);
