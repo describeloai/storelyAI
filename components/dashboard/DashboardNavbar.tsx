@@ -45,7 +45,7 @@ export default function DashboardNavbar() {
             cursor: 'default',
           }}
         >
-          <FeatherIcon size={20} color="white" />
+          <FeatherIcon size={35} />
           <span>Storely</span>
         </div>
       ) : (
@@ -61,7 +61,7 @@ export default function DashboardNavbar() {
             gap: '0.5rem',
           }}
         >
-          <FeatherIcon size={20} color="white" />
+        <FeatherIcon size={35} />
           <span>Storely</span>
         </Link>
       )}
