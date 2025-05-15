@@ -2,24 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
 import AppBridgeProvider from '@/components/dashboard/AppBridgeProvider';
+import RouteProtector from '@/components/dashboard/RouteProtector';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      router.push('/sign-in');
-    }
-  }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -36,6 +32,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <AppBridgeProvider>
+      <RouteProtector />
+
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <DashboardNavbar />
 
@@ -55,7 +53,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             />
           )}
 
-          <DashboardSidebar isSidebarOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+          <DashboardSidebar
+            isSidebarOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+          />
 
           <main
             style={{

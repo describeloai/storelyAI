@@ -3,7 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import PoweredBySection from "@/components/landing/PoweredBySection";
 import AnimatedGlobalBackground from "@/components/landing/AnimatedGlobalBackground";
-
+import EmbeddedRedirector from "@/components/common/EmbeddedRedirector";
 
 export const metadata: Metadata = {
   title: "StorelyAI",

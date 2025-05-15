@@ -10,10 +10,7 @@ export default function DashboardNavbar() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const embedded = params.get('embedded');
-    if (embedded === '1') {
-      setIsEmbedded(true);
-    }
+    setIsEmbedded(params.get('embedded') === '1');
   }, []);
 
   return (
@@ -33,6 +30,7 @@ export default function DashboardNavbar() {
         height: '44px',
       }}
     >
+      {/* Logo o Link a landing, según entorno */}
       {isEmbedded ? (
         <div
           style={{
@@ -61,11 +59,12 @@ export default function DashboardNavbar() {
             gap: '0.5rem',
           }}
         >
-        <FeatherIcon size={35} />
+          <FeatherIcon size={35} />
           <span>Storely</span>
         </Link>
       )}
 
+      {/* Buscador */}
       <div
         style={{
           position: 'absolute',
@@ -115,6 +114,7 @@ export default function DashboardNavbar() {
         </div>
       </div>
 
+      {/* Botones derecha */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <button
           title="Ayuda"
