@@ -5,7 +5,7 @@ import { SignUp } from '@clerk/nextjs';
 export default function SignUpPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Record<string, string | string[] | undefined>;
 }) {
   const redirectParam =
     typeof searchParams?.redirect_url === 'string'

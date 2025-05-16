@@ -5,7 +5,7 @@ import { SignIn } from '@clerk/nextjs';
 export default function SignInPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Record<string, string | string[] | undefined>;
 }) {
   const redirectParam =
     typeof searchParams?.redirect_url === 'string'
