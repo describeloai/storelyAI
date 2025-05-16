@@ -1,11 +1,16 @@
+'use client';
+
 import { SignUp } from '@clerk/nextjs';
 
-interface SignUpPageProps {
-  searchParams: { redirect_url?: string };
-}
-
-export default function SignUpPage({ searchParams }: SignUpPageProps) {
-  const redirectParam = searchParams?.redirect_url || '/dashboard';
+export default function SignUpPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const redirectParam =
+    typeof searchParams?.redirect_url === 'string'
+      ? searchParams.redirect_url
+      : '/dashboard';
 
   return (
     <div
