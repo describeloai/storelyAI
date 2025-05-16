@@ -1,7 +1,10 @@
-'use client';
-
-import React from "react";
+import { Suspense } from "react";
+import AccountClient from "./AccountClient";
 
 export default function AccountPage() {
-  return "Mi Cuenta";
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <AccountClient />
+    </Suspense>
+  );
 }
