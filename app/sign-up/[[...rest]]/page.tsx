@@ -1,28 +1,12 @@
-'use client';
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 
-import { SignUp } from '@clerk/nextjs';
+const SignUpClient = dynamic(() => import('./SignUpClient'), { ssr: false });
 
-export default function SignUpPage({
-  searchParams,
-}: {
-  searchParams: Record<string, string | string[] | undefined>;
-}) {
-  const redirectParam =
-    typeof searchParams?.redirect_url === 'string'
-      ? searchParams.redirect_url
-      : '/dashboard';
-
+export default function SignUpPage() {
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        background: 'linear-gradient(to bottom right, #4B0082, #8A2BE2)',
-      }}
-    >
-      <SignUp redirectUrl={redirectParam} />
-    </div>
+    <Suspense fallback={<div style={{ color: 'white' }}>Cargando registro...</div>}>
+      <SignUpClient />
+    </Suspense>
   );
 }
