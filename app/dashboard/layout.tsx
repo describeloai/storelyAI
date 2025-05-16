@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // <-- Solo dejamos este
+// import { useSearchParams } from 'next/navigation'; <-- 🔥 Eliminar
 
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
@@ -11,9 +12,7 @@ import RouteProtector from '@/components/dashboard/RouteProtector';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isLoaded, isSignedIn } = useAuth();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
+  const router = useRouter(); // <-- si se usa luego (por ahora no, pero podría usarse)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 

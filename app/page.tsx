@@ -3,6 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
+import dynamic from 'next/dynamic';
+
+// ⚠️ Carga dinámica del componente cliente
+const Landing = dynamic(() => import('./LandingPage'), { ssr: false });
 
 export default function EntryPoint() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -24,12 +28,19 @@ export default function EntryPoint() {
 
   if (skippingLanding) {
     return (
-      <div style={{ color: 'white', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div
+        style={{
+          color: 'white',
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         Cargando Storely...
       </div>
     );
   }
 
-  const Landing = require('./LandingPage').default;
   return <Landing />;
 }

@@ -8,15 +8,14 @@ export default function EmbeddedRedirector() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const isEmbedded = searchParams.get('embedded') === '1';
-
   useEffect(() => {
-    // Si estamos embebidos y en la landing, redirigimos al dashboard
+    const isEmbedded = searchParams.get('embedded') === '1';
+
     if (isEmbedded && pathname === '/') {
       const params = new URLSearchParams(searchParams.toString());
       router.replace(`/dashboard?${params.toString()}`);
     }
-  }, [isEmbedded, pathname]);
+  }, [pathname, searchParams, router]);
 
   return null;
 }

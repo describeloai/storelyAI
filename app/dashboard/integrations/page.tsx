@@ -1,24 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 export default function IntegrationsPage() {
-  const router = useRouter();
   const [shopDomain, setShopDomain] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleConnect = () => {
-    if (!shopDomain) return;
-
-    const formattedShop = shopDomain.includes('.myshopify.com')
-      ? shopDomain
-      : `${shopDomain}.myshopify.com`;
-
-    setLoading(true);
-    router.push(`/api/shopify/auth?shop=${formattedShop}`);
-  };
+  const formattedShop = shopDomain.includes('.myshopify.com')
+    ? shopDomain
+    : `${shopDomain}.myshopify.com`;
 
   return (
     <div
@@ -31,7 +22,10 @@ export default function IntegrationsPage() {
         backgroundColor: '#f9f9f9',
       }}
     >
-      <div
+      <form
+        action={`/api/shopify/auth`}
+        method="GET"
+        onSubmit={() => setLoading(true)}
         style={{
           background: '#fff',
           borderRadius: '20px',
@@ -65,12 +59,21 @@ export default function IntegrationsPage() {
           Conecta tu tienda y empieza a sincronizar productos, automatizar tareas y recibir insights inteligentes con StorelyAI.
         </p>
 
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '2rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            alignItems: 'center',
+            marginBottom: '2rem',
+          }}
+        >
           <input
             type="text"
+            name="shop"
             placeholder="tu-tienda o tu-tienda.myshopify.com"
             value={shopDomain}
             onChange={(e) => setShopDomain(e.target.value)}
+            required
             style={{
               flex: 1,
               padding: '1rem 1.2rem',
@@ -82,7 +85,7 @@ export default function IntegrationsPage() {
             }}
           />
           <button
-            onClick={handleConnect}
+            type="submit"
             disabled={!shopDomain || loading}
             style={{
               padding: '0.8rem 1.5rem',
@@ -112,7 +115,7 @@ export default function IntegrationsPage() {
             Crea una gratis
           </a>.
         </p>
-      </div>
+      </form>
     </div>
   );
 }

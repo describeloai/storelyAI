@@ -1,11 +1,12 @@
-'use client';
-
 import { SignIn } from '@clerk/nextjs';
-import { useSearchParams } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
-export default function SignInPage() {
-  const searchParams = useSearchParams();
-  const redirectParam = searchParams.get('redirect_url') || '/dashboard';
+interface SignInPageProps {
+  searchParams: { redirect_url?: string };
+}
+
+export default function SignInPage({ searchParams }: SignInPageProps) {
+  const redirectParam = searchParams?.redirect_url || '/dashboard';
 
   return (
     <div
