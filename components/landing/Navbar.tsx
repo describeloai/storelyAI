@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { useUser, useClerk } from "@clerk/nextjs";
 import AuthAwareButton from "@/components/landing/AuthAwareButton";
 import FeatherIcon from "@/components/landing/FeatherIcon";
- // ✅ Icono pluma
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,7 +24,7 @@ export default function Navbar() {
   }, []);
 
   const scale = isScrolled ? 1.08 : 1.02;
-  const logoSize = isScrolled ? 80 : 70; // ✅ Tamaño más pequeño
+  const logoSize = isScrolled ? 80 : 70;
   const fontSize = isScrolled ? "1.90rem" : "1.73rem";
 
   return (
@@ -56,11 +55,10 @@ export default function Navbar() {
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
         <FeatherIcon size={logoSize} />
         <span
+          className="storely-chameleon"
           style={{
             fontSize,
             fontWeight: 700,
-            color: "white",
-            transition: "all 0.4s ease",
           }}
         >
           Storely
@@ -297,6 +295,33 @@ export default function Navbar() {
           }
           .nav-actions {
             display: none !important;
+          }
+        }
+
+        .storely-chameleon {
+          background: linear-gradient(
+            270deg,
+            #ff7eb9,
+            #7afcff,
+            #feff9c,
+            #ffffff,
+            #7b2ff7
+          );
+          background-size: 1000% 1000%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: chameleonShift 10s ease infinite;
+        }
+
+        @keyframes chameleonShift {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
           }
         }
       `}</style>
