@@ -2,10 +2,23 @@
 
 import { SignUp } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SignUpClient() {
+  const { isSignedIn } = useUser();
   const searchParams = useSearchParams();
-  const redirectParam = searchParams.get('redirect_url') || '/dashboard';
+  const router = useRouter();
+  const fallbackRedirect = searchParams.get('redirect_url') || '/dashboard';
+
+  useEffect(() => {
+    if (isSignedIn) {
+      router.push(fallbackRedirect);
+    }
+  }, [isSignedIn, fallbackRedirect, router]);
+
+  if (isSignedIn) return null;
 
   return (
     <div
@@ -17,7 +30,7 @@ export default function SignUpClient() {
         background: 'linear-gradient(to bottom right, #4B0082, #8A2BE2)',
       }}
     >
-      <SignUp redirectUrl={redirectParam} />
+      <SignUp fallbackRedirectUrl={fallbackRedirect} />
     </div>
   );
 }
