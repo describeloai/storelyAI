@@ -1,7 +1,7 @@
 'use client'
 import dynamic from 'next/dynamic'
 
-const Landing = dynamic(() => import('./landing/LandingLayout'), {
+const Landing = dynamic(() => import('./LandingLayout'), {
   ssr: false,
 }) as React.ComponentType
 

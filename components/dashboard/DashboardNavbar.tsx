@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
-import FeatherIcon from '@/components/landing/FeatherIcon';
+import FeatherIcon from '@/components/landing/ChameleonLogo';
 
 export default function DashboardNavbar() {
   const [isEmbedded, setIsEmbedded] = useState(false);
