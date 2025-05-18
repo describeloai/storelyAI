@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'; // 👈 Esto fuerza generación dinámica
+
 import type { Metadata } from "next"
 import { ClerkProvider } from "@clerk/nextjs"
 import "./globals.css"
@@ -30,15 +32,14 @@ export default function RootLayout({
           style={{
             margin: 0,
             padding: 0,
-            backgroundColor: "#0a0012", // Fondo oscuro
-            color: "#f3f4f6",           // Texto claro
+            backgroundColor: "#0a0012",
+            color: "#f3f4f6",
             overflowX: "hidden",
             minHeight: "100vh",
             fontFamily: "'Inter', sans-serif",
             position: "relative",
           }}
         >
-          {/* Redirige automáticamente al dashboard si viene embebido (Shopify) */}
           <EmbeddedRedirector />
 
           <div
@@ -56,3 +57,4 @@ export default function RootLayout({
     </ClerkProvider>
   )
 }
+ss
