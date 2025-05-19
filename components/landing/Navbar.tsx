@@ -16,56 +16,21 @@ export default function NewNavbar() {
   }
 
   return (
-    <header
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '1rem 2rem',
-        backgroundColor: 'transparent',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-      }}
-    >
-      {/* Logo */}
-      <Link
-        href="/"
-        style={{
-          textDecoration: 'none',
-          color: '#fff',
-          fontWeight: 'bold',
-          fontSize: '1.5rem',
-        }}
-        onClick={() => setMenuOpen(false)}
-      >
+    <header className="navbar">
+      <Link href="/" className="logo" onClick={() => setMenuOpen(false)}>
         Storely
       </Link>
 
-      {/* Menú hamburguesa móvil */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className="menu-toggle"
-        style={{
-          display: 'none',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          gap: '4px',
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-        }}
         aria-label="Toggle menu"
       >
-        <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }} />
-        <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }} />
-        <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }} />
+        <span />
+        <span />
+        <span />
       </button>
 
-      {/* Navegación visible solo en desktop */}
       <nav className="nav-desktop">
         <Link href="/precios">Precios</Link>
 
@@ -84,7 +49,6 @@ export default function NewNavbar() {
         )}
       </nav>
 
-      {/* Menú móvil desplegable */}
       {menuOpen && (
         <div className="mobile-menu">
           <Link href="/precios" onClick={() => setMenuOpen(false)}>Precios</Link>
@@ -105,16 +69,54 @@ export default function NewNavbar() {
         </div>
       )}
 
-      {/* Estilos */}
       <style jsx>{`
+        .navbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem 2rem;
+          background-color: transparent;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          position: sticky;
+          top: 0;
+          z-index: 50;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+
+        .logo {
+          text-decoration: none;
+          color: #fff;
+          font-weight: bold;
+          font-size: 1.5rem;
+        }
+
         nav a,
-        nav button {
+        nav button,
+        .mobile-menu button {
           color: #fff;
           font-weight: 500;
           background: none;
           border: none;
           cursor: pointer;
           margin-left: 1rem;
+        }
+
+        .menu-toggle {
+          display: none;
+          flex-direction: column;
+          justify-content: center;
+          gap: 5px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+        }
+
+        .menu-toggle span {
+          width: 24px;
+          height: 2px;
+          background-color: #fff;
+          display: block;
         }
 
         .mobile-menu {
