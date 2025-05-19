@@ -1,0 +1,99 @@
+.embla {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  gap: 2rem;
+  padding: 0 2rem;
+}
+
+.slide {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card {
+  background: #15102b;
+  border-radius: 2rem;
+  padding: 2rem;
+  text-align: center;
+  height: 460px;
+  width: 100%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.textBlock {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.textBlock h3 {
+  color: white;
+  font-size: 1.9rem;
+  margin-bottom: 0.4rem;
+}
+
+.role {
+  color: #8e8eff;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.desc {
+  color: #ccc;
+  font-size: 1rem;
+  margin: 0 auto;
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+.prev, .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #111;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.prev {
+  left: 0;
+}
+
+.next {
+  right: 0;
+}
+
+@media (min-width: 768px) {
+  .slide {
+    flex: 0 0 calc((100% - 4rem) / 3); /* 3 cards + 2 gaps of 2rem */
+  }
+
+  .card {
+    height: 520px;
+  }
+
+  .textBlock {
+    max-width: 360px;
+  }
+}

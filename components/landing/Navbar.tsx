@@ -15,11 +15,13 @@ export default function NewNavbar() {
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: '1rem 2rem',
-        backgroundColor: '#000',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+        backgroundColor: 'transparent', // Fondo transparente
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
         position: 'sticky',
         top: 0,
         zIndex: 50,
+        backdropFilter: 'blur(8px)', // Opcional: efecto blur detrás del navbar
+        WebkitBackdropFilter: 'blur(8px)', // Para compatibilidad en Safari
       }}
     >
       {/* Logo + Marca */}
