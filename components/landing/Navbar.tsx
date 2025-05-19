@@ -45,61 +45,90 @@ export default function NewNavbar() {
         Storely
       </Link>
 
-      {/* Botón Hamburguesa */}
+      {/* Menú hamburguesa móvil */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
+        className="menu-toggle"
         style={{
           display: 'none',
           flexDirection: 'column',
           justifyContent: 'center',
-          gap: '5px',
+          gap: '4px',
           background: 'transparent',
           border: 'none',
           cursor: 'pointer',
         }}
-        className="menu-toggle"
-        aria-label="Toggle navigation"
+        aria-label="Toggle menu"
       >
         <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }} />
         <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }} />
         <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }} />
       </button>
 
-      {/* Navegación */}
-      <nav className={`nav-items ${menuOpen ? 'open' : ''}`}>
-        <Link href="/precios" onClick={() => setMenuOpen(false)}>Precios</Link>
+      {/* Navegación visible solo en desktop */}
+      <nav className="nav-desktop">
+        <Link href="/precios">Precios</Link>
 
         {user ? (
           <>
-            <button onClick={() => handleClick(() => router.push('/dashboard'))}>Dashboard</button>
+            <button onClick={() => router.push('/dashboard')}>Dashboard</button>
             <SignOutButton>
-              <button onClick={() => setMenuOpen(false)}>Cerrar sesión</button>
+              <button>Cerrar sesión</button>
             </SignOutButton>
           </>
         ) : (
           <>
-            <button onClick={() => handleClick(() => router.push('/sign-in'))}>Acceder</button>
-            <button onClick={() => handleClick(() => router.push('/sign-up'))}>Registrarse</button>
+            <button onClick={() => router.push('/sign-in')}>Acceder</button>
+            <button onClick={() => router.push('/sign-up')}>Registrarse</button>
           </>
         )}
       </nav>
 
-      {/* CSS interno responsivo */}
-      <style jsx>{`
-        nav {
-          display: flex;
-          gap: 1rem;
-          align-items: center;
-        }
+      {/* Menú móvil desplegable */}
+      {menuOpen && (
+        <div className="mobile-menu">
+          <Link href="/precios" onClick={() => setMenuOpen(false)}>Precios</Link>
 
+          {user ? (
+            <>
+              <button onClick={() => handleClick(() => router.push('/dashboard'))}>Dashboard</button>
+              <SignOutButton>
+                <button onClick={() => setMenuOpen(false)}>Cerrar sesión</button>
+              </SignOutButton>
+            </>
+          ) : (
+            <>
+              <button onClick={() => handleClick(() => router.push('/sign-in'))}>Acceder</button>
+              <button onClick={() => handleClick(() => router.push('/sign-up'))}>Registrarse</button>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Estilos */}
+      <style jsx>{`
         nav a,
         nav button {
           color: #fff;
-          text-decoration: none;
           font-weight: 500;
           background: none;
           border: none;
           cursor: pointer;
+          margin-left: 1rem;
+        }
+
+        .mobile-menu {
+          position: absolute;
+          top: 100%;
+          right: 1rem;
+          background-color: #15102b;
+          border-radius: 1rem;
+          padding: 1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+          z-index: 999;
         }
 
         @media (max-width: 768px) {
@@ -107,24 +136,14 @@ export default function NewNavbar() {
             display: flex;
           }
 
-          nav.nav-items {
-            display: ${menuOpen ? 'flex' : 'none'};
-            flex-direction: column;
-            position: absolute;
-            top: 100%;
-            right: 1rem;
-            background-color: #15102b;
-            border-radius: 1rem;
-            padding: 1rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            gap: 1rem;
-            z-index: 999;
+          .nav-desktop {
+            display: none;
           }
+        }
 
-          nav.nav-items a,
-          nav.nav-items button {
-            width: 100%;
-            text-align: left;
+        @media (min-width: 769px) {
+          .mobile-menu {
+            display: none;
           }
         }
       `}</style>
