@@ -16,9 +16,15 @@ export default function IntegrationSection() {
             Conecta Storely con las plataformas que ya usas: Shopify, WooCommerce, y más. Automatiza y escala sin complicaciones.
           </p>
 
-          <div className="integration-logos">
+          <div className="integration-logos-grid">
             <img src="/logos/shopify-white.png" alt="Shopify" />
             <img src="/logos/woocommerce-white.png" alt="WooCommerce" />
+            <img src="/logos/gmail.png" alt="Gmail" />
+            <img src="/logos/meta.png" alt="Meta" />
+            <img src="/logos/amazon.png" alt="Amazon" />
+            <img src="/logos/notion.png" alt="Notion" />
+            <img src="/logos/drive.png" alt="Google Drive" />
+            <img src="/logos/instagram.png" alt="Instagram" />
           </div>
         </div>
       </div>
@@ -40,7 +46,7 @@ export default function IntegrationSection() {
           justify-content: space-between;
           max-width: 1200px;
           width: 100%;
-          min-height: 600px; /* 2.5x altura original aprox */
+          min-height: 600px;
           gap: 4rem;
         }
 
@@ -67,24 +73,27 @@ export default function IntegrationSection() {
 
         .text-content p {
           font-size: 1.2rem;
-          margin-bottom: 2rem;
+          margin-bottom: 2.5rem;
           color: #d1d5db;
         }
 
-        .integration-logos {
-          display: flex;
-          gap: 1.5rem;
+        .integration-logos-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 2rem;
+          justify-items: center;
           align-items: center;
         }
 
-        .integration-logos img {
+        .integration-logos-grid img {
           height: 50px;
-          opacity: 0.8;
+          max-width: 100%;
+          opacity: 0.85;
           transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
-        .integration-logos img:hover {
-          transform: scale(1.05);
+        .integration-logos-grid img:hover {
+          transform: scale(1.08);
           opacity: 1;
         }
 
@@ -103,6 +112,11 @@ export default function IntegrationSection() {
           .text-content {
             text-align: center;
             align-items: center;
+          }
+
+          .integration-logos-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
           }
         }
       `}</style>
