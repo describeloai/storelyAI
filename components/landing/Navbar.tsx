@@ -10,6 +10,12 @@ export default function NewNavbar() {
   const { user } = useUser()
   const [menuOpen, setMenuOpen] = useState(false)
 
+  // Cierra el menú al hacer clic en cualquier botón o enlace
+  const handleClick = (callback: () => void) => {
+    setMenuOpen(false)
+    callback()
+  }
+
   return (
     <header
       style={{
@@ -36,12 +42,13 @@ export default function NewNavbar() {
             fontWeight: 'bold',
             fontSize: '1.5rem',
           }}
+          onClick={() => setMenuOpen(false)}
         >
           Storely
         </Link>
       </div>
 
-      {/* Hamburguesa solo en móvil */}
+      {/* Botón hamburguesa solo en móvil */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         style={{
@@ -54,28 +61,19 @@ export default function NewNavbar() {
           cursor: 'pointer',
         }}
         className="menu-toggle"
+        aria-label="Toggle navigation"
       >
-        <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }}></span>
-        <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }}></span>
-        <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }}></span>
+        <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }} />
+        <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }} />
+        <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }} />
       </button>
 
-      {/* Navegación */}
-      <nav
-        className={`nav-items ${menuOpen ? 'open' : ''}`}
-        style={{
-          display: 'flex',
-          gap: '1rem',
-          alignItems: 'center',
-        }}
-      >
+      {/* Menú de navegación */}
+      <nav className={`nav-items ${menuOpen ? 'open' : ''}`} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <Link
           href="/precios"
-          style={{
-            color: '#fff',
-            textDecoration: 'none',
-            fontWeight: 500,
-          }}
+          style={{ color: '#fff', textDecoration: 'none', fontWeight: 500 }}
+          onClick={() => setMenuOpen(false)}
         >
           Precios
         </Link>
@@ -83,7 +81,7 @@ export default function NewNavbar() {
         {user ? (
           <>
             <button
-              onClick={() => router.push('/dashboard')}
+              onClick={() => handleClick(() => router.push('/dashboard'))}
               style={{
                 backgroundColor: '#6f3ff5',
                 color: 'white',
@@ -108,6 +106,7 @@ export default function NewNavbar() {
                   cursor: 'pointer',
                   fontWeight: 500,
                 }}
+                onClick={() => setMenuOpen(false)}
               >
                 Cerrar sesión
               </button>
@@ -116,7 +115,7 @@ export default function NewNavbar() {
         ) : (
           <>
             <button
-              onClick={() => router.push('/sign-in')}
+              onClick={() => handleClick(() => router.push('/sign-in'))}
               style={{
                 backgroundColor: '#6f3ff5',
                 color: 'white',
@@ -131,7 +130,7 @@ export default function NewNavbar() {
             </button>
 
             <button
-              onClick={() => router.push('/sign-up')}
+              onClick={() => handleClick(() => router.push('/sign-up'))}
               style={{
                 backgroundColor: 'transparent',
                 color: '#ccc',
@@ -148,7 +147,7 @@ export default function NewNavbar() {
         )}
       </nav>
 
-      {/* Responsive styles */}
+      {/* Estilos responsivos */}
       <style jsx>{`
         @media (max-width: 768px) {
           .menu-toggle {
