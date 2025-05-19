@@ -4,6 +4,7 @@ import NewCTA from './CTA'
 import ChamaTeamSection from '@/components/landing/ChamaTeamSection'
 import ChamaIntroSection from '@/components/landing/ChamaIntroSection'
 import ChamaFeatureSection from '@/components/landing/ChamaFeatureSection'
+import ImageBannerSection from '@/components/landing/ImageBannerSection'
 
 export default function NewLandingLayout() {
   return (
@@ -14,6 +15,7 @@ export default function NewLandingLayout() {
         <ChamaIntroSection />        {/* 👈 esto debe estar */}
         <ChamaTeamSection />
         <ChamaFeatureSection /> {/* 👈 nueva sección con los Chamas */}
+        <ImageBannerSection /> 
         <NewCTA />
       </main>
     </div>

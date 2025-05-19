@@ -32,19 +32,21 @@ export default function NewNavbar() {
       </button>
 
       <nav className="nav-desktop">
-        <Link href="/precios">Precios</Link>
+        <Link href="/precios" className="nav-link">Precios</Link>
 
         {user ? (
           <>
-            <button onClick={() => router.push('/dashboard')}>Dashboard</button>
+            <button className="dashboard-button" onClick={() => router.push('/dashboard')}>
+              Dashboard
+            </button>
             <SignOutButton>
-              <button>Cerrar sesión</button>
+              <button className="nav-link">Cerrar sesión</button>
             </SignOutButton>
           </>
         ) : (
           <>
-            <button onClick={() => router.push('/sign-in')}>Acceder</button>
-            <button onClick={() => router.push('/sign-up')}>Registrarse</button>
+            <button className="nav-link" onClick={() => router.push('/sign-in')}>Acceder</button>
+            <button className="nav-link" onClick={() => router.push('/sign-up')}>Registrarse</button>
           </>
         )}
       </nav>
@@ -85,21 +87,42 @@ export default function NewNavbar() {
         }
 
         .logo {
-          text-decoration: none;
+          font-size: 1.8rem;
+          font-weight: 800;
           color: #fff;
-          font-weight: bold;
-          font-size: 1.5rem;
+          text-decoration: none;
+          letter-spacing: -0.5px;
         }
 
-        nav a,
-        nav button,
-        .mobile-menu button {
+        .nav-desktop {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .nav-link {
           color: #fff;
           font-weight: 500;
           background: none;
           border: none;
           cursor: pointer;
-          margin-left: 1rem;
+          padding: 0.5rem 1rem;
+          font-size: 1rem;
+        }
+
+        .dashboard-button {
+          background-color: #6a0dad; /* morado elegante */
+          color: #fff;
+          font-weight: 600;
+          border: none;
+          padding: 0.5rem 1.2rem;
+          border-radius: 999px;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        }
+
+        .dashboard-button:hover {
+          background-color: #57108a;
         }
 
         .menu-toggle {
