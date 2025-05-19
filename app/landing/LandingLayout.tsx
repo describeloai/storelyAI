@@ -5,6 +5,9 @@ import ChamaTeamSection from '@/components/landing/ChamaTeamSection'
 import ChamaIntroSection from '@/components/landing/ChamaIntroSection'
 import ChamaFeatureSection from '@/components/landing/ChamaFeatureSection'
 import ImageBannerSection from '@/components/landing/ImageBannerSection'
+import IntegrationSection from '@/components/landing/IntegrationSection'
+import TestimonialsSection from '@/components/landing/TestimonialsSection'
+import Footer from '@/components/landing/Footer'
 
 export default function NewLandingLayout() {
   return (
@@ -15,8 +18,11 @@ export default function NewLandingLayout() {
         <ChamaIntroSection />        {/* 👈 esto debe estar */}
         <ChamaTeamSection />
         <ChamaFeatureSection /> {/* 👈 nueva sección con los Chamas */}
-        <ImageBannerSection /> 
+        <ImageBannerSection />
+        <IntegrationSection /> 
+        <TestimonialsSection />
         <NewCTA />
+        <Footer />
       </main>
     </div>
   )
