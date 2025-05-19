@@ -10,7 +10,6 @@ export default function NewNavbar() {
   const { user } = useUser()
   const [menuOpen, setMenuOpen] = useState(false)
 
-  // Cierra el menú al hacer clic en cualquier botón o enlace
   const handleClick = (callback: () => void) => {
     setMenuOpen(false)
     callback()
@@ -33,22 +32,20 @@ export default function NewNavbar() {
       }}
     >
       {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <Link
-          href="/"
-          style={{
-            textDecoration: 'none',
-            color: '#fff',
-            fontWeight: 'bold',
-            fontSize: '1.5rem',
-          }}
-          onClick={() => setMenuOpen(false)}
-        >
-          Storely
-        </Link>
-      </div>
+      <Link
+        href="/"
+        style={{
+          textDecoration: 'none',
+          color: '#fff',
+          fontWeight: 'bold',
+          fontSize: '1.5rem',
+        }}
+        onClick={() => setMenuOpen(false)}
+      >
+        Storely
+      </Link>
 
-      {/* Botón hamburguesa solo en móvil */}
+      {/* Botón Hamburguesa */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         style={{
@@ -68,93 +65,49 @@ export default function NewNavbar() {
         <span style={{ width: '24px', height: '2px', backgroundColor: '#fff' }} />
       </button>
 
-      {/* Menú de navegación */}
-      <nav className={`nav-items ${menuOpen ? 'open' : ''}`} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <Link
-          href="/precios"
-          style={{ color: '#fff', textDecoration: 'none', fontWeight: 500 }}
-          onClick={() => setMenuOpen(false)}
-        >
-          Precios
-        </Link>
+      {/* Navegación */}
+      <nav className={`nav-items ${menuOpen ? 'open' : ''}`}>
+        <Link href="/precios" onClick={() => setMenuOpen(false)}>Precios</Link>
 
         {user ? (
           <>
-            <button
-              onClick={() => handleClick(() => router.push('/dashboard'))}
-              style={{
-                backgroundColor: '#6f3ff5',
-                color: 'white',
-                padding: '0.5rem 1.2rem',
-                borderRadius: '9999px',
-                border: 'none',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
-            >
-              Dashboard
-            </button>
-
+            <button onClick={() => handleClick(() => router.push('/dashboard'))}>Dashboard</button>
             <SignOutButton>
-              <button
-                style={{
-                  backgroundColor: 'transparent',
-                  color: '#ccc',
-                  border: '1px solid #444',
-                  padding: '0.45rem 1rem',
-                  borderRadius: '9999px',
-                  cursor: 'pointer',
-                  fontWeight: 500,
-                }}
-                onClick={() => setMenuOpen(false)}
-              >
-                Cerrar sesión
-              </button>
+              <button onClick={() => setMenuOpen(false)}>Cerrar sesión</button>
             </SignOutButton>
           </>
         ) : (
           <>
-            <button
-              onClick={() => handleClick(() => router.push('/sign-in'))}
-              style={{
-                backgroundColor: '#6f3ff5',
-                color: 'white',
-                padding: '0.5rem 1.2rem',
-                borderRadius: '9999px',
-                border: 'none',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
-            >
-              Acceder
-            </button>
-
-            <button
-              onClick={() => handleClick(() => router.push('/sign-up'))}
-              style={{
-                backgroundColor: 'transparent',
-                color: '#ccc',
-                border: '1px solid #444',
-                padding: '0.45rem 1rem',
-                borderRadius: '9999px',
-                cursor: 'pointer',
-                fontWeight: 500,
-              }}
-            >
-              Registrarse
-            </button>
+            <button onClick={() => handleClick(() => router.push('/sign-in'))}>Acceder</button>
+            <button onClick={() => handleClick(() => router.push('/sign-up'))}>Registrarse</button>
           </>
         )}
       </nav>
 
-      {/* Estilos responsivos */}
+      {/* CSS interno responsivo */}
       <style jsx>{`
+        nav {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        nav a,
+        nav button {
+          color: #fff;
+          text-decoration: none;
+          font-weight: 500;
+          background: none;
+          border: none;
+          cursor: pointer;
+        }
+
         @media (max-width: 768px) {
           .menu-toggle {
             display: flex;
           }
 
-          .nav-items {
+          nav.nav-items {
             display: ${menuOpen ? 'flex' : 'none'};
             flex-direction: column;
             position: absolute;
@@ -168,8 +121,8 @@ export default function NewNavbar() {
             z-index: 999;
           }
 
-          .nav-items a,
-          .nav-items button {
+          nav.nav-items a,
+          nav.nav-items button {
             width: 100%;
             text-align: left;
           }
