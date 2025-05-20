@@ -16,7 +16,8 @@ export default function TestimonialsSection() {
           WebkitTextFillColor: 'transparent',
         }}
       >
-        Qué opinan nuestros usuarios
+        
+      What our users are saying.
       </h2>
 
       <div
@@ -31,22 +32,22 @@ export default function TestimonialsSection() {
         {[ 
           {
             stars: '★★★★★',
-            text: 'StorelyAI me ahorra horas automatizando las descripciones. Brutal.',
+            text: 'StorelyAI saves me hours by automating product descriptions. Absolutely game-changing.',
             author: 'Ana P., España',
           },
           {
             stars: '★★★★★',
-            text: 'Conecté mi tienda Shopify y al día siguiente ya tenía 3 mejoras aplicadas con IA.',
+            text: 'The Chamas are like having an expert team always one step ahead — giving me ideas, fixing blind spots, and keeping my store on track without stress.',
             author: 'Carlos M., México',
           },
           {
             stars: '★★★★★',
-            text: 'Gracias a StorelySync pude integrar Notion y automatizar el contenido en minutos.',
+            text: 'StorelySync saved me hours, I connected Notion and had my content automation up and running in minutes.',
             author: 'Lucía R., Argentina',
           },
           {
             stars: '★★★★★',
-            text: 'Las recomendaciones de los Chamas me ayudaron a optimizar mis campañas sin tocar nada.',
+            text: 'I trusted the Chamas with my campaigns, and they delivered. They optimized everything behind the scenes while I focused on growing my business.',
             author: 'Marco D., Colombia',
           },
         ].map((review, i) => (

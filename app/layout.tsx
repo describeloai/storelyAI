@@ -26,6 +26,14 @@ export default function RootLayout({
       }}
     >
       <html lang="es">
+        <head>
+          {/* Script necesario para el widget de Trustpilot */}
+          <script
+            type="text/javascript"
+            src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
+            async
+          ></script>
+        </head>
         <body
           suppressHydrationWarning
           style={{
