@@ -16,7 +16,6 @@ export default function Footer() {
         gap: '2rem',
       }}
     >
-      {/* Content Grid */}
       <div
         style={{
           width: '100%',
@@ -27,8 +26,17 @@ export default function Footer() {
           gap: '2rem',
         }}
       >
-        {/* Legal + Trustpilot Section (izquierda) */}
-        <div style={{ flex: '1 1 360px', minWidth: 260, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        {/* Columna izquierda con todo perfectamente alineado */}
+        <div
+          style={{
+            flex: '1 1 360px',
+            minWidth: 260,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+          }}
+        >
+          {/* Legal */}
           <h4 style={headingStyle}>Legal</h4>
           <ul style={listStyle}>
             <li><a href="/privacy-policy" style={linkStyle}>Privacy Policy</a></li>
@@ -38,14 +46,18 @@ export default function Footer() {
             <li><a href="/legal" style={linkStyle}>Other Policies</a></li>
           </ul>
 
-          {/* Widgets */}
-          <div style={{ marginTop: '2rem', width: '100%', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <CustomTrustpilotWidget />
-            <TrustpilotWidget />
+          {/* Trustpilot widgets: perfectamente alineados a la izquierda */}
+          <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
+            <div style={{ alignSelf: 'flex-start' }}>
+              <CustomTrustpilotWidget />
+            </div>
+            <div style={{ alignSelf: 'flex-start' }}>
+              <TrustpilotWidget />
+            </div>
           </div>
         </div>
 
-        {/* Espacio derecho libre o para expansión futura */}
+        {/* Columna derecha libre o para expansión futura */}
         <div style={{ flex: '1 1 300px', minWidth: 240 }} />
       </div>
 
