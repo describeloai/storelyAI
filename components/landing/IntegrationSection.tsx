@@ -4,12 +4,10 @@ export default function IntegrationSection() {
   return (
     <section className="integration-section">
       <div className="container">
-        {/* Área izquierda para imagen */}
-        <div className="image-placeholder">
-          {/* Aquí puedes insertar una imagen, SVG, animación, etc */}
-        </div>
+        {/* Imagen decorativa a la izquierda en desktop, abajo en móvil */}
+        <div className="image-placeholder" />
 
-        {/* Área derecha con texto */}
+        {/* Texto + grilla */}
         <div className="text-content">
           <h2 className="section-title">Powerful Integrations.</h2>
           <p>
@@ -105,14 +103,8 @@ export default function IntegrationSection() {
 
         @media (max-width: 900px) {
           .container {
-            flex-direction: column;
-            min-height: auto;
-            gap: 2rem;
-          }
-
-          .image-placeholder {
-            width: 100%;
-            height: 250px;
+            flex-direction: column-reverse;
+            gap: 3rem;
           }
 
           .text-content {
@@ -121,12 +113,25 @@ export default function IntegrationSection() {
           }
 
           .section-title {
-            font-size: 2.5rem;
+            font-size: 2.3rem;
           }
 
           .integration-logos-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, auto);
+            gap: 1.5rem 1rem;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 1.5rem;
+          }
+
+          .integration-logos-grid img {
+            height: 44px;
+          }
+
+          .image-placeholder {
+            width: 100%;
+            height: 240px;
           }
         }
       `}</style>
