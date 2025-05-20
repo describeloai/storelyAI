@@ -35,7 +35,7 @@ export default function ChamaIntroSection() {
           fontWeight: 500,
         }}
       >
-        Smart. Adaptable. Unstoppable.
+        
       </p>
 
       <p
@@ -47,7 +47,7 @@ export default function ChamaIntroSection() {
           lineHeight: 1.75,
         }}
       >
-        AI-powered modules that elevate your brand and support you 24/7 — the Chamas are here to revolutionize your online business with intelligence and precision.
+        The Chamas are your 24/7 AI team, automating content, engagement, and operations with precision, so your business grows even when you're offline.
       </p>
     </section>
   )

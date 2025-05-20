@@ -1,5 +1,26 @@
 'use client'
 
+import Image from 'next/image'
+
+const reviews = [
+  {
+    text: 'StorelyAI saves me hours by automating product descriptions. Absolutely game-changing.',
+    author: 'Ana P., España',
+  },
+  {
+    text: 'The Chamas are like having an expert team always one step ahead — giving me ideas, fixing blind spots, and keeping my store on track without stress.',
+    author: 'Carlos M., México',
+  },
+  {
+    text: 'StorelySync saved me hours, I connected Notion and had my content automation up and running in minutes.',
+    author: 'Lucía R., Argentina',
+  },
+  {
+    text: 'I trusted the Chamas with my campaigns, and they delivered. They optimized everything behind the scenes while I focused on growing my business.',
+    author: 'Marco D., Colombia',
+  },
+]
+
 export default function TestimonialsSection() {
   return (
     <section style={{ background: '#000', padding: '6rem 2rem', color: '#fff' }}>
@@ -16,8 +37,7 @@ export default function TestimonialsSection() {
           WebkitTextFillColor: 'transparent',
         }}
       >
-        
-      What our users are saying.
+        What our users are saying.
       </h2>
 
       <div
@@ -29,28 +49,7 @@ export default function TestimonialsSection() {
           margin: '0 auto',
         }}
       >
-        {[ 
-          {
-            stars: '★★★★★',
-            text: 'StorelyAI saves me hours by automating product descriptions. Absolutely game-changing.',
-            author: 'Ana P., España',
-          },
-          {
-            stars: '★★★★★',
-            text: 'The Chamas are like having an expert team always one step ahead — giving me ideas, fixing blind spots, and keeping my store on track without stress.',
-            author: 'Carlos M., México',
-          },
-          {
-            stars: '★★★★★',
-            text: 'StorelySync saved me hours, I connected Notion and had my content automation up and running in minutes.',
-            author: 'Lucía R., Argentina',
-          },
-          {
-            stars: '★★★★★',
-            text: 'I trusted the Chamas with my campaigns, and they delivered. They optimized everything behind the scenes while I focused on growing my business.',
-            author: 'Marco D., Colombia',
-          },
-        ].map((review, i) => (
+        {reviews.map((review, i) => (
           <div
             key={i}
             style={{
@@ -67,12 +66,20 @@ export default function TestimonialsSection() {
             <div>
               <div
                 style={{
-                  color: '#00b67a',
-                  fontSize: '1.3rem',
-                  marginBottom: '0.75rem',
+                  display: 'flex',
+                  gap: '0.4rem',
+                  marginBottom: '1rem',
                 }}
               >
-                {review.stars}
+                {[...Array(5)].map((_, idx) => (
+                  <Image
+                    key={idx}
+                    src="/trustpilot-star-full.svg"
+                    alt="Star"
+                    width={24}
+                    height={24}
+                  />
+                ))}
               </div>
               <p style={{ fontSize: '1.05rem', lineHeight: 1.6 }}>{review.text}</p>
             </div>

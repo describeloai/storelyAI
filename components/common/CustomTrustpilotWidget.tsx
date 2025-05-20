@@ -39,7 +39,7 @@ export default function CustomTrustpilotWidget() {
 
       {/* Score */}
       <div style={{ fontSize: '1rem', color: '#333', fontWeight: 500 }}>
-        TrustScore <strong style={{ fontWeight: 700 }}>4.6</strong> | <strong>4,490</strong> reviews
+        TrustScore <strong style={{ fontWeight: 700 }}>4.6</strong> | <strong>5</strong> reviews
       </div>
     </div>
   )

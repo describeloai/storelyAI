@@ -30,7 +30,7 @@ export default function NewHero() {
           Transform your ecommerce with Artificial Intelligence.
         </h1>
         <p style={{ fontSize: '1.5rem', marginTop: '1.5rem', color: '#ccc' }}>
-          Optimize your business with our team of Chamas.
+          Smart. Adaptable. Unstoppable. Optimize your business with your team of Chamas.
         </p>
       </div>
 

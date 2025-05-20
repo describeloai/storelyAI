@@ -77,12 +77,10 @@ export default function ChamaFeatureSection() {
         {/* Texto (lado derecho) */}
         <div style={{ flex: '1 1 500px', color: 'white' }}>
           <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>
-            One Chama. Multiple outcomes.
+            One Chama. Infinite Possibilities.
           </h3>
           <p style={{ fontSize: '1.1rem', lineHeight: 1.6, color: '#ccc' }}>
-            Each module in the Storely team isn’t just smart — it’s built to handle entire
-            workflows. From analyzing your catalog to generating optimized content or
-            tracking customer insights. Storely Chamas think, act and learn. While you rest.
+            Each Storely module is more than smart, it’s designed to understand your business, automate complete workflows, and improve with every interaction. From analyzing your catalog to generating content and insights, the Chamas think, act, and evolve. The more you share, the better they perform.
           </p>
         </div>
       </div>

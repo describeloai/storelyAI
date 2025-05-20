@@ -39,12 +39,12 @@ export default function Footer() {
           {/* Legal */}
           <h4 style={headingStyle}>Legal</h4>
           <ul style={listStyle}>
-            <li><a href="/privacy-policy" style={linkStyle}>Privacy Policy</a></li>
-            <li><a href="/terms" style={linkStyle}>Terms and Conditions</a></li>
-            <li><a href="/refund-policy" style={linkStyle}>Refund Policy</a></li>
-            <li><a href="/money-back" style={linkStyle}>Money-Back Guarantee</a></li>
-            <li><a href="/legal" style={linkStyle}>Other Policies</a></li>
-          </ul>
+  <li><a href="/legal/privacy-policy" style={linkStyle}>Privacy Policy</a></li>
+  <li><a href="/legal/terms" style={linkStyle}>Terms and Conditions</a></li>
+  <li><a href="/legal/refund-policy" style={linkStyle}>Refund Policy</a></li>
+  <li><a href="/legal/money-back" style={linkStyle}>Money-Back Guarantee</a></li>
+  <li><a href="/legal/other-policies" style={linkStyle}>Other Policies</a></li>
+</ul>
 
           {/* Trustpilot widgets: perfectamente alineados a la izquierda */}
           <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
