@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import Image from 'next/image'
+import Image from 'next/image';
 
 const reviews = [
   {
@@ -19,15 +19,21 @@ const reviews = [
     text: 'I trusted the Chamas with my campaigns, and they delivered. They optimized everything behind the scenes while I focused on growing my business.',
     author: 'Marco D., Colombia',
   },
-]
+];
 
 export default function TestimonialsSection() {
   return (
-    <section style={{ background: '#000', padding: '6rem 2rem', color: '#fff' }}>
+    <section
+      style={{
+        background: '#000',
+        padding: '6rem 1.5rem',
+        color: '#fff',
+      }}
+    >
       <h2
         style={{
           textAlign: 'center',
-          fontSize: '3.2rem',
+          fontSize: 'clamp(2.2rem, 5vw, 3.2rem)',
           fontWeight: 800,
           letterSpacing: '-1px',
           lineHeight: 1.2,
@@ -43,9 +49,9 @@ export default function TestimonialsSection() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '3rem',
-          maxWidth: '1000px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '2rem',
+          maxWidth: '1200px',
           margin: '0 auto',
         }}
       >
@@ -56,18 +62,27 @@ export default function TestimonialsSection() {
               backgroundColor: '#111',
               padding: '2rem',
               borderRadius: '1.2rem',
-              boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              transition: 'transform 0.3s ease',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              cursor: 'default',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 16px 40px rgba(0, 0, 0, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.4)';
             }}
           >
             <div>
               <div
                 style={{
                   display: 'flex',
-                  gap: '0.4rem',
+                  gap: '0.3rem',
                   marginBottom: '1rem',
                 }}
               >
@@ -76,8 +91,9 @@ export default function TestimonialsSection() {
                     key={idx}
                     src="/trustpilot-star-full.svg"
                     alt="Star"
-                    width={24}
-                    height={24}
+                    width={20}
+                    height={20}
+                    style={{ filter: 'brightness(1.2)' }}
                   />
                 ))}
               </div>
@@ -96,5 +112,5 @@ export default function TestimonialsSection() {
         ))}
       </div>
     </section>
-  )
+  );
 }
