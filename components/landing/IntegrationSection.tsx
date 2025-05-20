@@ -11,9 +11,9 @@ export default function IntegrationSection() {
 
         {/* Área derecha con texto */}
         <div className="text-content">
-          <h2>Integraciones poderosas</h2>
+          <h2 className="section-title">Powerful Integrations.</h2>
           <p>
-            Conecta Storely con las plataformas que ya usas: Shopify, WooCommerce, y más. Automatiza y escala sin complicaciones.
+            StorelySync connects your favorite tools — Shopify, Amazon, Notion, Gmail, and more — with AI-powered automation through a smart, chat-based interface. One conversation, endless possibilities.
           </p>
 
           <div className="integration-logos-grid">
@@ -33,7 +33,7 @@ export default function IntegrationSection() {
         .integration-section {
           width: 100%;
           background-color: #000;
-          padding: 4rem 2rem;
+          padding: 6rem 2rem;
           color: #f3f4f6;
           display: flex;
           justify-content: center;
@@ -46,8 +46,8 @@ export default function IntegrationSection() {
           justify-content: space-between;
           max-width: 1200px;
           width: 100%;
-          min-height: 600px;
-          gap: 4rem;
+          min-height: 640px;
+          gap: 5rem;
         }
 
         .image-placeholder {
@@ -65,16 +65,22 @@ export default function IntegrationSection() {
           justify-content: center;
         }
 
-        .text-content h2 {
-          font-size: 2.5rem;
-          font-weight: 700;
-          margin-bottom: 1rem;
+        .section-title {
+          font-size: 3.2rem;
+          font-weight: 800;
+          letter-spacing: -1px;
+          line-height: 1.2;
+          margin-bottom: 1.5rem;
+          background: linear-gradient(to right, #ffffff, #888888);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
 
         .text-content p {
-          font-size: 1.2rem;
+          font-size: 1.25rem;
           margin-bottom: 2.5rem;
           color: #d1d5db;
+          line-height: 1.75;
         }
 
         .integration-logos-grid {
@@ -112,6 +118,10 @@ export default function IntegrationSection() {
           .text-content {
             text-align: center;
             align-items: center;
+          }
+
+          .section-title {
+            font-size: 2.5rem;
           }
 
           .integration-logos-grid {

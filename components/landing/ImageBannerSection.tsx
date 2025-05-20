@@ -5,9 +5,9 @@ import Image from 'next/image'
 export default function ImageBannerSection() {
   return (
     <section className="image-banner-section">
-      <div className="image-wrapper">
+      <div className="image-floating-wrapper">
         <Image
-          src="/images/banner-grande.png" // Reemplaza con tu ruta real
+          src="/images/banner-grande.png" // Asegúrate de que exista esta imagen
           alt="Banner principal"
           fill
           priority
@@ -18,21 +18,23 @@ export default function ImageBannerSection() {
       <style jsx>{`
         .image-banner-section {
           width: 100%;
-          position: relative;
-          padding: 2rem 0;
+          background-color: #000;
+          padding: 6rem 2rem;
           display: flex;
           justify-content: center;
           align-items: center;
         }
 
-        .image-wrapper {
+        .image-floating-wrapper {
           position: relative;
           width: 100%;
-          max-width: 1600px;
+          max-width: 1400px;
           aspect-ratio: 16 / 9;
-          border-radius: 1rem;
+          border-radius: 1.5rem;
           overflow: hidden;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5),
+                      0 0 0 1px rgba(255, 255, 255, 0.05);
+          transform: translateY(-2rem);
         }
 
         .banner-image {

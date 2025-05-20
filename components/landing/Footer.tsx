@@ -1,32 +1,71 @@
 'use client'
 
-import { useEffect } from 'react'
+import TrustpilotWidget from '@/components/landing/TrustpilotWidget'
+
 
 export default function Footer() {
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js'
-    script.async = true
-    document.body.appendChild(script)
-  }, [])
-
   return (
-    <footer style={{ background: '#fff', padding: '3rem 2rem', textAlign: 'center' }}>
-      <p style={{ marginBottom: '1rem', fontWeight: 500 }}>© {new Date().getFullYear()} StorelyAI</p>
+    <footer
+      style={{
+        backgroundColor: '#fff',
+        borderTop: '1px solid #eaeaea',
+        padding: '4rem 2rem',
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        gap: '2rem',
+      }}
+    >
+      {/* Legal Section */}
+      <div style={{ flex: '1 1 200px', minWidth: 180 }}>
+        <h4 style={headingStyle}>Legal</h4>
+        <ul style={listStyle}>
+          <li><a href="/privacy-policy" style={linkStyle}>Privacy Policy</a></li>
+          <li><a href="/terms" style={linkStyle}>Terms and Conditions</a></li>
+          <li><a href="/refund-policy" style={linkStyle}>Refund Policy</a></li>
+          <li><a href="/money-back" style={linkStyle}>Money-Back Guarantee</a></li>
+          <li><a href="/legal" style={linkStyle}>Other Policies</a></li>
+        </ul>
+      </div>
 
-      <div
-        className="trustpilot-widget"
-        data-locale="es-ES"
-        data-template-id="56278e9abfbbba0bdcd568bc"
-        data-businessunit-id="682b2addfe7a18bd7cb2e929"
-        data-style-height="52px"
-        data-style-width="100%"
-        data-theme="light"
-      >
-        <a href="https://www.trustpilot.com/review/storelyai.com" target="_blank" rel="noopener">
-          Trustpilot
-        </a>
+      {/* Trustpilot Widget */}
+      <div style={{ flex: '1 1 300px', minWidth: 240 }}>
+        <TrustpilotWidget />
+      </div>
+
+      {/* Copyright */}
+      <div style={{ flex: '1 1 100%', textAlign: 'center', marginTop: '3rem' }}>
+        <p style={copyright}>
+          © {new Date().getFullYear()} StorelyAI. All rights reserved.
+        </p>
       </div>
     </footer>
   )
+}
+
+const headingStyle = {
+  marginBottom: '1rem',
+  fontSize: '1rem',
+  fontWeight: 600,
+  color: '#111',
+}
+
+const listStyle = {
+  listStyle: 'none',
+  padding: 0,
+  margin: 0,
+  lineHeight: '2',
+}
+
+const linkStyle = {
+  textDecoration: 'none',
+  color: '#333',
+  fontSize: '0.95rem',
+  transition: 'color 0.3s ease',
+}
+
+const copyright = {
+  fontSize: '0.9rem',
+  color: '#888',
 }

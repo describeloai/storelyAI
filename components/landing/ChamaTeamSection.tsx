@@ -51,9 +51,21 @@ export default function ChamaTeamSection() {
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi])
 
   return (
-    <section style={{ backgroundColor: '#0d011f', padding: '4rem 1rem', position: 'relative' }}>
-      <h2 style={{ textAlign: 'center', fontSize: '2.5rem', color: 'white', marginBottom: '2rem' }}>
-      Meet your Chama team.
+    <section style={{ backgroundColor: '#0d011f', padding: '6rem 1rem', position: 'relative' }}>
+      <h2
+        style={{
+          textAlign: 'center',
+          fontSize: '3.2rem',
+          fontWeight: 800,
+          letterSpacing: '-1px',
+          lineHeight: 1.2,
+          marginBottom: '3rem',
+          background: 'linear-gradient(to right, #ffffff, #888888)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+        }}
+      >
+        Meet your Chama team.
       </h2>
 
       <div className={styles.embla}>
