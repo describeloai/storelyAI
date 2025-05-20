@@ -1,36 +1,43 @@
 'use client'
 
-import { useEffect } from 'react'
-
-declare global {
-  interface Window {
-    Trustpilot?: {
-      loadFromElement: (element: HTMLElement, reload: boolean) => void
-    }
-  }
-}
+import { useEffect, useState } from 'react'
 
 export default function TrustpilotWidget() {
+  const [canRenderWidget, setCanRenderWidget] = useState(true)
+
   useEffect(() => {
-    const scriptId = 'trustpilot-widget-script'
-
-    const loadWidget = () => {
-      if (typeof window !== 'undefined' && window.Trustpilot) {
-        window.Trustpilot.loadFromElement(document.body, true)
+    try {
+      // Detecta si está embebido y sandbox bloquea scripts
+      if (window.self !== window.top) {
+        const frame = window.frameElement as HTMLIFrameElement | null
+        if (frame?.sandbox && !frame.sandbox.contains('allow-scripts')) {
+          setCanRenderWidget(false)
+        }
       }
-    }
-
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement('script')
-      script.src = 'https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js'
-      script.async = true
-      script.id = scriptId
-      script.onload = loadWidget
-      document.body.appendChild(script)
-    } else {
-      loadWidget()
+    } catch {
+      setCanRenderWidget(false)
     }
   }, [])
+
+  if (!canRenderWidget) {
+    return (
+      <div style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '0.5rem' }}>
+        <a
+          href="https://www.trustpilot.com/review/storelyai.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            textDecoration: 'none',
+            color: '#333',
+            fontWeight: 500,
+            display: 'inline-block',
+          }}
+        >
+          ★ Trustpilot — See our reviews
+        </a>
+      </div>
+    )
+  }
 
   return (
     <div
