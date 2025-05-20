@@ -2,7 +2,6 @@
 
 import TrustpilotWidget from '@/components/landing/TrustpilotWidget'
 
-
 export default function Footer() {
   return (
     <footer
@@ -13,12 +12,11 @@ export default function Footer() {
         display: 'flex',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
         gap: '2rem',
       }}
     >
-      {/* Legal Section */}
-      <div style={{ flex: '1 1 200px', minWidth: 180 }}>
+      {/* Legal + Trustpilot agrupado en una sola columna */}
+      <div style={{ flex: '1 1 300px', minWidth: 240 }}>
         <h4 style={headingStyle}>Legal</h4>
         <ul style={listStyle}>
           <li><a href="/privacy-policy" style={linkStyle}>Privacy Policy</a></li>
@@ -27,12 +25,15 @@ export default function Footer() {
           <li><a href="/money-back" style={linkStyle}>Money-Back Guarantee</a></li>
           <li><a href="/legal" style={linkStyle}>Other Policies</a></li>
         </ul>
+
+        {/* Trustpilot widget debajo de Legal */}
+        <div style={{ marginTop: '2rem' }}>
+          <TrustpilotWidget />
+        </div>
       </div>
 
-      {/* Trustpilot Widget */}
-      <div style={{ flex: '1 1 300px', minWidth: 240 }}>
-        <TrustpilotWidget />
-      </div>
+      {/* Espacio derecho vacío o para futuras secciones */}
+      <div style={{ flex: '1 1 300px', minWidth: 240 }} />
 
       {/* Copyright */}
       <div style={{ flex: '1 1 100%', textAlign: 'center', marginTop: '3rem' }}>
