@@ -16,22 +16,19 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
-  // Construimos el destino real: /dashboard?shop=...&host=...&embedded=1
+  // Construye la URL final embebida (sin pasar por login)
   const targetUrl = new URL(redirectTo, base);
   targetUrl.searchParams.set('host', host);
   targetUrl.searchParams.set('shop', shop);
 
   const isEmbeddedApp =
     redirectTo.startsWith('/dashboard') || redirectTo.startsWith('/integraciones');
+
   if (isEmbeddedApp) {
     targetUrl.searchParams.set('embedded', '1');
   }
 
-  // Redirigir siempre al login, con redirect_url al destino final
-  const loginUrl = new URL('/sign-in', base);
-  loginUrl.searchParams.set('redirect_url', targetUrl.pathname + '?' + targetUrl.searchParams.toString());
+  console.log('🔁 Redirigiendo directamente al destino:', targetUrl.toString());
 
-  console.log('🔁 Redirigiendo al login con destino:', loginUrl.toString());
-
-  return NextResponse.redirect(loginUrl);
+  return NextResponse.redirect(targetUrl);
 }
