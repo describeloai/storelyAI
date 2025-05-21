@@ -2,11 +2,21 @@
 
 import { useEffect, useState } from 'react'
 
+// Declaración de tipo global para evitar errores de TypeScript
+declare global {
+  interface Window {
+    Trustpilot?: {
+      loadFromElement: (element: HTMLElement, flag: boolean) => void
+    }
+  }
+}
+
 export default function TrustpilotWidget() {
   const [canRenderWidget, setCanRenderWidget] = useState(true)
 
   useEffect(() => {
     try {
+      // Evita renderizar si está embebido en un iframe sin allow-scripts
       if (window.self !== window.top) {
         const frame = window.frameElement as HTMLIFrameElement | null
         if (frame?.sandbox && !frame.sandbox.contains('allow-scripts')) {
@@ -15,14 +25,26 @@ export default function TrustpilotWidget() {
         }
       }
 
-      // Inject Trustpilot script if not already loaded
       const scriptId = 'trustpilot-script'
-      if (!document.getElementById(scriptId)) {
+      const existingScript = document.getElementById(scriptId)
+
+      if (!existingScript) {
         const script = document.createElement('script')
         script.id = scriptId
         script.src = 'https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js'
         script.async = true
+        script.onload = () => {
+          // Forzar inicialización tras carga del script
+          if (window.Trustpilot) {
+            window.Trustpilot.loadFromElement(document.body, true)
+          }
+        }
         document.body.appendChild(script)
+      } else {
+        // Si ya existe el script, aún así forzamos la carga del widget
+        if (window.Trustpilot) {
+          window.Trustpilot.loadFromElement(document.body, true)
+        }
       }
 
     } catch {
