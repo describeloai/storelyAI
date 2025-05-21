@@ -16,7 +16,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // ✅ Extraer headers desde el servidor
   const headersList = await headers();
   const xNextUrl = headersList.get('x-next-url') ?? '';
   const searchParams = new URLSearchParams(xNextUrl.split('?')[1] ?? '');
@@ -41,16 +40,12 @@ export default async function RootLayout({
             async
           ></script>
 
-          {/* Shopify App Bridge CDN Script (solo si embebido) */}
-          {isEmbedded && (
-            <>
-              <meta
-                name="shopify-api-key"
-                content="a0f3598698f796710ae6252e2417b103"
-              />
-              <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
-            </>
-          )}
+          {/* Shopify App Bridge CDN Script — se carga siempre */}
+          <meta
+            name="shopify-api-key"
+            content="a0f3598698f796710ae6252e2417b103"
+          />
+          <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
         </head>
         <body
           suppressHydrationWarning
