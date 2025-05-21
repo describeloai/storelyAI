@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import FeatherIcon from '@/components/landing/ChameleonLogo';
+import UserMenu from '@/components/dashboard/UserMenu'; // 👈 Importa el nuevo menú
 
 export default function DashboardNavbar() {
   const [isEmbedded, setIsEmbedded] = useState(false);
@@ -135,7 +135,8 @@ export default function DashboardNavbar() {
         >
           ?
         </button>
-        <UserButton afterSignOutUrl="/" />
+
+        <UserMenu /> {/* 👈 Aquí va el nuevo menú */}
       </div>
     </header>
   );
