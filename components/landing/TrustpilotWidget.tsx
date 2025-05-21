@@ -7,13 +7,24 @@ export default function TrustpilotWidget() {
 
   useEffect(() => {
     try {
-      // Detecta si está embebido y sandbox bloquea scripts
       if (window.self !== window.top) {
         const frame = window.frameElement as HTMLIFrameElement | null
         if (frame?.sandbox && !frame.sandbox.contains('allow-scripts')) {
           setCanRenderWidget(false)
+          return
         }
       }
+
+      // Inject Trustpilot script if not already loaded
+      const scriptId = 'trustpilot-script'
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement('script')
+        script.id = scriptId
+        script.src = 'https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js'
+        script.async = true
+        document.body.appendChild(script)
+      }
+
     } catch {
       setCanRenderWidget(false)
     }
