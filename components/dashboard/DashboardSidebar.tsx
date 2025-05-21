@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   Settings,
   Home,
@@ -16,6 +16,7 @@ import {
   PlugZap,
 } from 'lucide-react';
 import { useShopifyConnectionStatus } from '@/lib/useShopifyConnectionStatus';
+import { navigateToEmbeddedRoute } from '@/utils/navigateToEmbeddedRoute';
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -24,7 +25,6 @@ interface SidebarProps {
 
 export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
-  const router = useRouter();
   const pathname = usePathname() ?? '';
   const { isConnected, shopDomain, isLoaded } = useShopifyConnectionStatus();
 
@@ -36,7 +36,7 @@ export default function Sidebar({ isSidebarOpen, onClose }: SidebarProps) {
   }, []);
 
   const handleClick = (href: string) => {
-    router.push(href);
+    navigateToEmbeddedRoute(href);
     if (isMobile) onClose();
   };
 
