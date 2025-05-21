@@ -1,23 +1,36 @@
 'use client';
 
 import { SignIn } from '@clerk/nextjs';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function SignInClient() {
   const { isSignedIn } = useUser();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const fallbackRedirect = searchParams.get('redirect_url') || '/dashboard';
 
-  // Si ya está autenticado, redirige automáticamente
+  const redirectUrl = searchParams.get('redirect_url');
+  const host = searchParams.get('host');
+  const shop = searchParams.get('shop');
+  const embedded = searchParams.get('embedded');
+
+  const buildRedirectUrl = () => {
+    const base = redirectUrl || '/dashboard';
+    const params = new URLSearchParams();
+
+    if (host) params.set('host', host);
+    if (shop) params.set('shop', shop);
+    if (embedded) params.set('embedded', embedded);
+
+    return `${base}?${params.toString()}`;
+  };
+
   useEffect(() => {
     if (isSignedIn) {
-      router.push(fallbackRedirect);
+      router.push(buildRedirectUrl());
     }
-  }, [isSignedIn, fallbackRedirect, router]);
+  }, [isSignedIn]);
 
   if (isSignedIn) return null;
 
@@ -31,7 +44,7 @@ export default function SignInClient() {
         background: 'linear-gradient(to bottom right, #4B0082, #8A2BE2)',
       }}
     >
-      <SignIn fallbackRedirectUrl={fallbackRedirect} />
+      <SignIn fallbackRedirectUrl={buildRedirectUrl()} />
     </div>
   );
 }
