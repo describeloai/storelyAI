@@ -76,27 +76,31 @@ export default function NewNavbar() {
 
       {menuOpen && (
         <div className="mobile-menu">
-          <Link href="/precios" onClick={() => setMenuOpen(false)}>Pricing</Link>
+          <Link href="/precios" onClick={() => setMenuOpen(false)} className="mobile-button">
+            Pricing
+          </Link>
 
           {user ? (
             <>
-              <button onClick={() => handleClick(() => router.push('/dashboard'))}>Dashboard</button>
+              <button onClick={() => handleClick(() => router.push('/dashboard'))} className="mobile-button">
+                Dashboard
+              </button>
               <SignOutButton>
-                <button onClick={() => setMenuOpen(false)}>Log Out</button>
+                <button onClick={() => setMenuOpen(false)} className="mobile-button">
+                  Log Out
+                </button>
               </SignOutButton>
             </>
           ) : (
             <>
-              <button onClick={() => handleClick(() => router.push('/sign-in'))}>Sign In</button>
+              <button onClick={() => handleClick(() => router.push('/sign-in'))} className="mobile-button">
+                Sign In
+              </button>
               <button
                 onClick={() => handleClick(() => router.push('/sign-up'))}
+                className="get-started-button"
                 style={{
                   backgroundColor: colors[colorIndex],
-                  color: '#000',
-                  padding: '0.6rem 1.2rem',
-                  borderRadius: '999px',
-                  border: 'none',
-                  fontWeight: '600',
                 }}
               >
                 Get Started
@@ -201,12 +205,39 @@ export default function NewNavbar() {
           right: 1rem;
           background-color: #15102b;
           border-radius: 1rem;
-          padding: 1rem;
+          padding: 1.2rem;
           display: flex;
           flex-direction: column;
           gap: 1rem;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
           z-index: 999;
+          min-width: 180px;
+        }
+
+        .mobile-button {
+          background: none;
+          color: #fff;
+          font-size: 1rem;
+          font-weight: 500;
+          border: none;
+          padding: 0.6rem 1.2rem;
+          border-radius: 8px;
+          text-align: left;
+          transition: background 0.2s ease;
+        }
+
+        .mobile-button:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .get-started-button {
+          color: #000;
+          font-weight: 600;
+          padding: 0.6rem 1.2rem;
+          border-radius: 999px;
+          border: none;
+          font-size: 1rem;
+          transition: background-color 1s ease;
         }
 
         @media (max-width: 768px) {
