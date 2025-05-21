@@ -1,76 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
-// Declaración de tipo global para evitar errores de TypeScript
-declare global {
-  interface Window {
-    Trustpilot?: {
-      loadFromElement: (element: HTMLElement, flag: boolean) => void
-    }
-  }
-}
+import { useEffect } from 'react'
 
 export default function TrustpilotWidget() {
-  const [canRenderWidget, setCanRenderWidget] = useState(true)
-
   useEffect(() => {
-    try {
-      // Evita renderizar si está embebido en un iframe sin allow-scripts
-      if (window.self !== window.top) {
-        const frame = window.frameElement as HTMLIFrameElement | null
-        if (frame?.sandbox && !frame.sandbox.contains('allow-scripts')) {
-          setCanRenderWidget(false)
-          return
-        }
-      }
-
-      const scriptId = 'trustpilot-script'
-      const existingScript = document.getElementById(scriptId)
-
-      if (!existingScript) {
-        const script = document.createElement('script')
-        script.id = scriptId
-        script.src = 'https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js'
-        script.async = true
-        script.onload = () => {
-          // Forzar inicialización tras carga del script
-          if (window.Trustpilot) {
-            window.Trustpilot.loadFromElement(document.body, true)
-          }
-        }
-        document.body.appendChild(script)
-      } else {
-        // Si ya existe el script, aún así forzamos la carga del widget
-        if (window.Trustpilot) {
-          window.Trustpilot.loadFromElement(document.body, true)
-        }
-      }
-
-    } catch {
-      setCanRenderWidget(false)
+    const scriptId = 'trustpilot-script'
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script')
+      script.id = scriptId
+      script.src = 'https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js'
+      script.async = true
+      document.head.appendChild(script)
     }
   }, [])
-
-  if (!canRenderWidget) {
-    return (
-      <div style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '0.5rem' }}>
-        <a
-          href="https://www.trustpilot.com/review/storelyai.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            textDecoration: 'none',
-            color: '#333',
-            fontWeight: 500,
-            display: 'inline-block',
-          }}
-        >
-          ★ Trustpilot — See our reviews
-        </a>
-      </div>
-    )
-  }
 
   return (
     <div
