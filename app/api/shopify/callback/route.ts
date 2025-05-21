@@ -12,14 +12,12 @@ export async function GET(req: NextRequest) {
 
   console.log('🧭 CALLBACK PARAMS:', { shop, code, host });
 
-  // 🔒 Validar parámetros
   if (!shop || !code || !host) {
-    console.error('❌ Faltan parámetros en el callback', { shop, code, host });
-    return NextResponse.json({ error: 'Faltan parámetros en la URL' }, { status: 400 });
+    console.error('❌ Faltan parámetros en el callback');
+    return NextResponse.json({ error: 'Faltan parámetros' }, { status: 400 });
   }
 
   try {
-    // 🔑 Intercambiar code por access_token
     const tokenResponse = await axios.post(
       `https://${shop}/admin/oauth/access_token`,
       {
@@ -36,29 +34,28 @@ export async function GET(req: NextRequest) {
     // @ts-ignore
     const { userId } = auth();
     if (!userId) {
-      console.error('⚠️ Usuario no autenticado con Clerk');
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/sign-in`);
     }
 
-    // 📝 Guardar en Clerk
+    // Guardar en Clerk
     // @ts-ignore
     await clerkClient.users.updateUserMetadata(userId, {
       privateMetadata: { shop, accessToken },
     });
 
-    // 🔔 Registrar Webhooks (opcional)
+    // Registrar webhooks
     await registerShopifyWebhooks(shop, accessToken);
 
-    // ✅ Redirigir directamente al UI embebido
-    const embeddedDashboardUrl = `https://admin.shopify.com/store/${shop.replace(
-      '.myshopify.com',
-      ''
-    )}/apps/storelyai/dashboard?shop=${shop}&host=${host}&embedded=1`;
+    // ✅ Redirigir a la app vía redirect-entry
+    const redirectUrl = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/redirect-entry`);
+    redirectUrl.searchParams.set('shop', shop);
+    redirectUrl.searchParams.set('host', host);
+    redirectUrl.searchParams.set('redirectTo', '/dashboard');
 
-    console.log('🚀 Redirigiendo al dashboard embebido:', embeddedDashboardUrl);
-    return NextResponse.redirect(embeddedDashboardUrl);
+    console.log('🚀 Redirigiendo a:', redirectUrl.toString());
+    return NextResponse.redirect(redirectUrl);
   } catch (error) {
-    console.error('❌ Error en Shopify callback:', error);
+    console.error('❌ Error en callback:', error);
     return NextResponse.json({ error: 'Error en callback' }, { status: 500 });
   }
 }
