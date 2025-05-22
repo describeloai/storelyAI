@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
-import SignInClient from '@/app/sign-in/[[...rest]]/SignInClient'; // Ajusta si es necesario
+import SignInClient from '@/app/sign-in/[[...rest]]/SignInClient';
 
 export default function RouteProtector() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -21,28 +21,31 @@ export default function RouteProtector() {
     const embedded = searchParams.get('embedded') === '1';
     const isIframe = window.top !== window.self;
 
-    const redirectTo = `${pathname}?${searchParams.toString()}`;
-
-    // Si está embebido pero faltan parámetros, redirigir al flujo de entrada
     if ((embedded || isIframe) && (!host || !shop)) {
-      router.replace(`/redirect-entry?redirectTo=${encodeURIComponent(redirectTo)}`);
+      // Faltan parámetros embebidos → reconstruirlos
+      router.replace(`/api/redirect-entry?redirectTo=${encodeURIComponent(pathname)}`);
       return;
     }
 
-    // Si no está autenticado
     if (!isSignedIn) {
+      // Si no está logueado y estamos embebidos, ir a /sign-in con los mismos params
       if (embedded || isIframe) {
-        // Mostrar login embebido
-        setShowLogin(true);
+        const params = new URLSearchParams();
+        if (host) params.set('host', host);
+        if (shop) params.set('shop', shop);
+        if (embedded) params.set('embedded', '1');
+        params.set('redirect_url', pathname);
+
+        router.replace(`/sign-in?${params.toString()}`);
         return;
       }
 
-      // Redirigir a la landing page fuera de embed
+      // Si no estamos embebidos, ir a home o /sign-in estándar
       router.replace('/');
     }
   }, [isLoaded, isSignedIn, searchParams, pathname, router]);
 
-  if (showLogin) {
+  if (!isSignedIn && showLogin) {
     return <SignInClient />;
   }
 

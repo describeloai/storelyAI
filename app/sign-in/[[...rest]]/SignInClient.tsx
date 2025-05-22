@@ -16,13 +16,12 @@ export default function SignInClient() {
   const embedded = searchParams.get('embedded');
 
   const buildRedirectUrl = () => {
+    const base = redirectUrl;
     const params = new URLSearchParams();
-
     if (host) params.set('host', host);
     if (shop) params.set('shop', shop);
     if (embedded) params.set('embedded', embedded);
-
-    return `${redirectUrl}${redirectUrl.includes('?') ? '&' : '?'}${params.toString()}`;
+    return `${base}?${params.toString()}`;
   };
 
   useEffect(() => {
