@@ -1,3 +1,5 @@
+// app/redirect-entry/page.tsx
+
 'use client';
 
 import { useEffect } from 'react';
@@ -21,7 +23,8 @@ export default function RedirectEntry() {
     const redirectTo = searchParams.get('redirectTo') || '/dashboard';
 
     if (!host || !shop) {
-      console.warn('❌ Faltan parámetros "host" o "shop", cancelando redirección.');
+      console.warn('❌ Faltan parámetros "host" o "shop", redirigiendo a página de error.');
+      window.location.href = '/error/missing-context';
       return;
     }
 
@@ -36,7 +39,7 @@ export default function RedirectEntry() {
       console.log('✅ Redirección embebida con ShopifyApp:', finalUrl);
       window.ShopifyApp.redirect({ url: finalUrl });
     } else {
-      console.log('➡️ Redirección normal con window.location.href:', finalUrl);
+      console.log('➡️ Redirección directa con window.location.href:', finalUrl);
       window.location.href = finalUrl;
     }
   }, [searchParams]);

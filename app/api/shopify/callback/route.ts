@@ -35,25 +35,32 @@ export async function GET(req: NextRequest) {
     // Obtener el userId del usuario actual (Clerk)
     // @ts-ignore
     const { userId } = auth();
-    if (!userId) {
-      console.error('⚠️ Usuario no autenticado con Clerk');
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/sign-in`);
+
+    if (userId) {
+      // Guardar datos en Clerk
+      // @ts-ignore
+      await clerkClient.users.updateUserMetadata(userId, {
+        privateMetadata: {
+          shop,
+          accessToken,
+        },
+      });
+
+      // Registrar webhooks
+      await registerShopifyWebhooks(shop, accessToken);
+    } else {
+      console.warn('⚠️ Usuario no autenticado todavía. Clerk se gestionará en el client.');
     }
 
-    // Guardar datos en el usuario de Clerk (en privateMetadata)
-    // @ts-ignore
-    await clerkClient.users.updateUserMetadata(userId, {
-      privateMetadata: {
-        shop,
-        accessToken,
-      },
-    });
+    // Redirigir al flujo embebido con contexto
+    const base = process.env.NEXT_PUBLIC_BASE_URL;
 
-    // Opcional: registrar webhooks para la tienda
-    await registerShopifyWebhooks(shop, accessToken);
+    if (!base) {
+      console.error('❌ Faltante: NEXT_PUBLIC_BASE_URL no definido');
+      return NextResponse.json({ error: 'Configuración incompleta del entorno' }, { status: 500 });
+    }
 
-    // Redirigir a la página embebida con parámetros
-    const safeRedirectUrl = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/redirect-entry`);
+    const safeRedirectUrl = new URL('/redirect-entry', base);
     safeRedirectUrl.searchParams.set('shop', shop);
     safeRedirectUrl.searchParams.set('host', host);
     safeRedirectUrl.searchParams.set('redirectTo', '/dashboard');

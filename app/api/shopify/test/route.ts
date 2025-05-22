@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuth } from '@clerk/nextjs/server';
+import { getAuth, clerkClient } from '@clerk/nextjs/server';
 
 export async function GET(req: NextRequest) {
   const { userId } = getAuth(req);
@@ -8,5 +8,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
   }
 
-  return NextResponse.json({ message: 'Autenticado correctamente', userId });
+  // ✅ (Opcional) Obtener detalles del usuario
+  // @ts-ignore
+  const user = await clerkClient.users.getUser(userId);
+
+  return NextResponse.json({
+    message: 'Autenticado correctamente',
+    userId,
+    email: user.emailAddresses?.[0]?.emailAddress,
+    privateMetadata: user.privateMetadata,
+  });
 }

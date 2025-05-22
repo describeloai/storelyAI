@@ -3,31 +3,37 @@ import { jwtVerify, importSPKI } from 'jose';
 
 export async function POST(req: Request) {
   try {
+    // 🔐 Validación del header de autenticación
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'No autorizado: faltan headers' }, { status: 401 });
+      return NextResponse.json({ error: 'No autorizado: faltan headers Bearer' }, { status: 401 });
     }
 
     const token = authHeader.split(' ')[1];
-    const { shop, accessToken } = await req.json();
 
+    // 📦 Parseo del body
+    const { shop, accessToken } = await req.json();
     if (!shop || !accessToken) {
-      return NextResponse.json({ error: 'Faltan datos en el body' }, { status: 400 });
+      return NextResponse.json({ error: 'Faltan datos en el body (shop o accessToken)' }, { status: 400 });
     }
 
-    // ✅ Importar la clave pública como CryptoKey (formato SPKI)
+    // 🔑 Importar la clave pública y verificar el JWT
     const publicKey = await importSPKI(process.env.CLERK_JWT_PUBLIC_KEY!, 'RS256');
 
-    const { payload } = await jwtVerify(token, publicKey, {
-      algorithms: ['RS256'],
-    });
+    let payload;
+    try {
+      ({ payload } = await jwtVerify(token, publicKey, { algorithms: ['RS256'] }));
+    } catch (err) {
+      console.error('❌ Error al verificar JWT:', err);
+      return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
+    }
 
     const userId = payload.sub;
     if (!userId) {
       return NextResponse.json({ error: 'No se pudo extraer userId del token' }, { status: 401 });
     }
 
-    // ✅ Guardar en Clerk
+    // 📤 Guardar en Clerk
     const updateRes = await fetch(`https://api.clerk.com/v1/users/${userId}/metadata`, {
       method: 'PATCH',
       headers: {
@@ -44,8 +50,11 @@ export async function POST(req: Request) {
 
     if (!updateRes.ok) {
       const errorDetail = await updateRes.text();
-      console.error('❌ Error al guardar en Clerk:', errorDetail);
-      return NextResponse.json({ error: 'Error al guardar en Clerk', detail: errorDetail }, { status: 500 });
+      console.error(`❌ Clerk API Error [${updateRes.status}]:`, errorDetail);
+      return NextResponse.json(
+        { error: 'Error al guardar en Clerk', detail: errorDetail },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ success: true });

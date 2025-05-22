@@ -14,11 +14,18 @@ export default function AppBridgeProvider({ children }: { children: React.ReactN
       shop = sessionStorage.getItem('shopify-shop') || '';
     }
 
-    console.log('🧩 SHOP en AppBridgeProvider:', shop);
-
+    const isIframe = window.top !== window.self;
+    const embedded = query.get('embedded') === '1';
     const ShopifyApp = (window as any).ShopifyApp;
 
-    if (shop && ShopifyApp) {
+    if (!shop && isIframe) {
+      console.warn('⚠️ Falta "shop" en iframe embebido, redirigiendo a /redirect-entry...');
+      const currentUrl = window.location.href;
+      window.location.href = `/redirect-entry?redirectTo=${encodeURIComponent(currentUrl)}`;
+      return;
+    }
+
+    if (shop && ShopifyApp && embedded) {
       try {
         ShopifyApp.init({
           apiKey: process.env.NEXT_PUBLIC_SHOPIFY_API_KEY!,
@@ -26,16 +33,16 @@ export default function AppBridgeProvider({ children }: { children: React.ReactN
           forceRedirect: true,
         });
 
-        console.log('✅ App Bridge (CDN) inicializado correctamente con shopOrigin');
+        console.log('✅ App Bridge (CDN) inicializado correctamente');
       } catch (error) {
         console.error('❌ Error al inicializar App Bridge desde CDN:', error);
       }
-    } else if (!shop && window.top !== window.self) {
-      console.warn('⚠️ No se detectó "shop", redirigiendo a redirect-entry para recuperarlo...');
-      const currentUrl = window.location.href;
-      window.location.href = `/redirect-entry?redirectTo=${encodeURIComponent(currentUrl)}`;
     } else {
-      console.log('🧭 No se detectó "shop", pero estamos fuera del iframe. No se redirige.');
+      if (!ShopifyApp && isIframe) {
+        console.warn('⚠️ ShopifyApp no está disponible en iframe. ¿Falta el script de la CDN?');
+      } else {
+        console.log('🧭 App fuera de iframe o sin contexto embebido. No se inicializa App Bridge.');
+      }
     }
   }, []);
 

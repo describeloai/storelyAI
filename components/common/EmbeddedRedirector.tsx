@@ -9,17 +9,19 @@ export default function EmbeddedRedirector() {
   const router = useRouter();
 
   useEffect(() => {
-    const isIframe = window.top !== window.self;
-    const hasEmbeddedParam = searchParams.get('embedded') === '1';
-    const shouldRedirect = isIframe && !hasEmbeddedParam;
+    const isIframe = typeof window !== 'undefined' && window.top !== window.self;
+    const embedded = searchParams.get('embedded') === '1';
 
-    if (shouldRedirect) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('embedded', '1');
+    // No redirigir en rutas especiales como /redirect-entry o /sign-in
+    const excludedPaths = ['/redirect-entry', '/sign-in', '/sign-up'];
+    if (excludedPaths.includes(pathname)) return;
 
-      // Conserva ruta actual pero con `embedded=1`
-      const redirectUrl = `${pathname}?${params.toString()}`;
-      console.log('🔁 Redirigiendo con embedded=1 a:', redirectUrl);
+    if (isIframe && !embedded) {
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.set('embedded', '1');
+
+      const redirectUrl = `${pathname}?${newParams.toString()}`;
+      console.log('🔁 Redirigiendo a:', redirectUrl);
       router.replace(redirectUrl);
     }
   }, [pathname, searchParams, router]);

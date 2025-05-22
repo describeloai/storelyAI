@@ -2,11 +2,12 @@
 
 import { SignUp } from '@clerk/nextjs';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
-import { useEffect } from 'react';
+import { useUser, useAuth } from '@clerk/nextjs';
+import { useEffect, useMemo } from 'react';
 
 export default function SignUpClient() {
   const { isSignedIn } = useUser();
+  const { isLoaded } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -15,22 +16,23 @@ export default function SignUpClient() {
   const shop = searchParams.get('shop');
   const embedded = searchParams.get('embedded');
 
-  const buildRedirectUrl = () => {
-    const base = redirectUrl;
-    const params = new URLSearchParams();
-    if (host) params.set('host', host);
-    if (shop) params.set('shop', shop);
-    if (embedded) params.set('embedded', embedded);
-    return `${base}?${params.toString()}`;
-  };
+  const finalRedirectUrl = useMemo(() => {
+    const url = new URL(redirectUrl, window.location.origin);
+    if (host) url.searchParams.set('host', host);
+    if (shop) url.searchParams.set('shop', shop);
+    if (embedded) url.searchParams.set('embedded', embedded);
+    return url.toString();
+  }, [redirectUrl, host, shop, embedded]);
 
   useEffect(() => {
+    if (!isLoaded) return;
     if (isSignedIn) {
-      router.push(buildRedirectUrl());
+      console.log('✅ Usuario registrado y autenticado, redirigiendo a:', finalRedirectUrl);
+      router.replace(finalRedirectUrl);
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, isLoaded, finalRedirectUrl, router]);
 
-  if (isSignedIn) return null;
+  if (!isLoaded || isSignedIn) return null;
 
   return (
     <div
@@ -42,7 +44,7 @@ export default function SignUpClient() {
         background: 'linear-gradient(to bottom right, #4B0082, #8A2BE2)',
       }}
     >
-      <SignUp fallbackRedirectUrl={buildRedirectUrl()} />
+      <SignUp fallbackRedirectUrl={finalRedirectUrl} />
     </div>
   );
 }

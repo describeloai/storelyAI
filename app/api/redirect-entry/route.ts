@@ -1,4 +1,5 @@
 // app/api/redirect-entry/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -7,14 +8,12 @@ export async function GET(req: NextRequest) {
   const shop = searchParams.get('shop');
   const redirectTo = searchParams.get('redirectTo') || '/dashboard';
 
-  if (!host || !shop) {
-    return NextResponse.redirect(new URL('/', req.url));
-  }
-
   const base = process.env.NEXT_PUBLIC_BASE_URL;
-  if (!base) {
-    console.error('❌ Faltante: NEXT_PUBLIC_BASE_URL no definido');
-    return NextResponse.redirect(new URL('/', req.url));
+
+  if (!host || !shop || !base) {
+    console.error('❌ Parámetros faltantes o mal configurados en redirect-entry API.');
+    const errorUrl = new URL('/error/missing-context', req.url);
+    return NextResponse.redirect(errorUrl);
   }
 
   const targetUrl = new URL(redirectTo, base);
