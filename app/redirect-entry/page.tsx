@@ -1,5 +1,3 @@
-// app/redirect-entry/page.tsx
-
 'use client';
 
 import { useEffect } from 'react';
@@ -23,26 +21,39 @@ export default function RedirectEntry() {
     const redirectTo = searchParams.get('redirectTo') || '/dashboard';
 
     if (!host || !shop) {
-      console.warn('❌ Faltan parámetros "host" o "shop", redirigiendo a página de error.');
-      window.location.href = '/error/missing-context';
+      console.warn('❌ Faltan parámetros "host" o "shop", cancelando redirección.');
       return;
     }
 
     const url = new URL(redirectTo, window.location.origin);
     url.searchParams.set('shop', shop);
     url.searchParams.set('host', host);
-    if (embedded) url.searchParams.set('embedded', '1');
+    url.searchParams.set('embedded', '1');
 
     const finalUrl = url.toString();
 
-    if (embedded && window.top !== window.self && window.ShopifyApp) {
-      console.log('✅ Redirección embebida con ShopifyApp:', finalUrl);
-      window.ShopifyApp.redirect({ url: finalUrl });
-    } else {
-      console.log('➡️ Redirección directa con window.location.href:', finalUrl);
-      window.location.href = finalUrl;
-    }
+    const isIframe = window.top !== window.self;
+
+    const redirectNow = () => {
+      if (isIframe && window.ShopifyApp) {
+        console.log('✅ Redirección embebida con App Bridge:', finalUrl);
+        window.ShopifyApp.redirect({ url: finalUrl });
+      } else {
+        console.log('🔁 Redirección directa con location.href:', finalUrl);
+        window.location.href = finalUrl;
+      }
+    };
+
+    // ⏳ Espera hasta que ShopifyApp esté disponible (máx 1 segundo)
+    let waited = 0;
+    const interval = setInterval(() => {
+      if (window.ShopifyApp || waited > 1000) {
+        clearInterval(interval);
+        redirectNow();
+      }
+      waited += 100;
+    }, 100);
   }, [searchParams]);
 
-  return <p>Redirigiendo...</p>;
+  return <p style={{ color: 'white', textAlign: 'center', marginTop: '20%' }}>Redirigiendo...</p>;
 }
