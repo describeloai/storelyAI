@@ -10,20 +10,19 @@ export default function SignInClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const redirectUrl = searchParams.get('redirect_url');
+  const redirectUrl = searchParams.get('redirect_url') || '/dashboard';
   const host = searchParams.get('host');
   const shop = searchParams.get('shop');
   const embedded = searchParams.get('embedded');
 
   const buildRedirectUrl = () => {
-    const base = redirectUrl || '/dashboard';
     const params = new URLSearchParams();
 
     if (host) params.set('host', host);
     if (shop) params.set('shop', shop);
     if (embedded) params.set('embedded', embedded);
 
-    return `${base}?${params.toString()}`;
+    return `${redirectUrl}${redirectUrl.includes('?') ? '&' : '?'}${params.toString()}`;
   };
 
   useEffect(() => {
