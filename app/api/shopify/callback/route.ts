@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    // Intercambiar el código por un access token
     const tokenResponse = await axios.post(
       `https://${shop}/admin/oauth/access_token`,
       {
@@ -31,6 +32,7 @@ export async function GET(req: NextRequest) {
     const accessToken = tokenResponse.data.access_token;
     console.log('🔐 Access token obtenido:', accessToken);
 
+    // Obtener el userId del usuario actual (Clerk)
     // @ts-ignore
     const { userId } = auth();
     if (!userId) {
@@ -38,22 +40,25 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/sign-in`);
     }
 
-    // Guardar en Clerk
+    // Guardar datos en el usuario de Clerk (en privateMetadata)
     // @ts-ignore
     await clerkClient.users.updateUserMetadata(userId, {
-      privateMetadata: { shop, accessToken },
+      privateMetadata: {
+        shop,
+        accessToken,
+      },
     });
 
-    // Registrar webhooks opcional
+    // Opcional: registrar webhooks para la tienda
     await registerShopifyWebhooks(shop, accessToken);
 
-    // ✅ Redirigir correctamente al flujo embebido
-    const safeRedirectUrl = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/redirect-entry`);
+    // Redirigir a la página embebida con parámetros
+    const safeRedirectUrl = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/redirect-entry`);
     safeRedirectUrl.searchParams.set('shop', shop);
     safeRedirectUrl.searchParams.set('host', host);
     safeRedirectUrl.searchParams.set('redirectTo', '/dashboard');
 
-    console.log('🚀 Redirigiendo al dashboard embebido vía /api/redirect-entry:', safeRedirectUrl.toString());
+    console.log('🚀 Redirigiendo al dashboard embebido vía /redirect-entry:', safeRedirectUrl.toString());
 
     return NextResponse.redirect(safeRedirectUrl);
   } catch (error) {
