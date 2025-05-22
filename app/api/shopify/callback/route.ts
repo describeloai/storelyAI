@@ -1,3 +1,4 @@
+// app/api/shopify/callback/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import axios from 'axios';
@@ -13,6 +14,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    // 1. Obtener accessToken de Shopify
     const tokenRes = await axios.post(
       `https://${shop}/admin/oauth/access_token`,
       {
@@ -24,12 +26,17 @@ export async function GET(req: NextRequest) {
     );
 
     const accessToken = tokenRes.data.access_token;
-//@ts-ignore
+
+    // 2. Obtener usuario actual
+    //@ts-ignore
     const { userId } = auth();
     if (!userId) {
+      console.error('❌ Usuario no autenticado en Clerk');
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/sign-in`);
     }
-//@ts-ignore
+
+    // 3. Guardar datos en Clerk
+    //@ts-ignore
     await clerkClient.users.updateUserMetadata(userId, {
       privateMetadata: {
         shop,
@@ -37,14 +44,15 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const redirectTo = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
-    redirectTo.searchParams.set('shop', shop);
-    redirectTo.searchParams.set('host', host);
-    redirectTo.searchParams.set('embedded', '1');
+    // 4. Redirigir al dashboard embebido
+    const redirect = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/redirect-entry`);
+    redirect.searchParams.set('shop', shop);
+    redirect.searchParams.set('host', host);
+    redirect.searchParams.set('redirectTo', '/dashboard');
 
-    return NextResponse.redirect(redirectTo);
+    return NextResponse.redirect(redirect);
   } catch (error) {
-    console.error('Error al intercambiar token:', error);
-    return NextResponse.json({ error: 'Error en callback' }, { status: 500 });
+    console.error('❌ Error en callback:', error);
+    return NextResponse.json({ error: 'Error interno' }, { status: 500 });
   }
 }
