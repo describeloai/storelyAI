@@ -1,5 +1,3 @@
-// @ts-ignore
-import { registerShopifyWebhooks } from '@/lib/shopify/registerShopifyWebhooks';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import axios from 'axios';
@@ -10,16 +8,12 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get('code');
   const host = searchParams.get('host');
 
-  console.log('🧭 CALLBACK PARAMS:', { shop, code, host });
-
   if (!shop || !code || !host) {
-    console.error('❌ Faltan parámetros en el callback', { shop, code, host });
-    return NextResponse.json({ error: 'Faltan parámetros en la URL' }, { status: 400 });
+    return NextResponse.json({ error: 'Faltan parámetros' }, { status: 400 });
   }
 
   try {
-    // Intercambiar el código por un access token
-    const tokenResponse = await axios.post(
+    const tokenRes = await axios.post(
       `https://${shop}/admin/oauth/access_token`,
       {
         client_id: process.env.SHOPIFY_API_KEY,
@@ -29,47 +23,28 @@ export async function GET(req: NextRequest) {
       { headers: { 'Content-Type': 'application/json' } }
     );
 
-    const accessToken = tokenResponse.data.access_token;
-    console.log('🔐 Access token obtenido:', accessToken);
-
-    // Obtener el userId del usuario actual (Clerk)
-    // @ts-ignore
+    const accessToken = tokenRes.data.access_token;
+//@ts-ignore
     const { userId } = auth();
-
-    if (userId) {
-      // Guardar datos en Clerk
-      // @ts-ignore
-      await clerkClient.users.updateUserMetadata(userId, {
-        privateMetadata: {
-          shop,
-          accessToken,
-        },
-      });
-
-      // Registrar webhooks
-      await registerShopifyWebhooks(shop, accessToken);
-    } else {
-      console.warn('⚠️ Usuario no autenticado todavía. Clerk se gestionará en el client.');
+    if (!userId) {
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/sign-in`);
     }
+//@ts-ignore
+    await clerkClient.users.updateUserMetadata(userId, {
+      privateMetadata: {
+        shop,
+        accessToken,
+      },
+    });
 
-    // Redirigir al flujo embebido con contexto
-    const base = process.env.NEXT_PUBLIC_BASE_URL;
+    const redirectTo = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
+    redirectTo.searchParams.set('shop', shop);
+    redirectTo.searchParams.set('host', host);
+    redirectTo.searchParams.set('embedded', '1');
 
-    if (!base) {
-      console.error('❌ Faltante: NEXT_PUBLIC_BASE_URL no definido');
-      return NextResponse.json({ error: 'Configuración incompleta del entorno' }, { status: 500 });
-    }
-
-    const safeRedirectUrl = new URL('/redirect-entry', base);
-    safeRedirectUrl.searchParams.set('shop', shop);
-    safeRedirectUrl.searchParams.set('host', host);
-    safeRedirectUrl.searchParams.set('redirectTo', '/dashboard');
-
-    console.log('🚀 Redirigiendo al dashboard embebido vía /redirect-entry:', safeRedirectUrl.toString());
-
-    return NextResponse.redirect(safeRedirectUrl);
+    return NextResponse.redirect(redirectTo);
   } catch (error) {
-    console.error('❌ Error en Shopify callback:', error);
+    console.error('Error al intercambiar token:', error);
     return NextResponse.json({ error: 'Error en callback' }, { status: 500 });
   }
 }
