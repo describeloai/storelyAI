@@ -1,0 +1,93 @@
+:root {
+  --blue: #1DA1F2;
+  --lavender: #9B59B6;
+  --green: #388e3c;
+  --purple: #7e57c2;
+  --orange: #f57c00;
+  --gray: #888;
+}
+.titleCromado {
+  font-size: 3.2rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.2;
+  background-image: linear-gradient(120deg, #6BA3E8, #3A4F6A, #9CA3AF);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 2rem 3rem;
+}
+
+.card {
+  border-radius: 1.5rem;
+  color: white;
+  padding: 1.5rem;
+  text-align: center;
+  height: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.04);
+  mix-blend-mode: overlay;
+  z-index: 0;
+}
+
+.card * {
+  position: relative;
+  z-index: 1;
+}
+
+.image {
+  height: 100px;
+  object-fit: contain;
+  margin-top: 1rem;
+}
+
+/* Colores originales con más cuerpo */
+.blue {
+  background: linear-gradient(135deg, #1976d2, #21cbf3);
+}
+
+.lavender {
+  background: linear-gradient(135deg, #9c27b0, #e1bee7);
+}
+
+.orange {
+  background: linear-gradient(135deg, #f57c00, #ffb300);
+}
+
+.yellow {
+  background: linear-gradient(135deg, #fff176, #fbc02d);
+  color: #333;
+}
+
+.green {
+  background: linear-gradient(135deg, #388e3c, #81c784);
+}
+
+.purple {
+  background: linear-gradient(135deg, #7e57c2, #ba68c8);
+}

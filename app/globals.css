@@ -55,10 +55,17 @@ input, textarea, select {
   background: #999;
 }
 
-/* === Root variables (puedes ampliarlas) === */
+/* === Root variables === */
 :root {
   --primary: #6f3ff5;
   --background: #ffffff;
   --foreground: #111111;
   --radius: 12px;
+
+  /* === Colores dinámicos del sidebar === */
+  --blue: #2196f3;
+  --lavender: #b388ff;
+  --green: #4caf50;
+  --purple: #7e57c2;
+  --gray: #9ca3af;
 }
