@@ -1,93 +1,99 @@
-:root {
-  --blue: #1DA1F2;
-  --lavender: #9B59B6;
-  --green: #388e3c;
-  --purple: #7e57c2;
-  --orange: #f57c00;
-  --gray: #888;
+.wrapper {
+  padding: 4rem 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
 }
-.titleCromado {
-  font-size: 3.2rem;
+
+.heroTitle {
+  font-size: 2.7rem;
   font-weight: 800;
   letter-spacing: -1px;
   line-height: 1.2;
-  background-image: linear-gradient(120deg, #6BA3E8, #3A4F6A, #9CA3AF);
+  background: linear-gradient(to right, #0a2540, #b0b7c3);
   background-clip: text;
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   color: transparent;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 3rem;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  padding: 2rem 3rem;
 }
 
 .card {
   border-radius: 1.5rem;
-  color: white;
   padding: 1.5rem;
-  text-align: center;
-  height: 380px;
+  color: white;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
-  transition: transform 0.2s;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
+  height: 330px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
 }
+
 
 .card:hover {
-  transform: scale(1.03);
+  transform: translateY(-6px);
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.04);
-  mix-blend-mode: overlay;
-  z-index: 0;
+.cardHeader h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
 }
 
-.card * {
-  position: relative;
-  z-index: 1;
+.cardHeader p {
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+  opacity: 0.85;
 }
 
-.image {
-  height: 100px;
-  object-fit: contain;
-  margin-top: 1rem;
+.cardImage {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Colores originales con más cuerpo */
-.blue {
-  background: linear-gradient(135deg, #1976d2, #21cbf3);
+.imagePlaceholder {
+  width: 100%;
+  height: 140px;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.lavender {
-  background: linear-gradient(135deg, #9c27b0, #e1bee7);
-}
-
+/* Colores */
 .orange {
-  background: linear-gradient(135deg, #f57c00, #ffb300);
-}
-
-.yellow {
-  background: linear-gradient(135deg, #fff176, #fbc02d);
-  color: #333;
+  background: linear-gradient(135deg, #ff8a00, #ffb347);
 }
 
 .green {
-  background: linear-gradient(135deg, #388e3c, #81c784);
+  background: linear-gradient(135deg, #21db5f, #e6d92c);
+}
+
+.blue {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+}
+
+.yellow {
+  background: linear-gradient(135deg, #fbd786, #ecf009);
+  color: #333;
+}
+
+.lavender {
+  background: linear-gradient(135deg, #41058f, #6b0380);
 }
 
 .purple {
-  background: linear-gradient(135deg, #7e57c2, #ba68c8);
+  background: linear-gradient(135deg, #7f00ff, #e100ff);
 }

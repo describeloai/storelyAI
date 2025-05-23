@@ -1,73 +1,32 @@
 'use client';
 
-import Link from 'next/link';
 import styles from '@/components/dashboard/dashboard.module.css';
 
-const modules = [
-  {
-    name: 'Catálogo y SEO',
-    description: 'Optimiza productos',
-    color: 'blue',
-    path: '/dashboard/products',
-    image: '/images/modules/catalogo.png',
-  },
-  {
-    name: 'Marketing',
-    description: 'Crea campañas',
-    color: 'lavender',
-    path: '/dashboard/marketing',
-    image: '/images/modules/marketing.png',
-  },
-  {
-    name: 'Ventas',
-    description: 'Convierte más',
-    color: 'orange',
-    path: '/dashboard/sales',
-    image: '/images/modules/ventas.png',
-  },
-  {
-    name: 'Soporte',
-    description: 'Responde a clientes',
-    color: 'yellow',
-    path: '/dashboard/support',
-    image: '/images/modules/soporte.png',
-  },
-  {
-    name: 'Analítica',
-    description: 'Datos útiles',
-    color: 'green',
-    path: '/dashboard/analytics',
-    image: '/images/modules/analytics.png',
-  },
-  {
-    name: 'Operaciones',
-    description: 'Administra tu tienda',
-    color: 'purple',
-    path: '/dashboard/operations',
-    image: '/images/modules/operaciones.png',
-  },
+const cards = [
+  { name: 'Nova', role: 'AI Marketer', color: 'orange' },
+  { name: 'Zeno', role: 'Data Analyst', color: 'green' },
+  { name: 'Astra', role: 'SEO Assistant', color: 'blue' },
+  { name: 'Lumi', role: 'Customer Support', color: 'yellow' },
+  { name: 'Iris', role: 'Copywriter', color: 'lavender' },
+  { name: 'Nyra', role: 'Ops Manager', color: 'purple' },
 ];
 
 export default function DashboardHome() {
   return (
-    <div style={{ padding: '2rem 3rem' }}>
-      <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
-        <h1 className={styles.titleCromado}>Everything in one place</h1>
-      </div>
+    <div className={styles.wrapper}>
+      <h1 className={styles.heroTitle}>Everything in one place.</h1>
 
       <div className={styles.grid}>
-        {modules.map((mod) => (
-          <Link
-            href={mod.path}
-            key={mod.name}
-            className={`${styles.card} ${styles[mod.color]}`}
-          >
-            <div>
-              <h2 style={{ marginBottom: '0.25rem' }}>{mod.name}</h2>
-              <p style={{ fontSize: '0.9rem' }}>{mod.description}</p>
+        {cards.map((card) => (
+          <div key={card.name} className={`${styles.card} ${styles[card.color]}`}>
+            <div className={styles.cardHeader}>
+              <h3>{card.name}</h3>
+              <p>{card.role}</p>
             </div>
-            <img src={mod.image} alt={mod.name} className={styles.image} />
-          </Link>
+            <div className={styles.cardImage}>
+              <div className={styles.imagePlaceholder}>[ image ]</div>
+            </div>
+          </div>
         ))}
       </div>
     </div>

@@ -3,13 +3,11 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Home, BarChart2, Zap, BookOpen, Settings, Plug } from 'lucide-react';
+import { Home, Brain, Settings, Plug } from 'lucide-react';
 
 const navItems = [
   { icon: <Home size={20} />, path: '/dashboard', color: 'blue' },
-  { icon: <Zap size={20} />, path: '/dashboard/marketing', color: 'lavender' },
-  { icon: <BarChart2 size={20} />, path: '/dashboard/analytics', color: 'green' },
-  { icon: <BookOpen size={20} />, path: '/dashboard/operations', color: 'purple' },
+  { icon: <Brain size={20} />, path: '/dashboard/ia', color: 'pink' },
   { icon: <Plug size={20} />, path: '/dashboard/integraciones', color: 'orange' },
 ];
 
@@ -19,6 +17,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const [activeColor, setActiveColor] = useState('gray');
   const [sColor, setSColor] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const interval = setInterval(() => {
+      setSColor((prev) => (prev + 1) % colorCycle.length);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const current = navItems.find((item) => {
@@ -29,16 +36,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setActiveColor(current?.color || 'gray');
   }, [pathname]);
 
+  // ✅ Bloqueo de scroll solo en dashboard
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSColor((prev) => (prev + 1) % colorCycle.length);
-    }, 1000);
-    return () => clearInterval(interval);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
   }, []);
 
   return (
-    <>
-      {/* Sidebar fijo */}
+    <div style={{ display: 'flex', minHeight: '100vh', overflowX: 'hidden' }}>
+      {/* Sidebar */}
       <aside
         style={{
           width: '80px',
@@ -56,20 +65,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           zIndex: 50,
         }}
       >
-        {/* Logo animado S */}
         <div
           style={{
-            fontWeight: 'bold',
-            fontSize: '2rem',
-            color: colorCycle[sColor],
+            fontWeight: 900,
+            fontSize: '2.5rem',
+            fontFamily: 'Segoe UI, Inter, sans-serif',
+            background: 'linear-gradient(135deg, #6b5b95, #f06292)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textShadow: '0 1px 3px rgba(0,0,0,0.2)',
             marginBottom: '2rem',
-            transition: 'color 0.5s ease-in-out',
+            transition: 'all 0.5s ease-in-out',
           }}
         >
           S
         </div>
 
-        {/* Íconos del sidebar */}
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           {navItems.map((item) => {
             const isActive =
@@ -77,13 +88,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 ? pathname === '/dashboard'
                 : pathname.startsWith(item.path);
 
+            const iconColor =
+              item.path === '/dashboard/ia' && (isActive || pathname === '/dashboard/ia')
+                ? '#FF6EC7'
+                : isActive
+                ? `var(--${item.color})`
+                : '#888';
+
             return (
               <Link
                 key={item.path}
                 href={item.path}
                 style={{
-                  color: isActive ? `var(--${item.color})` : '#888',
-                  transition: 'color 0.2s ease-in-out',
+                  color: iconColor,
+                  transition: 'color 0.3s ease',
                 }}
               >
                 {item.icon}
@@ -92,7 +110,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        {/* Icono de Configuración más arriba */}
         <div style={{ marginBottom: '4rem' }}>
           <Link
             href="/dashboard/settings"
@@ -106,8 +123,47 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      {/* Contenido principal */}
-      <main style={{ marginLeft: '80px', padding: '2rem', width: '100%' }}>{children}</main>
-    </>
+      <main
+        style={{
+          marginLeft: '80px',
+          flex: 1,
+          padding: '2rem',
+          minHeight: '100vh',
+          position: 'relative',
+          overflowX: 'hidden',
+          backgroundColor: '#f1f3f5',
+          borderTopLeftRadius: '1rem',
+          borderTopRightRadius: '1rem',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '220px',
+            background: 'linear-gradient(to bottom, #2C3E50, #E0E0E0 70%, #ffffff 100%)',
+            opacity: 0.2,
+            zIndex: 0,
+            pointerEvents: 'none',
+            borderTopLeftRadius: '1rem',
+            borderTopRightRadius: '1rem',
+          }}
+        />
+
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            maxWidth: '1280px',
+            margin: '0 auto',
+            width: '100%',
+          }}
+        >
+          {children}
+        </div>
+      </main>
+    </div>
   );
 }
