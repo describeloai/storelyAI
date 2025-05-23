@@ -1,14 +1,15 @@
 'use client';
 
+import Link from 'next/link';
 import styles from '@/components/dashboard/dashboard.module.css';
 
 const cards = [
-  { name: 'Nova', role: 'AI Marketer', color: 'orange' },
-  { name: 'Zeno', role: 'Data Analyst', color: 'green' },
-  { name: 'Astra', role: 'SEO Assistant', color: 'blue' },
-  { name: 'Lumi', role: 'Customer Support', color: 'yellow' },
-  { name: 'Iris', role: 'Copywriter', color: 'lavender' },
-  { name: 'Nyra', role: 'Ops Manager', color: 'purple' },
+  { name: 'sofia', label: 'Sofía', role: 'AI Marketer', color: 'orange' },
+  { name: 'echo', label: 'Echo', role: 'Data Analyst', color: 'green' },
+  { name: 'ciro', label: 'Ciro', role: 'SEO Assistant', color: 'blue' },
+  { name: 'tariq', label: 'Tariq', role: 'Customer Support', color: 'yellow' },
+  { name: 'mara', label: 'Mara', role: 'Copywriter', color: 'lavender' },
+  { name: 'thalia', label: 'Thalia', role: 'Ops Manager', color: 'purple' },
 ];
 
 export default function DashboardHome() {
@@ -18,15 +19,17 @@ export default function DashboardHome() {
 
       <div className={styles.grid}>
         {cards.map((card) => (
-          <div key={card.name} className={`${styles.card} ${styles[card.color]}`}>
-            <div className={styles.cardHeader}>
-              <h3>{card.name}</h3>
-              <p>{card.role}</p>
+          <Link key={card.name} href={`/dashboard/${card.name}`}>
+            <div className={`${styles.card} ${styles[card.color]}`}>
+              <div className={styles.cardHeader}>
+                <h3>{card.label}</h3>
+                <p>{card.role}</p>
+              </div>
+              <div className={styles.cardImage}>
+                <div className={styles.imagePlaceholder}>[ image ]</div>
+              </div>
             </div>
-            <div className={styles.cardImage}>
-              <div className={styles.imagePlaceholder}>[ image ]</div>
-            </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
