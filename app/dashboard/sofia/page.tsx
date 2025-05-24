@@ -14,7 +14,7 @@ export default function SofiaPage() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +30,7 @@ export default function SofiaPage() {
       const res = await fetch('/api/sofia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: value, userId: 'demo-user' }) // luego usarás Clerk
+        body: JSON.stringify({ prompt: value, userId: 'demo-user' })
       });
 
       const data = await res.json();
@@ -141,9 +141,10 @@ export default function SofiaPage() {
               <button
                 key={idx}
                 onClick={() => {
-                  setMessages(prev => [...prev, { from: 'user', text: suggestion }]);
-                  handleSubmit({ preventDefault: () => {} } as React.FormEvent);
-                  if (inputRef.current) inputRef.current.value = suggestion;
+                  if (inputRef.current) {
+                    inputRef.current.value = suggestion;
+                    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+                  }
                 }}
                 style={{
                   backgroundColor: '#fff',
@@ -160,7 +161,7 @@ export default function SofiaPage() {
           </div>
         </div>
 
-        {/* MENSAJES CON SCROLL */}
+        {/* MENSAJES */}
         <div
           ref={scrollRef}
           style={{
@@ -186,6 +187,49 @@ export default function SofiaPage() {
               {msg.text}
             </div>
           ))}
+
+          {/* BURBUJA DE "escribiendo..." */}
+          {loading && (
+            <div style={{
+              alignSelf: 'flex-start',
+              background: '#fff',
+              color: '#333',
+              padding: '0.75rem 1rem',
+              borderRadius: '1rem',
+              maxWidth: '50%',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+              display: 'flex',
+              gap: '0.3rem',
+            }}>
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.2s',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.4s',
+              }} />
+              <style>
+                {`@keyframes bounce {
+                  0% { transform: translateY(0); }
+                  100% { transform: translateY(-5px); }
+                }`}
+              </style>
+            </div>
+          )}
         </div>
 
         {/* INPUT */}
