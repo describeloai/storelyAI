@@ -7,24 +7,43 @@ export default function SofiaPage() {
   const [messages, setMessages] = useState([
     { from: 'sofia', text: 'Hi! I’m Sofía, your AI marketing assistant. Ready to boost your store’s visibility and sales?' },
   ]);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const primaryColor = '#FB923C'; // Naranja
+  const primaryColor = '#FB923C';
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const value = inputRef.current?.value.trim();
     if (!value) return;
-    setMessages(prev => [
-      ...prev,
-      { from: 'user', text: value },
-      { from: 'sofia', text: 'Let me craft something special...' }
-    ]);
+
+    const userMessage = { from: 'user', text: value };
+    setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/sofia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: value, userId: 'demo-user' }) // luego usarás Clerk
+      });
+
+      const data = await res.json();
+      if (data.output) {
+        setMessages(prev => [...prev, { from: 'sofia', text: data.output }]);
+      } else {
+        setMessages(prev => [...prev, { from: 'sofia', text: 'Ups, no pude procesarlo.' }]);
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, { from: 'sofia', text: 'Error al contactar con la IA.' }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -123,6 +142,8 @@ export default function SofiaPage() {
                 key={idx}
                 onClick={() => {
                   setMessages(prev => [...prev, { from: 'user', text: suggestion }]);
+                  handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+                  if (inputRef.current) inputRef.current.value = suggestion;
                 }}
                 style={{
                   backgroundColor: '#fff',
@@ -183,6 +204,7 @@ export default function SofiaPage() {
             ref={inputRef}
             name="msg"
             placeholder="Type your question..."
+            disabled={loading}
             style={{
               flex: 1,
               padding: '1rem 1.25rem',
@@ -194,6 +216,7 @@ export default function SofiaPage() {
           />
           <button
             type="submit"
+            disabled={loading}
             style={{
               backgroundColor: primaryColor,
               color: '#fff',
@@ -203,7 +226,7 @@ export default function SofiaPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer'
+              cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
             <Send size={20} />
