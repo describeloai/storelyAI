@@ -1,20 +1,15 @@
 'use client';
 
-import { useState } from 'react';
 import { Send } from 'lucide-react';
+import BrainAssistant from '@/components/dashboard/BrainAssistant';
 
 export default function EchoPage() {
-  const [messages, setMessages] = useState([
-    { from: 'echo', text: 'Hey! I’m Echo, your data analyst. Share your store data or ask me for insights anytime.' },
-  ]);
-
-  const primaryColor = '#22C55E'; // Verde vivo (tailwind green-500)
+  const primaryColor = '#22C55E'; // Verde vivo
 
   return (
     <div style={{
       display: 'flex',
-      height: '100%',
-      minHeight: '100vh',
+      height: '100vh',
       background: '#fff',
       borderRadius: '1rem',
       overflow: 'hidden',
@@ -83,8 +78,9 @@ export default function EchoPage() {
         flexDirection: 'column',
         padding: '2rem',
         background: '#f0fdf4',
+        overflow: 'hidden',
       }}>
-        <div>
+        <div style={{ flexShrink: 0 }}>
           <h1 style={{
             fontSize: '2.2rem',
             fontWeight: 800,
@@ -105,7 +101,8 @@ export default function EchoPage() {
               <button
                 key={idx}
                 onClick={() => {
-                  setMessages(prev => [...prev, { from: 'user', text: suggestion }]);
+                  const input = document.querySelector<HTMLInputElement>('input[name="brain-input"]');
+                  if (input) input.value = suggestion;
                 }}
                 style={{
                   backgroundColor: '#fff',
@@ -122,76 +119,14 @@ export default function EchoPage() {
           </div>
         </div>
 
+        {/* CHAT IA MODULAR */}
         <div style={{
           flex: 1,
+          overflow: 'hidden',
           marginTop: '2rem',
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-          paddingBottom: '2rem'
         }}>
-          {messages.map((msg, i) => (
-            <div key={i} style={{
-              alignSelf: msg.from === 'user' ? 'flex-end' : 'flex-start',
-              background: msg.from === 'user' ? primaryColor : '#fff',
-              color: msg.from === 'user' ? '#fff' : '#333',
-              padding: '0.75rem 1rem',
-              borderRadius: '1rem',
-              maxWidth: '70%',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
-            }}>
-              {msg.text}
-            </div>
-          ))}
+          <BrainAssistant role="echo" />
         </div>
-
-        {/* Input */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const input = e.currentTarget.msg as HTMLInputElement;
-            const value = input.value.trim();
-            if (!value) return;
-            setMessages(prev => [...prev, { from: 'user', text: value }, { from: 'echo', text: 'Processing your data...' }]);
-            input.value = '';
-          }}
-          style={{
-            display: 'flex',
-            gap: '1rem',
-            marginTop: 'auto',
-            padding: '1rem 0',
-            alignItems: 'center',
-          }}
-        >
-          <input
-            name="msg"
-            placeholder="Type your question..."
-            style={{
-              flex: 1,
-              padding: '1rem 1.25rem',
-              borderRadius: '1rem',
-              border: '1px solid #ddd',
-              fontSize: '1rem',
-            }}
-          />
-          <button
-            type="submit"
-            style={{
-              backgroundColor: primaryColor,
-              color: '#fff',
-              border: 'none',
-              padding: '0.75rem',
-              borderRadius: '9999px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer'
-            }}
-          >
-            <Send size={20} />
-          </button>
-        </form>
       </section>
     </div>
   );
