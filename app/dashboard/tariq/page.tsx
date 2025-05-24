@@ -1,20 +1,36 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
 
 export default function TariqPage() {
   const [messages, setMessages] = useState([
     { from: 'tariq', text: 'Hello! I’m Tariq. Ask me anything related to customer support or user experience.' },
   ]);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const primaryColor = '#FFD600'; // Amarillo brillante
 
-  const primaryColor = '#FFD600'; // Amarillo brillante (como referencia a la card)
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+  }, [messages]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = inputRef.current?.value.trim();
+    if (!value) return;
+    setMessages(prev => [
+      ...prev,
+      { from: 'user', text: value },
+      { from: 'tariq', text: 'Let me look into that for you...' }
+    ]);
+    if (inputRef.current) inputRef.current.value = '';
+  };
 
   return (
     <div style={{
       display: 'flex',
-      height: '100%',
-      minHeight: '100vh',
+      height: '100vh',
       background: '#fff',
       borderRadius: '1rem',
       overflow: 'hidden',
@@ -83,8 +99,9 @@ export default function TariqPage() {
         flexDirection: 'column',
         padding: '2rem',
         background: '#fffdf2',
+        overflow: 'hidden',
       }}>
-        <div>
+        <div style={{ flexShrink: 0 }}>
           <h1 style={{
             fontSize: '2.2rem',
             fontWeight: 800,
@@ -122,15 +139,19 @@ export default function TariqPage() {
           </div>
         </div>
 
-        <div style={{
-          flex: 1,
-          marginTop: '2rem',
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-          paddingBottom: '2rem'
-        }}>
+        {/* MENSAJES CON SCROLL */}
+        <div
+          ref={scrollRef}
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            marginTop: '2rem',
+            paddingRight: '0.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+          }}
+        >
           {messages.map((msg, i) => (
             <div key={i} style={{
               alignSelf: msg.from === 'user' ? 'flex-end' : 'flex-start',
@@ -146,33 +167,29 @@ export default function TariqPage() {
           ))}
         </div>
 
-        {/* Input */}
+        {/* INPUT */}
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const input = e.currentTarget.msg as HTMLInputElement;
-            const value = input.value.trim();
-            if (!value) return;
-            setMessages(prev => [...prev, { from: 'user', text: value }, { from: 'tariq', text: 'Let me look into that for you...' }]);
-            input.value = '';
-          }}
+          onSubmit={handleSubmit}
           style={{
+            padding: '1rem 0 1.25rem',
             display: 'flex',
             gap: '1rem',
-            marginTop: 'auto',
-            padding: '1rem 0',
             alignItems: 'center',
+            backgroundColor: '#fffdf2',
+            borderTop: '1px solid #e4e4e4',
           }}
         >
           <input
+            ref={inputRef}
             name="msg"
             placeholder="Type your question..."
             style={{
               flex: 1,
               padding: '1rem 1.25rem',
               borderRadius: '1rem',
-              border: '1px solid #ddd',
+              border: '1px solid #ccc',
               fontSize: '1rem',
+              backgroundColor: '#fff',
             }}
           />
           <button
@@ -186,7 +203,7 @@ export default function TariqPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             <Send size={20} />
