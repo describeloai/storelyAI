@@ -1,7 +1,15 @@
 import type { AiIntent } from '@/lib/ai/types';
 
 // Handler de intención para Mara, especialista en growth, conversión y estrategia
-export function detectMaraIntent(prompt: string): AiIntent {
+export function detectMaraIntent(prompt: string, fromUser: boolean): AiIntent {
+  // ✅ Protección: si el mensaje no es del usuario, no activar GPT-4
+  if (!fromUser) {
+    return {
+      tool: 'growth-analysis',
+      model: 'gpt-3.5-turbo',
+    };
+  }
+
   const lower = prompt.toLowerCase();
 
   // Auditoría de tienda o revisión general
@@ -79,6 +87,6 @@ export function detectMaraIntent(prompt: string): AiIntent {
   // Fallback: análisis general de negocio y crecimiento
   return {
     tool: 'growth-analysis',
-    model: 'gpt-4',
+    model: 'gpt-3.5-turbo', // ⬅️ Fallback más barato si es genérico
   };
 }

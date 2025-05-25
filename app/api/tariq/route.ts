@@ -9,7 +9,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
   }
 
-  const intent = detectTariqIntent(prompt); // Detecta herramienta y modelo
+  // ✅ Detectar intención solo desde el mensaje del usuario
+  const intent = detectTariqIntent(prompt, true);
 
   try {
     const output = await askTariq(prompt, intent, history);

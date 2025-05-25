@@ -1,7 +1,15 @@
 import type { AiIntent } from '@/lib/ai/types';
 
 // Handler de intención para Echo, especialista en atención al cliente y respuestas automáticas
-export function detectEchoIntent(prompt: string): AiIntent {
+export function detectEchoIntent(prompt: string, fromUser: boolean): AiIntent {
+  // ✅ Si el mensaje no es del usuario, usar fallback más barato
+  if (!fromUser) {
+    return {
+      tool: 'auto-response-general',
+      model: 'gpt-3.5-turbo',
+    };
+  }
+
   const lower = prompt.toLowerCase();
 
   // Reseñas, opiniones, FAQs, Q&A
@@ -76,6 +84,6 @@ export function detectEchoIntent(prompt: string): AiIntent {
   // Fallback: chat automático general
   return {
     tool: 'auto-response-general',
-    model: 'gpt-4',
+    model: 'gpt-3.5-turbo', // Fallback económico
   };
 }

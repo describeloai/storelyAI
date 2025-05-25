@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
   }
 
-  const intent = detectCiroIntent(prompt); // 👈 Esto se evalúa en CADA mensaje, como debe ser
+  const intent = detectCiroIntent(prompt, true); // 👈 Esto se evalúa en CADA mensaje, como debe ser
 
   try {
     const output = await askCiro(prompt, intent, history);

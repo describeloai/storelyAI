@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
   }
 
-  const intent = detectSofiaIntent(prompt);
+  const intent = detectSofiaIntent(prompt, true);
 
   try {
     const output = await askSofia(prompt, intent, history);

@@ -1,7 +1,15 @@
 import type { AiIntent } from '@/lib/ai/types';
 
 // Handler de intención para Tariq, especialista en contenido, anuncios y campañas
-export function detectTariqIntent(prompt: string): AiIntent {
+export function detectTariqIntent(prompt: string, fromUser: boolean): AiIntent {
+  // Si el mensaje no proviene del usuario, usar el modelo por defecto más económico
+  if (!fromUser) {
+    return {
+      tool: 'content-creator',
+      model: 'gpt-3.5-turbo',
+    };
+  }
+
   const lower = prompt.toLowerCase();
 
   // Publicaciones para redes sociales
@@ -98,6 +106,6 @@ export function detectTariqIntent(prompt: string): AiIntent {
   // Fallback
   return {
     tool: 'content-creator',
-    model: 'gpt-4',
+    model: 'gpt-3.5-turbo',
   };
 }

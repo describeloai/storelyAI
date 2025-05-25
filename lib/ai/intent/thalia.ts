@@ -1,7 +1,15 @@
 import type { AiIntent } from '@/lib/ai/types';
 
 // Handler de intención para Thalia, especialista en diseño de fichas, landings y visual
-export function detectThaliaIntent(prompt: string): AiIntent {
+export function detectThaliaIntent(prompt: string, fromUser: boolean): AiIntent {
+  // ✅ No activar GPT-4 si el mensaje no viene del usuario
+  if (!fromUser) {
+    return {
+      tool: 'web-design-advisor',
+      model: 'gpt-3.5-turbo',
+    };
+  }
+
   const lower = prompt.toLowerCase();
 
   // Generación o mejora de fichas de producto
@@ -77,6 +85,6 @@ export function detectThaliaIntent(prompt: string): AiIntent {
   // Fallback: sugerencias de diseño web general
   return {
     tool: 'web-design-advisor',
-    model: 'gpt-4',
+    model: 'gpt-3.5-turbo', // fallback seguro
   };
 }

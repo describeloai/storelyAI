@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
   }
 
-  const intent = detectEchoIntent(prompt);
+  const intent = detectEchoIntent(prompt, true);
 
   try {
     const output = await askEcho(prompt, intent, history);

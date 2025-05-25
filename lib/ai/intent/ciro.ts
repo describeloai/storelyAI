@@ -1,7 +1,15 @@
 import type { AiIntent } from '@/lib/ai/types';
 
 // Handler de intención para Ciro, especialista en datos, análisis y predicciones
-export function detectCiroIntent(prompt: string): AiIntent {
+export function detectCiroIntent(prompt: string, fromUser: boolean): AiIntent {
+  // ✅ Si el mensaje no es del usuario, evitar activar GPT-4
+  if (!fromUser) {
+    return {
+      tool: 'data-helper',
+      model: 'gpt-3.5-turbo',
+    };
+  }
+
   const lower = prompt.toLowerCase();
 
   // Análisis complejo, predicciones, atribución, campañas → GPT-4
@@ -15,7 +23,7 @@ export function detectCiroIntent(prompt: string): AiIntent {
     lower.includes('track') ||
     lower.includes('análisis de campañas') ||
     lower.includes('campaign analysis') ||
-    lower.includes('atribución') || // atribución / attribution
+    lower.includes('atribución') ||
     lower.includes('attribution') ||
     lower.includes('márgenes') ||
     lower.includes('margins') ||
@@ -30,7 +38,7 @@ export function detectCiroIntent(prompt: string): AiIntent {
     };
   }
 
-  // Por defecto: análisis o ayuda de datos básica → GPT-3.5
+  // Fallback: ayuda básica de datos → GPT-3.5
   return {
     tool: 'data-helper',
     model: 'gpt-3.5-turbo',

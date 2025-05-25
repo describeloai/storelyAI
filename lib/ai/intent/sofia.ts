@@ -1,6 +1,14 @@
 import type { AiIntent } from '@/lib/ai/types';
 
-export function detectSofiaIntent(prompt: string): AiIntent {
+export function detectSofiaIntent(prompt: string, fromUser: boolean): AiIntent {
+  // ✅ Si no es del usuario, usar fallback seguro con GPT-3.5
+  if (!fromUser) {
+    return {
+      tool: 'text-generator',
+      model: 'gpt-3.5-turbo',
+    };
+  }
+
   const lower = prompt.toLowerCase();
 
   // Auditoría o análisis avanzado de ficha
@@ -123,7 +131,7 @@ export function detectSofiaIntent(prompt: string): AiIntent {
     };
   }
 
-  // Por defecto: GPT-3.5 para generación libre de texto
+  // Fallback
   return {
     tool: 'text-generator',
     model: 'gpt-3.5-turbo',

@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
   }
 
-  const intent = detectThaliaIntent(prompt); // Detecta herramienta y modelo
+  const intent = detectThaliaIntent(prompt, true); // Detecta herramienta y modelo
 
   try {
     const output = await askThalia(prompt, intent, history);
