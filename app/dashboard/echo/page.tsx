@@ -1,10 +1,50 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
-import BrainAssistant from '@/components/dashboard/BrainAssistant';
 
 export default function EchoPage() {
-  const primaryColor = '#22C55E'; // Verde vivo
+  const [messages, setMessages] = useState([
+    { from: 'echo', text: 'Hello! I’m Echo. I can help you analyze performance, answer questions, and support your customers.' },
+  ]);
+  const [loading, setLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const primaryColor = '#22C55E'; // Verde
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+  }, [messages, loading]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = inputRef.current?.value.trim();
+    if (!value) return;
+
+    const userMessage = { from: 'user', text: value };
+    setMessages(prev => [...prev, userMessage]);
+    if (inputRef.current) inputRef.current.value = '';
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/echo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: value, userId: 'demo-user' }),
+      });
+
+      const data = await res.json();
+      if (data.output) {
+        setMessages(prev => [...prev, { from: 'echo', text: data.output }]);
+      } else {
+        setMessages(prev => [...prev, { from: 'echo', text: 'Oops, I couldn’t process that.' }]);
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, { from: 'echo', text: 'Error contacting AI.' }]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div style={{
@@ -41,7 +81,7 @@ export default function EchoPage() {
           </div>
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>Echo</h2>
-          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>Data Analyst</p>
+          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>AI Support Analyst</p>
 
           <button style={{
             marginTop: '2rem',
@@ -89,20 +129,22 @@ export default function EchoPage() {
           }}>
             Hey, it's <span style={{ color: primaryColor }}>Echo</span> 👋
           </h1>
-          <p style={{ fontSize: '1.1rem', color: '#555' }}>Ready to analyze your data?</p>
+          <p style={{ fontSize: '1.1rem', color: '#555' }}>How can I support you today?</p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '1rem' }}>
             {[
-              'Analiza mis métricas de conversión',
-              'Detecta caídas de rendimiento',
-              'Resume los KPIs del mes',
-              'Sugiere mejoras basadas en los datos',
+              'Responde una queja de cliente',
+              'Genera una secuencia de emails de postventa',
+              'Traduce mensaje al inglés',
+              'Sugiere mejoras en soporte al cliente',
             ].map((suggestion, idx) => (
               <button
                 key={idx}
                 onClick={() => {
-                  const input = document.querySelector<HTMLInputElement>('input[name="brain-input"]');
-                  if (input) input.value = suggestion;
+                  if (inputRef.current) {
+                    inputRef.current.value = suggestion;
+                    handleSubmit({ preventDefault: () => { } } as React.FormEvent);
+                  }
                 }}
                 style={{
                   backgroundColor: '#fff',
@@ -119,14 +161,114 @@ export default function EchoPage() {
           </div>
         </div>
 
-        {/* CHAT IA MODULAR */}
-        <div style={{
+        {/* MENSAJES Y BURBUJA */}
+        <div ref={scrollRef} style={{
           flex: 1,
-          overflow: 'hidden',
+          overflowY: 'auto',
           marginTop: '2rem',
+          paddingRight: '0.5rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
         }}>
-          <BrainAssistant role="echo" />
+          {messages.map((msg, i) => (
+            <div key={i} style={{
+              alignSelf: msg.from === 'user' ? 'flex-end' : 'flex-start',
+              background: msg.from === 'user' ? primaryColor : '#fff',
+              color: msg.from === 'user' ? '#fff' : '#333',
+              padding: '0.75rem 1rem',
+              borderRadius: '1rem',
+              maxWidth: '70%',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
+            }}>
+              {msg.text}
+            </div>
+          ))}
+
+          {loading && (
+            <div style={{
+              alignSelf: 'flex-start',
+              background: '#fff',
+              color: '#333',
+              padding: '0.75rem 1rem',
+              borderRadius: '1rem',
+              maxWidth: '50%',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+              display: 'flex',
+              gap: '0.3rem',
+            }}>
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.2s',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.4s',
+              }} />
+              <style>
+                {`@keyframes bounce {
+                  0% { transform: translateY(0); }
+                  100% { transform: translateY(-5px); }
+                }`}
+              </style>
+            </div>
+          )}
         </div>
+
+        {/* INPUT */}
+        <form onSubmit={handleSubmit} style={{
+          padding: '1rem 0 1.25rem',
+          display: 'flex',
+          gap: '1rem',
+          alignItems: 'center',
+          backgroundColor: '#f0fdf4',
+          borderTop: '1px solid #e4e4e4',
+        }}>
+          <input
+            ref={inputRef}
+            name="msg"
+            placeholder="Type your question..."
+            disabled={loading}
+            style={{
+              flex: 1,
+              padding: '1rem 1.25rem',
+              borderRadius: '1rem',
+              border: '1px solid #ccc',
+              fontSize: '1rem',
+              backgroundColor: '#fff',
+            }}
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              backgroundColor: primaryColor,
+              color: '#fff',
+              border: 'none',
+              padding: '0.75rem',
+              borderRadius: '9999px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: loading ? 'not-allowed' : 'pointer'
+            }}
+          >
+            <Send size={20} />
+          </button>
+        </form>
       </section>
     </div>
   );

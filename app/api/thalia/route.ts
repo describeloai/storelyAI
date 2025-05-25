@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { askSofia } from '@/lib/ai/clients/askSofia';
-import { detectSofiaIntent } from '@/lib/ai/intent/sofia';
+import { askThalia } from '@/lib/ai/clients/askThalia';
+import { detectThaliaIntent } from '@/lib/ai/intent/thalia';
 
 export async function POST(req: NextRequest) {
   const { prompt, userId } = await req.json();
@@ -9,17 +9,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
   }
 
-  const intent = detectSofiaIntent(prompt); // Detecta herramienta y modelo
+  const intent = detectThaliaIntent(prompt); // Detecta herramienta y modelo
 
   try {
-    const output = await askSofia(prompt, intent);
+    const output = await askThalia(prompt, intent);
     return NextResponse.json({
       output,
       tool: intent.tool,
       model: intent.model,
     });
   } catch (err) {
-    console.error('Sofía API error:', err);
+    console.error('Thalia API error:', err);
     return NextResponse.json({ error: 'AI request failed' }, { status: 500 });
   }
 }

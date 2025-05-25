@@ -5,26 +5,45 @@ import { Send } from 'lucide-react';
 
 export default function MaraPage() {
   const [messages, setMessages] = useState([
-    { from: 'mara', text: 'Hey! I’m Mara, your creative copy assistant. Need help writing something? Just ask.' },
+    { from: 'mara', text: 'Hey! I’m Mara, your AI strategist. Need help with conversions, growth or product ideas?' },
   ]);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const primaryColor = '#7C3AED'; // Morado oscuro
+  const primaryColor = '#7C3AED';
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const value = inputRef.current?.value.trim();
     if (!value) return;
-    setMessages(prev => [
-      ...prev,
-      { from: 'user', text: value },
-      { from: 'mara', text: 'Here’s something that might work…' }
-    ]);
+
+    const userMessage = { from: 'user', text: value };
+    setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/mara', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: value, userId: 'demo-user' }),
+      });
+
+      const data = await res.json();
+      if (data.output) {
+        setMessages(prev => [...prev, { from: 'mara', text: data.output }]);
+      } else {
+        setMessages(prev => [...prev, { from: 'mara', text: 'Oops, I couldn’t process that.' }]);
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, { from: 'mara', text: 'Error contacting AI.' }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -62,7 +81,7 @@ export default function MaraPage() {
           </div>
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>Mara</h2>
-          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>Copywriter</p>
+          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>Growth Strategist</p>
 
           <button style={{
             marginTop: '2rem',
@@ -110,19 +129,22 @@ export default function MaraPage() {
           }}>
             Hey, it's <span style={{ color: primaryColor }}>Mara</span> 👋
           </h1>
-          <p style={{ fontSize: '1.1rem', color: '#555' }}>Need help writing great content?</p>
+          <p style={{ fontSize: '1.1rem', color: '#555' }}>Let’s grow your business together.</p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '1rem' }}>
             {[
-              'Escribe una descripción de producto',
-              'Haz un texto atractivo para portada',
-              'Corrige este párrafo con mejor estilo',
-              'Crea una historia de marca inspiradora',
+              'Audita mi tienda online',
+              'Sugiere mejoras de conversión',
+              'Recomiéndame un producto tendencia',
+              'Crea una estrategia de crecimiento',
             ].map((suggestion, idx) => (
               <button
                 key={idx}
                 onClick={() => {
-                  setMessages(prev => [...prev, { from: 'user', text: suggestion }]);
+                  if (inputRef.current) {
+                    inputRef.current.value = suggestion;
+                    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+                  }
                 }}
                 style={{
                   backgroundColor: '#fff',
@@ -139,7 +161,7 @@ export default function MaraPage() {
           </div>
         </div>
 
-        {/* MENSAJES CON SCROLL */}
+        {/* MENSAJES + BURBUJA */}
         <div
           ref={scrollRef}
           style={{
@@ -165,6 +187,48 @@ export default function MaraPage() {
               {msg.text}
             </div>
           ))}
+
+          {loading && (
+            <div style={{
+              alignSelf: 'flex-start',
+              background: '#fff',
+              color: '#333',
+              padding: '0.75rem 1rem',
+              borderRadius: '1rem',
+              maxWidth: '50%',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+              display: 'flex',
+              gap: '0.3rem',
+            }}>
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.2s',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.4s',
+              }} />
+              <style>
+                {`@keyframes bounce {
+                  0% { transform: translateY(0); }
+                  100% { transform: translateY(-5px); }
+                }`}
+              </style>
+            </div>
+          )}
         </div>
 
         {/* INPUT */}
@@ -183,6 +247,7 @@ export default function MaraPage() {
             ref={inputRef}
             name="msg"
             placeholder="Type your question..."
+            disabled={loading}
             style={{
               flex: 1,
               padding: '1rem 1.25rem',
@@ -194,6 +259,7 @@ export default function MaraPage() {
           />
           <button
             type="submit"
+            disabled={loading}
             style={{
               backgroundColor: primaryColor,
               color: '#fff',
@@ -203,7 +269,7 @@ export default function MaraPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer'
+              cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
             <Send size={20} />
@@ -213,3 +279,4 @@ export default function MaraPage() {
     </div>
   );
 }
+

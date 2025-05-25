@@ -5,26 +5,45 @@ import { Send } from 'lucide-react';
 
 export default function CiroPage() {
   const [messages, setMessages] = useState([
-    { from: 'ciro', text: 'Hi! I’m Ciro, your SEO assistant. Ask me anything about optimization, keywords, or site performance.' },
+    { from: 'ciro', text: 'Hi! I’m Ciro, your ecommerce strategy assistant. Ask me about pricing, margins, inventory or campaigns.' },
   ]);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const primaryColor = '#1E40AF'; // Azul oscuro
+  const primaryColor = '#1E40AF';
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const value = inputRef.current?.value.trim();
     if (!value) return;
-    setMessages(prev => [
-      ...prev,
-      { from: 'user', text: value },
-      { from: 'ciro', text: 'Let me check that for SEO insights...' }
-    ]);
+
+    const userMessage = { from: 'user', text: value };
+    setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/ciro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: value, userId: 'demo-user' }),
+      });
+
+      const data = await res.json();
+      if (data.output) {
+        setMessages(prev => [...prev, { from: 'ciro', text: data.output }]);
+      } else {
+        setMessages(prev => [...prev, { from: 'ciro', text: 'Oops, I couldn’t process that.' }]);
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, { from: 'ciro', text: 'Error contacting AI.' }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -62,7 +81,7 @@ export default function CiroPage() {
           </div>
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>Ciro</h2>
-          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>SEO Assistant</p>
+          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>Business Strategy</p>
 
           <button style={{
             marginTop: '2rem',
@@ -110,19 +129,22 @@ export default function CiroPage() {
           }}>
             Hey, it's <span style={{ color: primaryColor }}>Ciro</span> 👋
           </h1>
-          <p style={{ fontSize: '1.1rem', color: '#555' }}>How can I help improve your SEO?</p>
+          <p style={{ fontSize: '1.1rem', color: '#555' }}>Let’s optimize your pricing and strategy.</p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '1rem' }}>
             {[
-              'Haz una auditoría SEO rápida',
-              'Sugiere mejoras de velocidad web',
-              'Genera metadescripciones atractivas',
-              'Analiza mis palabras clave actuales',
+              'Revisa mis márgenes por producto',
+              'Sugiere una estrategia de precios dinámica',
+              'Predecir ventas del próximo mes',
+              'Analiza mis campañas de Meta Ads',
             ].map((suggestion, idx) => (
               <button
                 key={idx}
                 onClick={() => {
-                  setMessages(prev => [...prev, { from: 'user', text: suggestion }]);
+                  if (inputRef.current) {
+                    inputRef.current.value = suggestion;
+                    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+                  }
                 }}
                 style={{
                   backgroundColor: '#fff',
@@ -139,7 +161,7 @@ export default function CiroPage() {
           </div>
         </div>
 
-        {/* MENSAJES + SCROLL */}
+        {/* MENSAJES + BURBUJA CARGANDO */}
         <div ref={scrollRef} style={{
           flex: 1,
           overflowY: 'auto',
@@ -162,24 +184,64 @@ export default function CiroPage() {
               {msg.text}
             </div>
           ))}
+
+          {loading && (
+            <div style={{
+              alignSelf: 'flex-start',
+              background: '#fff',
+              color: '#333',
+              padding: '0.75rem 1rem',
+              borderRadius: '1rem',
+              maxWidth: '50%',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+              display: 'flex',
+              gap: '0.3rem',
+            }}>
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.2s',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.4s',
+              }} />
+              <style>
+                {`@keyframes bounce {
+                  0% { transform: translateY(0); }
+                  100% { transform: translateY(-5px); }
+                }`}
+              </style>
+            </div>
+          )}
         </div>
 
         {/* INPUT */}
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            padding: '1rem 0 1.25rem',
-            display: 'flex',
-            gap: '1rem',
-            alignItems: 'center',
-            backgroundColor: '#f0f6ff',
-            borderTop: '1px solid #e4e4e4',
-          }}
-        >
+        <form onSubmit={handleSubmit} style={{
+          padding: '1rem 0 1.25rem',
+          display: 'flex',
+          gap: '1rem',
+          alignItems: 'center',
+          backgroundColor: '#f0f6ff',
+          borderTop: '1px solid #e4e4e4',
+        }}>
           <input
             ref={inputRef}
             name="msg"
             placeholder="Type your question..."
+            disabled={loading}
             style={{
               flex: 1,
               padding: '1rem 1.25rem',
@@ -191,6 +253,7 @@ export default function CiroPage() {
           />
           <button
             type="submit"
+            disabled={loading}
             style={{
               backgroundColor: primaryColor,
               color: '#fff',
@@ -200,7 +263,7 @@ export default function CiroPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer',
+              cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
             <Send size={20} />

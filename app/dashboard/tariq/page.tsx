@@ -5,26 +5,45 @@ import { Send } from 'lucide-react';
 
 export default function TariqPage() {
   const [messages, setMessages] = useState([
-    { from: 'tariq', text: 'Hello! I’m Tariq. Ask me anything related to customer support or user experience.' },
+    { from: 'tariq', text: 'Hello! I’m Tariq. Ask me anything related to content, campaigns or ad copy.' },
   ]);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const primaryColor = '#FFD600'; // Amarillo brillante
+  const primaryColor = '#FFD600';
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const value = inputRef.current?.value.trim();
     if (!value) return;
-    setMessages(prev => [
-      ...prev,
-      { from: 'user', text: value },
-      { from: 'tariq', text: 'Let me look into that for you...' }
-    ]);
+
+    const userMessage = { from: 'user', text: value };
+    setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/tariq', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: value, userId: 'demo-user' }),
+      });
+
+      const data = await res.json();
+      if (data.output) {
+        setMessages(prev => [...prev, { from: 'tariq', text: data.output }]);
+      } else {
+        setMessages(prev => [...prev, { from: 'tariq', text: 'Oops, I couldn’t process that.' }]);
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, { from: 'tariq', text: 'Error contacting AI.' }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -62,7 +81,7 @@ export default function TariqPage() {
           </div>
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>Tariq</h2>
-          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>Customer Support</p>
+          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>Content & Campaigns</p>
 
           <button style={{
             marginTop: '2rem',
@@ -110,19 +129,22 @@ export default function TariqPage() {
           }}>
             Hey, it's <span style={{ color: primaryColor }}>Tariq</span> 👋
           </h1>
-          <p style={{ fontSize: '1.1rem', color: '#555' }}>How can I help with your customers?</p>
+          <p style={{ fontSize: '1.1rem', color: '#555' }}>Let’s create amazing content together.</p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '1rem' }}>
             {[
-              'Responde una queja de un cliente',
-              'Sugiere una respuesta para una devolución',
-              'Consejos para mejorar el soporte',
-              'Detecta patrones de tickets repetitivos',
+              'Escribe un anuncio para redes sociales',
+              'Genera un correo para carrito abandonado',
+              'Crea un título llamativo para un banner',
+              'Escribe un guion para video en TikTok',
             ].map((suggestion, idx) => (
               <button
                 key={idx}
                 onClick={() => {
-                  setMessages(prev => [...prev, { from: 'user', text: suggestion }]);
+                  if (inputRef.current) {
+                    inputRef.current.value = suggestion;
+                    handleSubmit({ preventDefault: () => { } } as React.FormEvent);
+                  }
                 }}
                 style={{
                   backgroundColor: '#fff',
@@ -139,7 +161,7 @@ export default function TariqPage() {
           </div>
         </div>
 
-        {/* MENSAJES CON SCROLL */}
+        {/* MENSAJES */}
         <div
           ref={scrollRef}
           style={{
@@ -165,6 +187,49 @@ export default function TariqPage() {
               {msg.text}
             </div>
           ))}
+
+          {/* BURBUJA DE CARGANDO */}
+          {loading && (
+            <div style={{
+              alignSelf: 'flex-start',
+              background: '#fff',
+              color: '#333',
+              padding: '0.75rem 1rem',
+              borderRadius: '1rem',
+              maxWidth: '50%',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+              display: 'flex',
+              gap: '0.3rem',
+            }}>
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.2s',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.4s',
+              }} />
+              <style>
+                {`@keyframes bounce {
+                  0% { transform: translateY(0); }
+                  100% { transform: translateY(-5px); }
+                }`}
+              </style>
+            </div>
+          )}
         </div>
 
         {/* INPUT */}
@@ -183,6 +248,7 @@ export default function TariqPage() {
             ref={inputRef}
             name="msg"
             placeholder="Type your question..."
+            disabled={loading}
             style={{
               flex: 1,
               padding: '1rem 1.25rem',
@@ -194,6 +260,7 @@ export default function TariqPage() {
           />
           <button
             type="submit"
+            disabled={loading}
             style={{
               backgroundColor: primaryColor,
               color: '#000',
@@ -203,7 +270,7 @@ export default function TariqPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer',
+              cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
             <Send size={20} />

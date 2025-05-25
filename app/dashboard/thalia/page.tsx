@@ -7,24 +7,43 @@ export default function ThaliaPage() {
   const [messages, setMessages] = useState([
     { from: 'thalia', text: 'Hey! I’m Thalia, your operations manager. Ask me anything to optimize processes, tareas o flujos de trabajo.' },
   ]);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const primaryColor = '#D946EF'; // Fucsia fuerte
+  const primaryColor = '#D946EF';
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const value = inputRef.current?.value.trim();
     if (!value) return;
-    setMessages(prev => [
-      ...prev,
-      { from: 'user', text: value },
-      { from: 'thalia', text: 'Let me take care of that...' }
-    ]);
+
+    const userMessage = { from: 'user', text: value };
+    setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/thalia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: value, userId: 'demo-user' }),
+      });
+
+      const data = await res.json();
+      if (data.output) {
+        setMessages(prev => [...prev, { from: 'thalia', text: data.output }]);
+      } else {
+        setMessages(prev => [...prev, { from: 'thalia', text: 'Oops, I couldn’t process that.' }]);
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, { from: 'thalia', text: 'Error contacting AI.' }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -122,7 +141,10 @@ export default function ThaliaPage() {
               <button
                 key={idx}
                 onClick={() => {
-                  setMessages(prev => [...prev, { from: 'user', text: suggestion }]);
+                  if (inputRef.current) {
+                    inputRef.current.value = suggestion;
+                    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+                  }
                 }}
                 style={{
                   backgroundColor: '#fff',
@@ -139,7 +161,7 @@ export default function ThaliaPage() {
           </div>
         </div>
 
-        {/* MENSAJES CON SCROLL */}
+        {/* MENSAJES + BURBUJA */}
         <div
           ref={scrollRef}
           style={{
@@ -165,6 +187,48 @@ export default function ThaliaPage() {
               {msg.text}
             </div>
           ))}
+
+          {loading && (
+            <div style={{
+              alignSelf: 'flex-start',
+              background: '#fff',
+              color: '#333',
+              padding: '0.75rem 1rem',
+              borderRadius: '1rem',
+              maxWidth: '50%',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+              display: 'flex',
+              gap: '0.3rem',
+            }}>
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.2s',
+              }} />
+              <span style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#333',
+                animation: 'bounce 1s infinite alternate 0.4s',
+              }} />
+              <style>
+                {`@keyframes bounce {
+                  0% { transform: translateY(0); }
+                  100% { transform: translateY(-5px); }
+                }`}
+              </style>
+            </div>
+          )}
         </div>
 
         {/* INPUT */}
@@ -183,6 +247,7 @@ export default function ThaliaPage() {
             ref={inputRef}
             name="msg"
             placeholder="Type your question..."
+            disabled={loading}
             style={{
               flex: 1,
               padding: '1rem 1.25rem',
@@ -194,6 +259,7 @@ export default function ThaliaPage() {
           />
           <button
             type="submit"
+            disabled={loading}
             style={{
               backgroundColor: primaryColor,
               color: '#fff',
@@ -203,7 +269,7 @@ export default function ThaliaPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer'
+              cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
             <Send size={20} />
