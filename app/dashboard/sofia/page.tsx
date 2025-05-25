@@ -22,6 +22,14 @@ export default function SofiaPage() {
     if (!value) return;
 
     const userMessage = { from: 'user', text: value };
+    const prevHistory = messages
+      .slice(-4)
+      .filter(m => m.from === 'user' || m.from === 'sofia')
+      .map(m => ({
+        role: m.from === 'user' ? 'user' : 'assistant',
+        content: m.text,
+      }));
+
     setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
     setLoading(true);
@@ -30,7 +38,7 @@ export default function SofiaPage() {
       const res = await fetch('/api/sofia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: value, userId: 'demo-user' })
+        body: JSON.stringify({ prompt: value, userId: 'demo-user', history: prevHistory })
       });
 
       const data = await res.json();

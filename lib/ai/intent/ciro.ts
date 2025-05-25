@@ -1,89 +1,28 @@
-// Handler de intención para Ciro, experto en pricing y análisis estratégico
-export function detectCiroIntent(prompt: string) {
+import type { AiIntent } from '../types';
+
+export function detectCiroIntent(prompt: string): AiIntent {
   const lower = prompt.toLowerCase();
 
-  // Asesor de precios o comparador de competencia
+  // Tareas complejas → GPT-4
   if (
-    lower.includes('precio') ||
-    lower.includes('precios dinámicos') ||
-    lower.includes('price') ||
-    lower.includes('competencia') ||
-    lower.includes('competitor') ||
-    lower.includes('comparar precios')
-  ) {
-    return {
-      tool: 'dynamic-pricing-advisor',
-      model: 'gpt-4',
-    };
-  }
-
-  // Análisis de márgenes o costos
-  if (
-    lower.includes('margen') ||
-    lower.includes('beneficio') ||
-    lower.includes('rentabilidad') ||
-    lower.includes('ganancia') ||
-    lower.includes('coste') ||
-    lower.includes('cost') ||
-    lower.includes('profit') ||
-    lower.includes('loss')
-  ) {
-    return {
-      tool: 'margin-cost-analyzer',
-      model: 'gpt-4',
-    };
-  }
-
-  // Predicción de ventas o inventario
-  if (
-    lower.includes('predecir') ||
     lower.includes('predicción') ||
-    lower.includes('forecast') ||
-    lower.includes('ventas futuras') ||
-    lower.includes('demanda') ||
-    lower.includes('inventario futuro')
-  ) {
-    return {
-      tool: 'sales-inventory-predictor',
-      model: 'gpt-4',
-    };
-  }
-
-  // Alertas de inventario bajo o sugerencias de reposición
-  if (
-    lower.includes('reabastecimiento') ||
-    lower.includes('reponer') ||
-    lower.includes('stock bajo') ||
-    lower.includes('sin inventario') ||
-    lower.includes('stock alert') ||
-    lower.includes('inventory alert')
-  ) {
-    return {
-      tool: 'restock-alert-system',
-      model: 'gpt-4',
-    };
-  }
-
-  // Análisis de campañas, tráfico y conversiones (StorelyTrack)
-  if (
-    lower.includes('campaña') ||
-    lower.includes('ads') ||
-    lower.includes('tráfico') ||
+    lower.includes('competencia') ||
+    lower.includes('comparador') ||
     lower.includes('storelytrack') ||
-    lower.includes('conversiones') ||
-    lower.includes('ventas') ||
     lower.includes('análisis de campañas') ||
-    lower.includes('analytics')
+    lower.includes('atribu') || // atribución
+    lower.includes('márgenes') ||
+    lower.includes('rentabilidad')
   ) {
     return {
-      tool: 'storelytrack-analyzer',
+      tool: 'analytics',
       model: 'gpt-4',
     };
   }
 
-  // Fallback: análisis general estratégico
+  // Tareas simples → GPT-3.5
   return {
-    tool: 'ecommerce-strategy-analyzer',
-    model: 'gpt-4',
+    tool: 'data-helper',
+    model: 'gpt-3.5-turbo',
   };
 }

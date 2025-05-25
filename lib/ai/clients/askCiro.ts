@@ -1,48 +1,34 @@
-import OpenAI from 'openai';
+import { askCoreAI } from './askCore';
+import type { AiIntent } from '../types';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const system = `Eres Ciro, un asesor de datos experto en ecommerce.
+Ayudas a las tiendas online a entender y mejorar su rentabilidad, precios, inventario y rendimiento.
+Tus funciones incluyen:
+- Análisis de márgenes y costos
+- Predicciones de ventas e inventario
+- Alertas de inventario bajo
+- Comparaciones de precios con la competencia
+- Análisis de campañas y atribución (StorelyTrack)
+Respondes con claridad, enfoque en datos accionables, y sugieres siempre formas de mejorar los beneficios.`
 
-export async function askCiro(prompt: string, context: any) {
-  const completion = await openai.chat.completions.create({
-    model: context.model ?? 'gpt-4',
-    messages: [
-      {
-        role: 'system',
-        content: `
-You are Ciro, an expert AI advisor in ecommerce pricing, profitability and predictive analytics.
+export async function askGPT(prompt: string, intent: AiIntent, history?: any[]) {
+  const messages: any[] = [];
 
-You assist online stores in:
-- Setting and adjusting dynamic prices based on competition, demand, and margin targets
-- Analyzing product costs, margins and profit/loss per SKU
-- Forecasting sales, demand and inventory levels
-- Sending alerts for low stock or recommending replenishment strategies
-- Tracking ad campaign performance (StorelyTrack): traffic, conversion rate, ROAS and CPA
-- Comparing product prices against competitors and suggesting pricing strategies
+  // Añade system solo si es una nueva conversación
+  if (!history || history.length === 0) {
+    messages.push({ role: 'system', content: system });
+  }
 
-Tone:
-- Strategic, concise and data-driven
-- Clear about risks, trade-offs and ROI
-- Always aligned with ecommerce profitability
+  // Añade historial corto si existe
+  if (history && history.length > 0) {
+    messages.push(...history);
+  }
 
-Guidelines:
-- When analyzing prices, take into account margin, cost, and competitor pricing
-- For forecasts, ask for past sales data or trends if not provided
-- In StorelyTrack analysis, prioritize actionable insights: "What to change and why"
-- Make suggestions that maximize both short-term profit and long-term growth
+  // Añade el mensaje actual
+  messages.push({ role: 'user', content: prompt });
 
-If the prompt is unclear or lacks metrics (prices, costs, traffic, etc.), ask for that information.
-You are not a generic chatbot — you are a strategic AI for business performance.
-`
-      },
-      {
-        role: 'user',
-        content: prompt
-      }
-    ],
-    temperature: 0.7,
+  return await askCoreAI({
+    messages,
+    model: intent.model || 'gpt-3.5-turbo',
   });
-
-  return completion.choices[0].message.content ?? '';
 }

@@ -5,12 +5,12 @@ import { Send } from 'lucide-react';
 
 export default function CiroPage() {
   const [messages, setMessages] = useState([
-    { from: 'ciro', text: 'Hi! I’m Ciro, your ecommerce strategy assistant. Ask me about pricing, margins, inventory or campaigns.' },
+    { from: 'ciro', text: 'Hi! I’m Ciro, your data advisor. Ask me anything about pricing, inventory or campaign performance.' },
   ]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const primaryColor = '#1E40AF';
+  const primaryColor = '#1E40AF'; // Azul oscuro
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -22,6 +22,15 @@ export default function CiroPage() {
     if (!value) return;
 
     const userMessage = { from: 'user', text: value };
+
+    const prevHistory = messages
+      .slice(-4)
+      .filter(m => m.from === 'user' || m.from === 'ciro')
+      .map(m => ({
+        role: m.from === 'user' ? 'user' : 'assistant',
+        content: m.text,
+      }));
+
     setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
     setLoading(true);
@@ -30,17 +39,17 @@ export default function CiroPage() {
       const res = await fetch('/api/ciro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: value, userId: 'demo-user' }),
+        body: JSON.stringify({ prompt: value, userId: 'demo-user', history: prevHistory })
       });
 
       const data = await res.json();
       if (data.output) {
         setMessages(prev => [...prev, { from: 'ciro', text: data.output }]);
       } else {
-        setMessages(prev => [...prev, { from: 'ciro', text: 'Oops, I couldn’t process that.' }]);
+        setMessages(prev => [...prev, { from: 'ciro', text: 'Ups, no pude procesarlo.' }]);
       }
     } catch (err) {
-      setMessages(prev => [...prev, { from: 'ciro', text: 'Error contacting AI.' }]);
+      setMessages(prev => [...prev, { from: 'ciro', text: 'Error al contactar con la IA.' }]);
     } finally {
       setLoading(false);
     }
@@ -81,7 +90,7 @@ export default function CiroPage() {
           </div>
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>Ciro</h2>
-          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>Business Strategy</p>
+          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>Data Advisor</p>
 
           <button style={{
             marginTop: '2rem',
@@ -129,14 +138,14 @@ export default function CiroPage() {
           }}>
             Hey, it's <span style={{ color: primaryColor }}>Ciro</span> 👋
           </h1>
-          <p style={{ fontSize: '1.1rem', color: '#555' }}>Let’s optimize your pricing and strategy.</p>
+          <p style={{ fontSize: '1.1rem', color: '#555' }}>How can I help with your numbers?</p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '1rem' }}>
             {[
-              'Revisa mis márgenes por producto',
-              'Sugiere una estrategia de precios dinámica',
-              'Predecir ventas del próximo mes',
-              'Analiza mis campañas de Meta Ads',
+              'Analiza mis márgenes de beneficio',
+              'Haz una predicción de ventas',
+              'Detecta campañas poco rentables',
+              'Sugiere un precio dinámico',
             ].map((suggestion, idx) => (
               <button
                 key={idx}
@@ -161,7 +170,7 @@ export default function CiroPage() {
           </div>
         </div>
 
-        {/* MENSAJES + BURBUJA CARGANDO */}
+        {/* MENSAJES + BURBUJA */}
         <div ref={scrollRef} style={{
           flex: 1,
           overflowY: 'auto',
@@ -229,14 +238,17 @@ export default function CiroPage() {
         </div>
 
         {/* INPUT */}
-        <form onSubmit={handleSubmit} style={{
-          padding: '1rem 0 1.25rem',
-          display: 'flex',
-          gap: '1rem',
-          alignItems: 'center',
-          backgroundColor: '#f0f6ff',
-          borderTop: '1px solid #e4e4e4',
-        }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            padding: '1rem 0 1.25rem',
+            display: 'flex',
+            gap: '1rem',
+            alignItems: 'center',
+            backgroundColor: '#f0f6ff',
+            borderTop: '1px solid #e4e4e4',
+          }}
+        >
           <input
             ref={inputRef}
             name="msg"
