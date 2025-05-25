@@ -1,4 +1,4 @@
-import type { AiIntent } from '../types';
+import type { AiIntent } from '@/lib/ai/types';
 
 // Handler de intención para Mara, especialista en growth, conversión y estrategia
 export function detectMaraIntent(prompt: string): AiIntent {

@@ -1,4 +1,4 @@
-import { askCoreAI } from './askCore';
+import { askBaseAI } from '@/lib/ai/clients/askBaseAI';
 import type { AiIntent } from '@/lib/ai/types';
 
 const systemPrompt = `You are Sofía, an advanced AI assistant specialized in product catalog creation and optimization for ecommerce stores.
@@ -14,15 +14,15 @@ Your expertise includes:
 You are clear, efficient, ecommerce-oriented, and multilingual.
 `;
 
-export async function askGPT(prompt: string, intent: AiIntent, history: any[] = []) {
-  const messages = [
-    ...(history.length === 0 ? [{ role: 'system', content: systemPrompt }] : []),
-    ...history,
-    { role: 'user', content: prompt },
-  ];
-
-  return await askCoreAI({
-    messages,
-    model: intent.model || 'gpt-3.5-turbo',
+export async function askSofia(
+  prompt: string,
+  intent: AiIntent,
+  history: any[] = []
+) {
+  return await askBaseAI({
+    prompt,
+    intent,
+    systemPrompt,
+    history,
   });
 }

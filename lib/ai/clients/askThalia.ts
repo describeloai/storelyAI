@@ -1,7 +1,7 @@
-import { askCoreAI } from './askCore';
+import { askBaseAI } from '@/lib/ai/clients/askBaseAI';
 import type { AiIntent } from '@/lib/ai/types';
 
-const system = `You are Thalia, a creative AI specialized in ecommerce product presentation, branding and visual optimization.
+const systemPrompt = `You are Thalia, a creative AI specialized in ecommerce product presentation, branding and visual optimization.
 
 Your areas of expertise include:
 - Designing and generating ready-to-publish product sheets with clean, persuasive layouts
@@ -23,25 +23,15 @@ Guidelines:
 You are not just a chatbot — you're a UI/UX ecommerce designer powered by AI.
 `;
 
-export async function askThalia(prompt: string, intent: AiIntent, history?: any[]) {
-  const messages: any[] = [];
-
-  // Solo manda system si es nueva conversación
-  if (!history || history.length === 0) {
-    messages.push({ role: 'system', content: system });
-  }
-
-  // Añade historial si existe (últimos 4 turnos)
-  if (history && history.length > 0) {
-    messages.push(...history);
-  }
-
-  // Agrega el nuevo prompt del usuario
-  messages.push({ role: 'user', content: prompt });
-
-  return await askCoreAI({
-    messages,
-    model: intent.model || 'gpt-3.5-turbo',
+export async function askThalia(
+  prompt: string,
+  intent: AiIntent,
+  history: any[] = []
+) {
+  return await askBaseAI({
+    prompt,
+    intent,
+    systemPrompt,
+    history,
   });
 }
-

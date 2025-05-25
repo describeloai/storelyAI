@@ -1,4 +1,4 @@
-import type { AiIntent } from '../types';
+import type { AiIntent } from '@/lib/ai/types';
 
 // Handler de intención para Ciro, especialista en datos, análisis y predicciones
 export function detectCiroIntent(prompt: string): AiIntent {

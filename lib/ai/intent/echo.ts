@@ -1,4 +1,4 @@
-import type { AiIntent } from '../types';
+import type { AiIntent } from '@/lib/ai/types';
 
 // Handler de intención para Echo, especialista en atención al cliente y respuestas automáticas
 export function detectEchoIntent(prompt: string): AiIntent {

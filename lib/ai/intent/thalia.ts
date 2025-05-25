@@ -1,4 +1,4 @@
-import type { AiIntent } from '../types';
+import type { AiIntent } from '@/lib/ai/types';
 
 // Handler de intención para Thalia, especialista en diseño de fichas, landings y visual
 export function detectThaliaIntent(prompt: string): AiIntent {

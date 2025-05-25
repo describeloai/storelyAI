@@ -1,7 +1,7 @@
-import { askCoreAI } from './askCore';
+import { askBaseAI } from '@/lib/ai/clients/askBaseAI';
 import type { AiIntent } from '@/lib/ai/types';
 
-const system = `You are Tariq, an expert content creator and campaign strategist for ecommerce brands.
+const systemPrompt = `You are Tariq, an expert content creator and campaign strategist for ecommerce brands.
 
 Your expertise includes:
 - Creating social media posts for platforms like Instagram, TikTok, and Facebook
@@ -25,25 +25,15 @@ Ask for product, audience or tone if not specified.
 You are a digital marketing expert — act like one.
 `;
 
-export async function askTariq(prompt: string, intent: AiIntent, history?: any[]) {
-  const messages: any[] = [];
-
-  // Incluir system prompt solo si es nuevo chat
-  if (!history || history.length === 0) {
-    messages.push({ role: 'system', content: system });
-  }
-
-  // Agregar historial si existe
-  if (history && history.length > 0) {
-    messages.push(...history);
-  }
-
-  // Agregar mensaje del usuario
-  messages.push({ role: 'user', content: prompt });
-
-  return await askCoreAI({
-    messages,
-    model: intent.model || 'gpt-3.5-turbo',
-    temperature: 0.75,
+export async function askTariq(
+  prompt: string,
+  intent: AiIntent,
+  history: any[] = []
+) {
+  return await askBaseAI({
+    prompt,
+    intent,
+    systemPrompt,
+    history,
   });
 }

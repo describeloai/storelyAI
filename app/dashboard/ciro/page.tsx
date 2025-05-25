@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
+import { detectCiroIntent } from '@/lib/ai/intent/ciro';
 
 export default function CiroPage() {
   const [messages, setMessages] = useState([
@@ -10,7 +11,7 @@ export default function CiroPage() {
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const primaryColor = '#1E40AF'; // Azul oscuro
+  const primaryColor = '#1E40AF';
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -31,6 +32,8 @@ export default function CiroPage() {
         content: m.text,
       }));
 
+    const intent = detectCiroIntent(value);
+
     setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
     setLoading(true);
@@ -39,7 +42,13 @@ export default function CiroPage() {
       const res = await fetch('/api/ciro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: value, userId: 'demo-user', history: prevHistory })
+        body: JSON.stringify({
+          prompt: value,
+          userId: 'demo-user',
+          history: prevHistory,
+          model: intent.model,
+          tool: intent.tool,
+        }),
       });
 
       const data = await res.json();
@@ -63,7 +72,6 @@ export default function CiroPage() {
       borderRadius: '1rem',
       overflow: 'hidden',
     }}>
-      {/* SIDEBAR */}
       <aside style={{
         width: '300px',
         background: `linear-gradient(135deg, ${primaryColor}, #3b82f6)`,
@@ -120,7 +128,6 @@ export default function CiroPage() {
         </div>
       </aside>
 
-      {/* MAIN CHAT PANEL */}
       <section style={{
         flex: 1,
         display: 'flex',
@@ -170,7 +177,6 @@ export default function CiroPage() {
           </div>
         </div>
 
-        {/* MENSAJES + BURBUJA */}
         <div ref={scrollRef} style={{
           flex: 1,
           overflowY: 'auto',
@@ -237,7 +243,6 @@ export default function CiroPage() {
           )}
         </div>
 
-        {/* INPUT */}
         <form
           onSubmit={handleSubmit}
           style={{

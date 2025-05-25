@@ -1,4 +1,4 @@
-import type { AiIntent } from '../types';
+import type { AiIntent } from '@/lib/ai/types';
 
 // Handler de intención para Tariq, especialista en contenido, anuncios y campañas
 export function detectTariqIntent(prompt: string): AiIntent {

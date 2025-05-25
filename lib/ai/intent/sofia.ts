@@ -1,4 +1,4 @@
-import type { AiIntent } from '../types';
+import type { AiIntent } from '@/lib/ai/types';
 
 export function detectSofiaIntent(prompt: string): AiIntent {
   const lower = prompt.toLowerCase();

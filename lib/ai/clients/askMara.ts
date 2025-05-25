@@ -1,4 +1,4 @@
-import { askCoreAI } from './askCore';
+import { askBaseAI } from '@/lib/ai/clients/askBaseAI';
 import type { AiIntent } from '@/lib/ai/types';
 
 const systemPrompt = `You are Mara, a growth-focused AI strategist for ecommerce businesses.
@@ -24,16 +24,15 @@ Ask for clarification if the prompt lacks store info, traffic data, or goals.
 Your job is to help store owners make better decisions and grow. Be clear and decisive.
 `;
 
-export async function askMara(prompt: string, intent: AiIntent, history: any[] = []) {
-  const messages = [
-    ...(history.length === 0 ? [{ role: 'system', content: systemPrompt }] : []),
-    ...history,
-    { role: 'user', content: prompt },
-  ];
-
-  return await askCoreAI({
-    messages,
-    model: intent.model || 'gpt-3.5-turbo',
-    temperature: 0.7,
+export async function askMara(
+  prompt: string,
+  intent: AiIntent,
+  history: any[] = []
+) {
+  return await askBaseAI({
+    prompt,
+    intent,
+    systemPrompt,
+    history,
   });
 }

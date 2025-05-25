@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { askGPT } from '@/lib/ai/clients/askSofia';
+import { askSofia } from '@/lib/ai/clients/askSofia';
 import { detectSofiaIntent } from '@/lib/ai/intent/sofia';
 
 export async function POST(req: NextRequest) {
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const intent = detectSofiaIntent(prompt);
 
   try {
-    const output = await askGPT(prompt, intent, history);
+    const output = await askSofia(prompt, intent, history);
     return NextResponse.json({ output, tool: intent.tool, model: intent.model });
   } catch (err) {
     console.error('Sofía API error:', err);
