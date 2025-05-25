@@ -3,7 +3,7 @@ import { askThalia } from '@/lib/ai/clients/askThalia';
 import { detectThaliaIntent } from '@/lib/ai/intent/thalia';
 
 export async function POST(req: NextRequest) {
-  const { prompt, userId } = await req.json();
+  const { prompt, userId, history } = await req.json();
 
   if (!prompt) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const intent = detectThaliaIntent(prompt); // Detecta herramienta y modelo
 
   try {
-    const output = await askThalia(prompt, intent);
+    const output = await askThalia(prompt, intent, history);
     return NextResponse.json({
       output,
       tool: intent.tool,

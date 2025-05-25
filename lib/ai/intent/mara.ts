@@ -1,5 +1,7 @@
+import type { AiIntent } from '../types';
+
 // Handler de intención para Mara, especialista en growth, conversión y estrategia
-export function detectMaraIntent(prompt: string) {
+export function detectMaraIntent(prompt: string): AiIntent {
   const lower = prompt.toLowerCase();
 
   // Auditoría de tienda o revisión general
@@ -10,7 +12,9 @@ export function detectMaraIntent(prompt: string) {
     lower.includes('revisión de tienda') ||
     lower.includes('mejorar mi tienda') ||
     lower.includes('análisis de tienda') ||
-    lower.includes('store audit')
+    lower.includes('store audit') ||
+    lower.includes('store review') ||
+    lower.includes('shop analysis')
   ) {
     return {
       tool: 'store-auditor',
@@ -25,7 +29,9 @@ export function detectMaraIntent(prompt: string) {
     lower.includes('mejorar conversiones') ||
     lower.includes('funnel') ||
     lower.includes('embudo') ||
-    lower.includes('consultor de conversión')
+    lower.includes('consultor de conversión') ||
+    lower.includes('conversion funnel') ||
+    lower.includes('optimize funnel')
   ) {
     return {
       tool: 'conversion-consultant',
@@ -42,7 +48,10 @@ export function detectMaraIntent(prompt: string) {
     lower.includes('decisiones') ||
     lower.includes('mejorar ventas') ||
     lower.includes('crecer negocio') ||
-    lower.includes('growth')
+    lower.includes('growth') ||
+    lower.includes('recommendation') ||
+    lower.includes('strategy') ||
+    lower.includes('business advice')
   ) {
     return {
       tool: 'business-strategy-coach',
@@ -57,7 +66,9 @@ export function detectMaraIntent(prompt: string) {
     lower.includes('tendencias virales') ||
     lower.includes('productos ganadores') ||
     lower.includes('viral') ||
-    lower.includes('trend')
+    lower.includes('trend') ||
+    lower.includes('trending product') ||
+    lower.includes('winner product')
   ) {
     return {
       tool: 'viral-product-finder',

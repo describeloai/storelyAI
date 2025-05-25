@@ -1,17 +1,7 @@
-import OpenAI from 'openai';
+import { askCoreAI } from './askCore';
+import type { AiIntent } from '@/lib/ai/types';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-export async function askTariq(prompt: string, context: any) {
-  const completion = await openai.chat.completions.create({
-    model: context.model ?? 'gpt-4',
-    messages: [
-      {
-        role: 'system',
-        content: `
-You are Tariq, an expert content creator and campaign strategist for ecommerce brands.
+const system = `You are Tariq, an expert content creator and campaign strategist for ecommerce brands.
 
 Your expertise includes:
 - Creating social media posts for platforms like Instagram, TikTok, and Facebook
@@ -33,15 +23,27 @@ Guidelines:
 
 Ask for product, audience or tone if not specified.
 You are a digital marketing expert — act like one.
-`
-      },
-      {
-        role: 'user',
-        content: prompt
-      }
-    ],
+`;
+
+export async function askTariq(prompt: string, intent: AiIntent, history?: any[]) {
+  const messages: any[] = [];
+
+  // Incluir system prompt solo si es nuevo chat
+  if (!history || history.length === 0) {
+    messages.push({ role: 'system', content: system });
+  }
+
+  // Agregar historial si existe
+  if (history && history.length > 0) {
+    messages.push(...history);
+  }
+
+  // Agregar mensaje del usuario
+  messages.push({ role: 'user', content: prompt });
+
+  return await askCoreAI({
+    messages,
+    model: intent.model || 'gpt-3.5-turbo',
     temperature: 0.75,
   });
-
-  return completion.choices[0].message.content ?? '';
 }

@@ -1,5 +1,7 @@
+import type { AiIntent } from '../types';
+
 // Handler de intención para Thalia, especialista en diseño de fichas, landings y visual
-export function detectThaliaIntent(prompt: string) {
+export function detectThaliaIntent(prompt: string): AiIntent {
   const lower = prompt.toLowerCase();
 
   // Generación o mejora de fichas de producto
@@ -9,7 +11,9 @@ export function detectThaliaIntent(prompt: string) {
     lower.includes('ficha lista') ||
     lower.includes('publicar producto') ||
     lower.includes('product sheet') ||
-    lower.includes('product card')
+    lower.includes('product card') ||
+    lower.includes('product page') ||
+    lower.includes('generate sheet')
   ) {
     return {
       tool: 'product-sheet-generator',
@@ -24,7 +28,10 @@ export function detectThaliaIntent(prompt: string) {
     lower.includes('crear página') ||
     lower.includes('landing page') ||
     lower.includes('generar landing') ||
-    lower.includes('lp desde url')
+    lower.includes('lp desde url') ||
+    lower.includes('landing from url') ||
+    lower.includes('create landing') ||
+    lower.includes('generate landing')
   ) {
     return {
       tool: 'landing-page-builder',
@@ -39,8 +46,10 @@ export function detectThaliaIntent(prompt: string) {
     lower.includes('mejorar diseño') ||
     lower.includes('optimizar imagen') ||
     lower.includes('mejorar visual') ||
+    lower.includes('diseño visual') ||
     lower.includes('visual upgrade') ||
-    lower.includes('diseño visual')
+    lower.includes('improve visuals') ||
+    lower.includes('optimize image')
   ) {
     return {
       tool: 'visual-optimizer',
@@ -48,13 +57,16 @@ export function detectThaliaIntent(prompt: string) {
     };
   }
 
-  // Edición de imágenes con IA (compartida con Sofía)
+  // Edición de imágenes con IA
   if (
     lower.includes('editor de imágenes') ||
     lower.includes('editar imagen') ||
-    lower.includes('image editor') ||
     lower.includes('generar imagen') ||
-    lower.includes('photo enhancer')
+    lower.includes('photo enhancer') ||
+    lower.includes('image editor') ||
+    lower.includes('edit image') ||
+    lower.includes('generate image') ||
+    lower.includes('ai image')
   ) {
     return {
       tool: 'ai-image-editor',

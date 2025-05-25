@@ -1,15 +1,19 @@
-// Puedes mejorar este handler para usar lógica de intención real
-export function detectEchoIntent(prompt: string) {
+import type { AiIntent } from '../types';
+
+// Handler de intención para Echo, especialista en atención al cliente y respuestas automáticas
+export function detectEchoIntent(prompt: string): AiIntent {
   const lower = prompt.toLowerCase();
 
-  // Si el prompt habla de reseñas, opiniones o preguntas frecuentes
+  // Reseñas, opiniones, FAQs, Q&A
   if (
     lower.includes('reseña') ||
     lower.includes('review') ||
     lower.includes('opinión') ||
     lower.includes('q&a') ||
+    lower.includes('faq') ||
     lower.includes('pregunta frecuente') ||
-    lower.includes('faq')
+    lower.includes('customer question') ||
+    lower.includes('common question')
   ) {
     return {
       tool: 'reviews-qna-handler',
@@ -17,14 +21,17 @@ export function detectEchoIntent(prompt: string) {
     };
   }
 
-  // Si el prompt menciona chats, atención al cliente o respuestas automáticas
+  // Chat automático, atención al cliente, soporte
   if (
     lower.includes('chat') ||
     lower.includes('mensaje') ||
     lower.includes('respuesta automática') ||
     lower.includes('soporte') ||
     lower.includes('atención al cliente') ||
-    lower.includes('pregunta común')
+    lower.includes('respuesta instantánea') ||
+    lower.includes('auto reply') ||
+    lower.includes('support') ||
+    lower.includes('customer service')
   ) {
     return {
       tool: 'auto-reply-chat',
@@ -32,15 +39,17 @@ export function detectEchoIntent(prompt: string) {
     };
   }
 
-  // Si se refiere a correos automáticos o emails de ecommerce
+  // Correos automáticos, seguimiento, postventa
   if (
     lower.includes('email') ||
     lower.includes('correo') ||
+    lower.includes('seguimiento') ||
     lower.includes('postventa') ||
     lower.includes('upselling') ||
     lower.includes('abandono de carrito') ||
     lower.includes('email booster') ||
-    lower.includes('seguimiento')
+    lower.includes('follow-up') ||
+    lower.includes('email sequence')
   ) {
     return {
       tool: 'email-booster',
@@ -48,21 +57,23 @@ export function detectEchoIntent(prompt: string) {
     };
   }
 
-  // Si pide traducción o mención de idiomas
+  // Traducción o idiomas (multilingual chatbot)
   if (
     lower.includes('traducir') ||
     lower.includes('translate') ||
     lower.includes('idioma') ||
     lower.includes('multilingüe') ||
-    lower.includes('multilingual')
+    lower.includes('multilingual') ||
+    lower.includes('translate chat') ||
+    lower.includes('bilingual bot')
   ) {
     return {
       tool: 'multilingual-chatbot',
-      model: 'claude', // o gpt-4 si prefieres mantener uno solo
+      model: 'gpt-4',
     };
   }
 
-  // Por defecto, usa GPT-4 con herramienta general de conversación automatizada
+  // Fallback: chat automático general
   return {
     tool: 'auto-response-general',
     model: 'gpt-4',

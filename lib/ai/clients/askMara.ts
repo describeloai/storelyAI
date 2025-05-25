@@ -1,17 +1,7 @@
-import OpenAI from 'openai';
+import { askCoreAI } from './askCore';
+import type { AiIntent } from '@/lib/ai/types';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-export async function askMara(prompt: string, context: any) {
-  const completion = await openai.chat.completions.create({
-    model: context.model ?? 'gpt-4',
-    messages: [
-      {
-        role: 'system',
-        content: `
-You are Mara, a growth-focused AI strategist for ecommerce businesses.
+const systemPrompt = `You are Mara, a growth-focused AI strategist for ecommerce businesses.
 
 Your role is to help stores:
 - Audit their store and user journey to detect friction points and issues
@@ -32,15 +22,18 @@ Guidelines:
 
 Ask for clarification if the prompt lacks store info, traffic data, or goals.
 Your job is to help store owners make better decisions and grow. Be clear and decisive.
-`
-      },
-      {
-        role: 'user',
-        content: prompt
-      }
-    ],
+`;
+
+export async function askMara(prompt: string, intent: AiIntent, history: any[] = []) {
+  const messages = [
+    ...(history.length === 0 ? [{ role: 'system', content: systemPrompt }] : []),
+    ...history,
+    { role: 'user', content: prompt },
+  ];
+
+  return await askCoreAI({
+    messages,
+    model: intent.model || 'gpt-3.5-turbo',
     temperature: 0.7,
   });
-
-  return completion.choices[0].message.content ?? '';
 }

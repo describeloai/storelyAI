@@ -3,7 +3,7 @@ import { askTariq } from '@/lib/ai/clients/askTariq';
 import { detectTariqIntent } from '@/lib/ai/intent/tariq';
 
 export async function POST(req: NextRequest) {
-  const { prompt, userId } = await req.json();
+  const { prompt, userId, history } = await req.json();
 
   if (!prompt) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const intent = detectTariqIntent(prompt); // Detecta herramienta y modelo
 
   try {
-    const output = await askTariq(prompt, intent);
+    const output = await askTariq(prompt, intent, history);
     return NextResponse.json({
       output,
       tool: intent.tool,

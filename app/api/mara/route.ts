@@ -3,7 +3,7 @@ import { askMara } from '@/lib/ai/clients/askMara';
 import { detectMaraIntent } from '@/lib/ai/intent/mara';
 
 export async function POST(req: NextRequest) {
-  const { prompt, userId } = await req.json();
+  const { prompt, userId, history } = await req.json();
 
   if (!prompt) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const intent = detectMaraIntent(prompt); // Detecta herramienta y modelo
 
   try {
-    const output = await askMara(prompt, intent);
+    const output = await askMara(prompt, intent, history);
     return NextResponse.json({
       output,
       tool: intent.tool,

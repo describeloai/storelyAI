@@ -27,11 +27,19 @@ export default function TariqPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/tariq', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: value, userId: 'demo-user' }),
-      });
+      const prevHistory = messages
+  .slice(-4)
+  .filter(m => m.from === 'user' || m.from === 'tariq')
+  .map(m => ({
+    role: m.from === 'user' ? 'user' : 'assistant',
+    content: m.text,
+  }));
+
+const res = await fetch('/api/tariq', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ prompt: value, userId: 'demo-user', history: prevHistory }),
+});
 
       const data = await res.json();
       if (data.output) {

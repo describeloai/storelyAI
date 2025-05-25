@@ -1,17 +1,7 @@
-import OpenAI from 'openai';
+import { askCoreAI } from './askCore';
+import type { AiIntent } from '@/lib/ai/types';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-export async function askEcho(prompt: string, context: any) {
-  const completion = await openai.chat.completions.create({
-    model: context.model ?? 'gpt-4',
-    messages: [
-      {
-        role: 'system',
-        content: `
-You are Echo, a specialized AI assistant for customer communication and automation in ecommerce stores.
+const systemPrompt = `You are Echo, a specialized AI assistant for customer communication and automation in ecommerce stores.
 
 Your main skills include:
 - Managing and responding to customer reviews (positive, negative, neutral) and Q&A
@@ -32,15 +22,18 @@ Guidelines:
 
 Be precise. Ask for more context if needed (e.g., product name, review content, customer message).
 If the prompt involves ecommerce-specific cases (e.g., lost order, shipping delay, refund), respond accordingly.
-`
-      },
-      {
-        role: 'user',
-        content: prompt
-      }
-    ],
+`;
+
+export async function askEcho(prompt: string, intent: AiIntent, history: any[] = []) {
+  const messages = [
+    ...(history.length === 0 ? [{ role: 'system', content: systemPrompt }] : []),
+    ...history,
+    { role: 'user', content: prompt },
+  ];
+
+  return await askCoreAI({
+    messages,
+    model: intent.model || 'gpt-3.5-turbo',
     temperature: 0.7,
   });
-
-  return completion.choices[0].message.content ?? '';
 }

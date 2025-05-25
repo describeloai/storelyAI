@@ -3,7 +3,7 @@ import { askEcho } from '@/lib/ai/clients/askEcho';
 import { detectEchoIntent } from '@/lib/ai/intent/echo';
 
 export async function POST(req: NextRequest) {
-  const { prompt, userId } = await req.json();
+  const { prompt, userId, history } = await req.json();
 
   if (!prompt) {
     return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const intent = detectEchoIntent(prompt);
 
   try {
-    const output = await askEcho(prompt, intent);
+    const output = await askEcho(prompt, intent, history);
     return NextResponse.json({ output, tool: intent.tool, model: intent.model });
   } catch (err) {
     console.error('Echo API error:', err);
