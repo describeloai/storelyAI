@@ -32,7 +32,7 @@ export default function CiroPage() {
         content: m.text,
       }));
 
-    const intent = detectCiroIntent(value);
+    const intent = detectCiroIntent(value, true); // ✅ CORRECTO
 
     setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';

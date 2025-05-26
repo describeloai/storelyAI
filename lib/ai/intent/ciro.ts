@@ -2,7 +2,7 @@ import type { AiIntent } from '@/lib/ai/types';
 
 // Handler de intención para Ciro, especialista en datos, análisis y predicciones
 export function detectCiroIntent(prompt: string, fromUser: boolean): AiIntent {
-  // ✅ Si el mensaje no es del usuario, evitar activar GPT-4
+  // Si el mensaje no proviene del usuario, usar el modelo más económico
   if (!fromUser) {
     return {
       tool: 'data-helper',
@@ -38,7 +38,7 @@ export function detectCiroIntent(prompt: string, fromUser: boolean): AiIntent {
     };
   }
 
-  // Fallback: ayuda básica de datos → GPT-3.5
+  // Fallback
   return {
     tool: 'data-helper',
     model: 'gpt-3.5-turbo',
