@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AddInfoButton from '@/components/dashboard/ui/AddInfoButton';
+import KnowledgeList from '@/components/dashboard/brain/KnowledgeList';
 
 export default function StorelyBrainPage() {
   const backgroundColor = '#f4f2f9';
@@ -40,7 +41,7 @@ export default function StorelyBrainPage() {
       <div style={{ position: 'relative', height: '200px' }}>
         {/* CARD 1 */}
         <motion.div
-          onClick={handleToggle}
+          onClick={activeCard !== 'purple' ? handleToggle : undefined}
           initial={false}
           animate={{
             top: activeCard === 'purple' ? 0 : 80,
@@ -57,7 +58,7 @@ export default function StorelyBrainPage() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            cursor: 'pointer',
+            cursor: activeCard !== 'purple' ? 'pointer' : 'default',
             boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
           }}
         >
@@ -105,7 +106,7 @@ export default function StorelyBrainPage() {
 
         {/* CARD 2 */}
         <motion.div
-          onClick={handleToggle}
+          onClick={activeCard !== 'blue' ? handleToggle : undefined}
           initial={false}
           animate={{
             top: activeCard === 'blue' ? 0 : 80,
@@ -122,7 +123,7 @@ export default function StorelyBrainPage() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            cursor: 'pointer',
+            cursor: activeCard !== 'blue' ? 'pointer' : 'default',
             boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
           }}
         >
@@ -169,7 +170,7 @@ export default function StorelyBrainPage() {
         </motion.div>
       </div>
 
-      {/* CARD CENTRAL DE CONTENIDO */}
+      {/* CONTENIDO PRINCIPAL */}
       <div style={{
         background: '#fff',
         borderRadius: '1.5rem',
@@ -178,23 +179,13 @@ export default function StorelyBrainPage() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
       }}>
-        <Image
-          src="/icons/brain.png"
-          alt="Empty Brain"
-          width={90}
-          height={90}
-          style={{ opacity: 0.3, marginBottom: '1.25rem' }}
-        />
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem', color: '#222' }}>
-          Brain is empty
-        </h2>
-        <p style={{ color: '#666', fontSize: '0.95rem', marginBottom: '1.75rem' }}>
-          Add information to start using it
-        </p>
-        <AddInfoButton />
+        <KnowledgeList storeKey={activeCard} />
+        <div style={{ marginTop: '2rem' }}>
+          <AddInfoButton storeKey={activeCard} />
+        </div>
       </div>
     </div>
   );

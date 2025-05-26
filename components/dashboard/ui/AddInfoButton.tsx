@@ -2,11 +2,15 @@
 
 import { useState } from 'react';
 import { FileText, Link, Upload, Plug } from 'lucide-react';
-import '@/components/dashboard/ui/AddInfoButton.css'; // Si usas CSS externo
+import '@/components/dashboard/ui/AddInfoButton.css';
 
-export default function AddInfoButton() {
+export default function AddInfoButton({ storeKey }: { storeKey: 'purple' | 'blue' }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  const [textInput, setTextInput] = useState('');
+  const [linkInput, setLinkInput] = useState('');
+  const [file, setFile] = useState<File | null>(null);
 
   const options = [
     { key: 'text', label: 'Agregar texto manualmente', icon: <FileText size={18} /> },
@@ -14,6 +18,66 @@ export default function AddInfoButton() {
     { key: 'file', label: 'Subir archivo', icon: <Upload size={18} /> },
     { key: 'integration', label: 'Conectar una plataforma', icon: <Plug size={18} /> },
   ];
+
+  const handleSubmit = async () => {
+    if (!storeKey) return;
+
+    const userId = 'demo-user'; // TODO: reemplazar por user real
+
+    try {
+      if (selectedOption === 'text' && textInput) {
+        await fetch('/api/brain/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            storeKey,
+            type: 'text',
+            content: textInput,
+            title: '',
+            fileUrl: null,
+          }),
+        });
+      }
+
+      if (selectedOption === 'link' && linkInput) {
+        await fetch('/api/brain/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            storeKey,
+            type: 'link',
+            content: linkInput,
+            title: '',
+            fileUrl: null,
+          }),
+        });
+      }
+
+      if (selectedOption === 'file' && file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('userId', userId);
+        formData.append('storeKey', storeKey);
+        formData.append('type', 'file');
+
+        await fetch('/api/brain/add', {
+          method: 'POST',
+          body: formData,
+        });
+      }
+
+      // Reset UI
+      setIsOpen(false);
+      setSelectedOption(null);
+      setTextInput('');
+      setLinkInput('');
+      setFile(null);
+    } catch (err) {
+      console.error('Error adding info:', err);
+    }
+  };
 
   return (
     <>
@@ -39,29 +103,54 @@ export default function AddInfoButton() {
             ) : (
               <div>
                 <button className="back-button" onClick={() => setSelectedOption(null)}>← Volver</button>
+
                 {selectedOption === 'text' && (
                   <>
                     <h3>Agregar texto</h3>
-                    <textarea className="textarea" placeholder="Escribe tu contenido aquí..." />
+                    <textarea
+                      className="textarea"
+                      placeholder="Escribe tu contenido aquí..."
+                      value={textInput}
+                      onChange={e => setTextInput(e.target.value)}
+                    />
                   </>
                 )}
+
                 {selectedOption === 'link' && (
                   <>
                     <h3>Agregar enlace</h3>
-                    <input type="url" className="input" placeholder="https://ejemplo.com" />
+                    <input
+                      type="url"
+                      className="input"
+                      placeholder="https://ejemplo.com"
+                      value={linkInput}
+                      onChange={e => setLinkInput(e.target.value)}
+                    />
                   </>
                 )}
+
                 {selectedOption === 'file' && (
                   <>
                     <h3>Subir archivo</h3>
-                    <input type="file" className="input" />
+                    <input
+                      type="file"
+                      className="input"
+                      onChange={e => setFile(e.target.files?.[0] || null)}
+                    />
                   </>
                 )}
+
                 {selectedOption === 'integration' && (
                   <>
                     <h3>Conectar plataforma</h3>
                     <p>Próximamente podrás conectar tu CMS, ecommerce, etc.</p>
                   </>
+                )}
+
+                {selectedOption !== 'integration' && (
+                  <button className="add-button" style={{ marginTop: '1rem' }} onClick={handleSubmit}>
+                    Guardar
+                  </button>
                 )}
               </div>
             )}
