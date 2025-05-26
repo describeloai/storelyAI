@@ -63,7 +63,6 @@ export default function KnowledgeList({ storeKey }: { storeKey: 'purple' | 'blue
     const reordered = arrayMove(items, oldIndex, newIndex);
     setItems(reordered);
 
-    // Guardar nuevo orden en Neon
     const payload = reordered.map((item, index) => ({
       id: item.id,
       position: index,
@@ -80,7 +79,6 @@ export default function KnowledgeList({ storeKey }: { storeKey: 'purple' | 'blue
 
   return (
     <>
-      {/* Filtros */}
       <div style={{
         display: 'flex',
         gap: '0.75rem',
@@ -108,31 +106,29 @@ export default function KnowledgeList({ storeKey }: { storeKey: 'purple' | 'blue
         ))}
       </div>
 
-      {/* Lista arrastrable */}
-      {loading ? (
-        <p>Cargando conocimientos...</p>
-      ) : filteredItems.length === 0 ? (
-        <p>No knowledge in this filter.</p>
-      ) : (
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={filteredItems.map(i => i.id)} strategy={verticalListSortingStrategy}>
-            <div
-              style={{
-                width: '100%',
-                maxHeight: '400px',
-                overflowY: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
-              }}
-            >
-              {filteredItems.map(item => (
-                <SortableItem key={item.id} item={item} onDelete={handleDelete} />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-      )}
+      <div style={{
+        maxHeight: '400px',
+        overflowY: 'auto',
+        marginBottom: '1.5rem',
+        paddingRight: '0.5rem',
+        scrollbarGutter: 'stable',
+      }}>
+        {loading ? (
+          <p>Cargando conocimientos...</p>
+        ) : filteredItems.length === 0 ? (
+          <p>No knowledge in this filter.</p>
+        ) : (
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={filteredItems.map(i => i.id)} strategy={verticalListSortingStrategy}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {filteredItems.map(item => (
+                  <SortableItem key={item.id} item={item} onDelete={handleDelete} />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        )}
+      </div>
     </>
   );
 }
