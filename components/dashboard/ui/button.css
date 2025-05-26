@@ -1,0 +1,23 @@
+.custom-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background-color: #371866;
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.custom-button:hover {
+  background-color: #2d1354;
+}
+
+.custom-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

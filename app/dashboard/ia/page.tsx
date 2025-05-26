@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import AddInfoButton from '@/components/dashboard/ui/AddInfoButton';
 
 export default function StorelyBrainPage() {
   const backgroundColor = '#f4f2f9';
@@ -193,18 +194,7 @@ export default function StorelyBrainPage() {
         <p style={{ color: '#666', fontSize: '0.95rem', marginBottom: '1.75rem' }}>
           Add information to start using it
         </p>
-        <button style={{
-          padding: '0.8rem 1.4rem',
-          backgroundColor: purple,
-          color: '#fff',
-          border: 'none',
-          borderRadius: '0.75rem',
-          fontWeight: 600,
-          fontSize: '0.95rem',
-          cursor: 'pointer'
-        }}>
-          + Add info manually
-        </button>
+        <AddInfoButton />
       </div>
     </div>
   );

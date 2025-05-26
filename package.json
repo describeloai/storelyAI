@@ -12,6 +12,7 @@
     "@clerk/clerk-sdk-node": "^4.13.23",
     "@clerk/nextjs": "^6.19.0",
     "@nextui-org/react": "^2.6.11",
+    "@radix-ui/react-dialog": "^1.1.14",
     "@react-three/drei": "^10.0.6",
     "@react-three/fiber": "^9.1.2",
     "@shopify/app-bridge-utils": "^3.5.1",
@@ -20,6 +21,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.8.1",
     "axios": "^1.9.0",
+    "class-variance-authority": "^0.7.1",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.7.4",
     "jose": "^6.0.11",
@@ -32,6 +34,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "react-markdown": "^10.1.0",
     "recharts": "^2.15.3",
     "stripe": "^18.0.0",
     "three": "^0.175.0"
@@ -41,6 +44,9 @@
     "@types/node": "^20.17.31",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.7",
     "typescript": "^5"
   }
 }
