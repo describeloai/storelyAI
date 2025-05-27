@@ -45,11 +45,11 @@ export default async function RootLayout({
           style={{
             margin: 0,
             padding: 0,
-            backgroundColor: '#ffffff', // blanco por defecto
-            color: '#111827',
+            backgroundColor: '#ffffff',
             overflowX: 'hidden',
             minHeight: '100vh',
             fontFamily: "'Inter', sans-serif",
+            // 🔥 NOTA: color eliminado aquí
           }}
         >
           {children}

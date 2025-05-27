@@ -5,25 +5,13 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useUser, SignOutButton } from '@clerk/nextjs'
 
-const colors = [
-  '#FF784F', // Naranja mandarina
-  '#9B59B6', // Púrpura orquídea
-  '#FF6F61', // Coral rosado
-  '#1DA1F2', // Azul camaleón
-  '#F6E27F', // Amarillo arena
-  '#228B22', // Verde bosque
-]
+const colors = ['#FF784F', '#9B59B6', '#FF6F61', '#1DA1F2', '#F6E27F', '#228B22']
 
 export default function NewNavbar() {
   const router = useRouter()
   const { user } = useUser()
   const [menuOpen, setMenuOpen] = useState(false)
   const [colorIndex, setColorIndex] = useState(0)
-
-  const handleClick = (callback: () => void) => {
-    setMenuOpen(false)
-    callback()
-  }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -32,10 +20,15 @@ export default function NewNavbar() {
     return () => clearInterval(interval)
   }, [])
 
+  const handleClick = (callback: () => void) => {
+    setMenuOpen(false)
+    callback()
+  }
+
   return (
     <header className="navbar">
-      <Link href="/" className="logo" onClick={() => setMenuOpen(false)}>
-        Storely
+      <Link href="/">
+        <span className="logo">Storely</span>
       </Link>
 
       <button
@@ -49,11 +42,13 @@ export default function NewNavbar() {
       </button>
 
       <nav className="nav-desktop">
-        <Link href="/precios" className="nav-link">Pricing</Link>
+        <Link href="/precios">
+          <span className="nav-link">Pricing</span>
+        </Link>
 
         {user ? (
           <>
-            <button className="dashboard-button" onClick={() => router.push('/dashboard')}>
+            <button className="nav-link" onClick={() => router.push('/dashboard')}>
               Dashboard
             </button>
             <SignOutButton>
@@ -62,9 +57,11 @@ export default function NewNavbar() {
           </>
         ) : (
           <>
-            <button className="nav-link" onClick={() => router.push('/sign-in')}>Sign In</button>
+            <button className="nav-link" onClick={() => router.push('/sign-in')}>
+              Sign In
+            </button>
             <button
-              className="chameleon-button"
+              className="get-started-button"
               onClick={() => router.push('/sign-up')}
               style={{ backgroundColor: colors[colorIndex] }}
             >
@@ -76,8 +73,8 @@ export default function NewNavbar() {
 
       {menuOpen && (
         <div className="mobile-menu">
-          <Link href="/precios" onClick={() => setMenuOpen(false)} className="mobile-button">
-            Pricing
+          <Link href="/precios">
+            <span className="mobile-button">Pricing</span>
           </Link>
 
           {user ? (
@@ -99,9 +96,7 @@ export default function NewNavbar() {
               <button
                 onClick={() => handleClick(() => router.push('/sign-up'))}
                 className="get-started-button"
-                style={{
-                  backgroundColor: colors[colorIndex],
-                }}
+                style={{ backgroundColor: colors[colorIndex] }}
               >
                 Get Started
               </button>
@@ -116,69 +111,59 @@ export default function NewNavbar() {
           justify-content: space-between;
           align-items: center;
           padding: 1.2rem 2rem;
-          background-color: rgba(0, 0, 0, 0.6);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-          position: sticky;
+          position: fixed;
           top: 0;
+          left: 0;
+          right: 0;
           z-index: 100;
+          background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), transparent);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
         }
 
         .logo {
-          font-size: 2.1rem;
+          font-size: 2.4rem;
           font-weight: 900;
+          color: #fff !important;
+          font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
           text-decoration: none;
           letter-spacing: -1px;
-          background: linear-gradient(to right, #ffffff, #888888);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          display: inline-block;
         }
 
         .nav-desktop {
           display: flex;
           align-items: center;
-          gap: 1.2rem;
+          gap: 1.6rem;
         }
 
         .nav-link {
-          color: #f3f4f6;
-          font-weight: 500;
+          color: #fff !important;
+          font-weight: 600;
+          font-size: 1.1rem;
           background: none;
           border: none;
           cursor: pointer;
-          padding: 0.5rem 1rem;
-          font-size: 1rem;
-          transition: opacity 0.2s;
+          padding: 0.7rem 1.3rem;
+          border-radius: 8px;
+          font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+          transition: all 0.2s ease;
+          display: inline-block;
         }
 
         .nav-link:hover {
-          opacity: 0.8;
+          background-color: rgba(255, 255, 255, 0.1);
         }
 
-        .dashboard-button {
-          background-color: #444;
-          color: #fff;
-          font-weight: 600;
-          border: none;
-          padding: 0.6rem 1.3rem;
-          border-radius: 999px;
-          cursor: pointer;
-          transition: background 0.3s ease;
-        }
-
-        .dashboard-button:hover {
-          background-color: #555;
-        }
-
-        .chameleon-button {
+        .get-started-button {
           color: #000;
-          font-weight: 600;
-          border: none;
-          padding: 0.6rem 1.5rem;
+          font-weight: 700;
+          font-size: 1.1rem;
+          padding: 0.7rem 1.5rem;
           border-radius: 999px;
+          border: none;
+          font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
           cursor: pointer;
-          font-size: 1rem;
           transition: background-color 1s ease;
         }
 
@@ -216,28 +201,19 @@ export default function NewNavbar() {
 
         .mobile-button {
           background: none;
-          color: #fff;
-          font-size: 1rem;
-          font-weight: 500;
+          color: #fff !important;
+          font-size: 1.1rem;
+          font-weight: 600;
           border: none;
-          padding: 0.6rem 1.2rem;
+          padding: 0.7rem 1.2rem;
           border-radius: 8px;
           text-align: left;
+          font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
           transition: background 0.2s ease;
         }
 
         .mobile-button:hover {
           background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .get-started-button {
-          color: #000;
-          font-weight: 600;
-          padding: 0.6rem 1.2rem;
-          border-radius: 999px;
-          border: none;
-          font-size: 1rem;
-          transition: background-color 1s ease;
         }
 
         @media (max-width: 768px) {
