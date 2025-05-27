@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { FileText, Link, File, Trash2 } from 'lucide-react';
 import { BrainItem } from '@/lib/db/schema';
 
@@ -26,30 +26,41 @@ import { CSS } from '@dnd-kit/utilities';
 const filterOptions = ['all', 'text', 'link', 'file'] as const;
 type FilterType = (typeof filterOptions)[number];
 
-export default function KnowledgeList({ storeKey }: { storeKey: 'purple' | 'blue' }) {
+const KnowledgeList = forwardRef(function KnowledgeList(
+  { storeKey }: { storeKey: 'purple' | 'blue' },
+  ref
+) {
   const [items, setItems] = useState<BrainItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterType>('all');
 
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const res = await fetch(`/api/brain?storeKey=${storeKey}`);
-      const data = await res.json();
-      const ordered = [...data.items].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
-      setItems(ordered);
-      setLoading(false);
-    };
+  const fetchData = async () => {
+    setLoading(true);
+    const res = await fetch(`/api/brain?storeKey=${storeKey}`);
+    const data = await res.json();
+    const ordered = [...data.items].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+    setItems(ordered);
+    setLoading(false);
+  };
 
+  useEffect(() => {
     fetchData();
   }, [storeKey]);
 
+  useImperativeHandle(ref, () => ({
+    refetch: fetchData,
+  }));
+
   const handleDelete = async (id: string) => {
+    console.log('🧠 Trying to delete ID:', id);
     const res = await fetch(`/api/brain/${id}`, { method: 'DELETE' });
     if (res.ok) {
       setItems(prev => prev.filter(i => i.id !== id));
+      console.log('✅ Item deleted');
+    } else {
+      console.error('❌ Delete failed with status:', res.status);
     }
   };
 
@@ -79,13 +90,16 @@ export default function KnowledgeList({ storeKey }: { storeKey: 'purple' | 'blue
 
   return (
     <>
-      <div style={{
-        display: 'flex',
-        gap: '0.75rem',
-        marginBottom: '1rem',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-      }}>
+      {/* Filtros */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '0.75rem',
+          marginBottom: '1rem',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+        }}
+      >
         {filterOptions.map(option => (
           <button
             key={option}
@@ -106,17 +120,27 @@ export default function KnowledgeList({ storeKey }: { storeKey: 'purple' | 'blue
         ))}
       </div>
 
-      <div style={{
-        maxHeight: '400px',
-        overflowY: 'auto',
-        marginBottom: '1.5rem',
-        paddingRight: '0.5rem',
-        scrollbarGutter: 'stable',
-      }}>
+      {/* Contenedor elegante y fijo */}
+      <div
+        style={{
+          borderRadius: '1.25rem',
+          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.08)',
+          background: '#fff',
+          padding: '1.5rem',
+          height: '260px',
+          overflowY: 'auto',
+          margin: '0 auto',
+          width: '100%',
+          maxWidth: '860px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+        }}
+      >
         {loading ? (
-          <p>Cargando conocimientos...</p>
+          <p style={{ textAlign: 'center', color: '#888' }}>Loading knowledge...</p>
         ) : filteredItems.length === 0 ? (
-          <p>No knowledge in this filter.</p>
+          <p style={{ textAlign: 'center', color: '#888' }}>No knowledge in this filter.</p>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={filteredItems.map(i => i.id)} strategy={verticalListSortingStrategy}>
@@ -131,7 +155,9 @@ export default function KnowledgeList({ storeKey }: { storeKey: 'purple' | 'blue
       </div>
     </>
   );
-}
+});
+
+export default KnowledgeList;
 
 function SortableItem({ item, onDelete }: { item: BrainItem; onDelete: (id: string) => void }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
@@ -145,18 +171,37 @@ function SortableItem({ item, onDelete }: { item: BrainItem; onDelete: (id: stri
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    cursor: 'grab',
+    cursor: 'default',
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+    <div ref={setNodeRef} style={style} {...attributes}>
+      {/* Arrastrable solo a la izquierda */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '0.75rem',
+          alignItems: 'center',
+          cursor: 'grab',
+        }}
+        {...listeners}
+      >
         {item.type === 'text' && <FileText size={20} />}
         {item.type === 'link' && <Link size={20} />}
         {item.type === 'file' && <File size={20} />}
-        <span style={{ fontSize: '0.95rem' }}>{item.title || item.content}</span>
+        <span style={{ fontSize: '0.95rem', wordBreak: 'break-word' }}>
+          {item.title || item.content}
+        </span>
       </div>
-      <button onClick={() => onDelete(item.id)}>
+
+      {/* Botón de eliminar */}
+      <button
+        onClick={() => {
+          console.log('🗑️ Delete button clicked:', item.id);
+          onDelete(item.id);
+        }}
+        style={{ cursor: 'pointer' }}
+      >
         <Trash2 size={16} />
       </button>
     </div>

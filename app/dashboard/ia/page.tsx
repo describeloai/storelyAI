@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AddInfoButton from '@/components/dashboard/ui/AddInfoButton';
 import KnowledgeList from '@/components/dashboard/brain/KnowledgeList';
@@ -13,6 +13,9 @@ export default function StorelyBrainPage() {
   const textColor = '#ffffff';
 
   const [activeCard, setActiveCard] = useState<'purple' | 'blue'>('purple');
+
+  // Creamos el ref para controlar KnowledgeList
+  const knowledgeListRef = useRef<{ refetch: () => void }>(null);
 
   const handleToggle = () => {
     setActiveCard(prev => (prev === 'purple' ? 'blue' : 'purple'));
@@ -182,9 +185,9 @@ export default function StorelyBrainPage() {
         justifyContent: 'flex-start',
         boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
       }}>
-        <KnowledgeList storeKey={activeCard} />
+        <KnowledgeList ref={knowledgeListRef} storeKey={activeCard} />
         <div style={{ marginTop: '2rem' }}>
-          <AddInfoButton storeKey={activeCard} />
+          <AddInfoButton storeKey={activeCard} onInfoAdded={() => knowledgeListRef.current?.refetch()} />
         </div>
       </div>
     </div>

@@ -4,7 +4,13 @@ import { useState } from 'react';
 import { FileText, Link, Upload, Plug } from 'lucide-react';
 import '@/components/dashboard/ui/AddInfoButton.css';
 
-export default function AddInfoButton({ storeKey }: { storeKey: 'purple' | 'blue' }) {
+export default function AddInfoButton({
+  storeKey,
+  onInfoAdded,
+}: {
+  storeKey: 'purple' | 'blue';
+  onInfoAdded?: () => void;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
@@ -66,6 +72,11 @@ export default function AddInfoButton({ storeKey }: { storeKey: 'purple' | 'blue
           method: 'POST',
           body: formData,
         });
+      }
+
+      // Actualizar la lista de items sin recargar
+      if (onInfoAdded) {
+        onInfoAdded();
       }
 
       // Reset UI
