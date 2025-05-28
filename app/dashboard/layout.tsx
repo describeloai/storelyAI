@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Home, Brain, Settings, Plug } from 'lucide-react';
+import { Home, Brain, Settings, Plug, Moon, Sun } from 'lucide-react';
 
 const navItems = [
   { icon: <Home size={20} />, path: '/dashboard', color: 'blue' },
@@ -18,6 +18,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [activeColor, setActiveColor] = useState('gray');
   const [sColor, setSColor] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -36,7 +37,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setActiveColor(current?.color || 'gray');
   }, [pathname]);
 
-  // ✅ Bloqueo de scroll solo en dashboard
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -44,6 +44,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       document.body.style.overflow = originalOverflow;
     };
   }, []);
+
+  const toggleDarkMode = () => setDarkMode(prev => !prev);
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', overflowX: 'hidden' }}>
@@ -55,7 +57,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           position: 'fixed',
           top: 0,
           left: 0,
-          backgroundColor: '#fff',
+          backgroundColor: darkMode ? '#1a1a1a' : '#fff',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -63,6 +65,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           padding: '1.5rem 0',
           boxShadow: '2px 0 5px rgba(0, 0, 0, 0.03)',
           zIndex: 50,
+          transition: 'background 0.3s ease',
         }}
       >
         <div
@@ -93,7 +96,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 ? '#FF6EC7'
                 : isActive
                 ? `var(--${item.color})`
-                : '#888';
+                : darkMode ? '#ccc' : '#888';
 
             return (
               <Link
@@ -110,11 +113,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        <div style={{ marginBottom: '4rem' }}>
+        <div style={{ marginBottom: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+          <button
+            onClick={toggleDarkMode}
+            aria-label="Toggle dark mode"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: darkMode ? '#f4f4f5' : '#333',
+            }}
+          >
+            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
           <Link
             href="/dashboard/settings"
             style={{
-              color: pathname === '/dashboard/settings' ? 'var(--gray)' : '#888',
+              color: pathname === '/dashboard/settings' ? 'var(--gray)' : darkMode ? '#ccc' : '#888',
               transition: 'color 0.2s ease-in-out',
             }}
           >
@@ -131,9 +146,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           minHeight: '100vh',
           position: 'relative',
           overflowX: 'hidden',
-          backgroundColor: '#f1f3f5',
+          backgroundColor: darkMode ? '#121212' : '#f1f3f5',
+          color: darkMode ? '#f4f4f5' : '#111',
           borderTopLeftRadius: '1rem',
           borderTopRightRadius: '1rem',
+          transition: 'background 0.3s ease, color 0.3s ease',
         }}
       >
         <div
@@ -143,12 +160,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             left: 0,
             right: 0,
             height: '220px',
-            background: 'linear-gradient(to bottom, #2C3E50, #E0E0E0 70%, #ffffff 100%)',
+            background: darkMode
+              ? 'linear-gradient(to bottom, #000000, #222 70%, #121212 100%)'
+              : 'linear-gradient(to bottom, #2C3E50, #E0E0E0 70%, #ffffff 100%)',
             opacity: 0.2,
             zIndex: 0,
             pointerEvents: 'none',
             borderTopLeftRadius: '1rem',
             borderTopRightRadius: '1rem',
+            transition: 'background 0.3s ease',
           }}
         />
 

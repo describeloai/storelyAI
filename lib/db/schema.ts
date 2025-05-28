@@ -5,6 +5,7 @@ export type BrainItem = {
   type: 'text' | 'link' | 'file';
   title?: string;
   content: string;
-  fileUrl?: string | null; // ✅ permite string o null
+  fileUrl?: string | null;
+  folderId?: string | null; // Aquí la propiedad folderId que faltaba
   createdAt: string;
 };
