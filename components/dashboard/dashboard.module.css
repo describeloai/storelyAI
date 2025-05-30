@@ -16,6 +16,7 @@
   color: transparent;
   -webkit-text-fill-color: transparent;
   margin-bottom: 3rem;
+  transition: color 0.4s ease, -webkit-text-fill-color 0.4s ease;
 }
 
 .grid {
@@ -35,7 +36,6 @@
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
 }
-
 
 .card:hover {
   transform: translateY(-6px);
@@ -97,3 +97,4 @@
 .purple {
   background: linear-gradient(135deg, #7f00ff, #e100ff);
 }
+

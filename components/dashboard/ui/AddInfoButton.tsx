@@ -1,19 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, Link, Upload, Plug } from 'lucide-react';
+import { FileText, Link, Upload } from 'lucide-react';
 import '@/components/dashboard/ui/AddInfoButton.css';
+import { useDarkMode } from '@/context/DarkModeContext';
 
 export default function AddInfoButton({
   storeKey,
+  folderId,
   onInfoAdded,
 }: {
   storeKey: 'purple' | 'blue';
+  folderId?: string | null;
   onInfoAdded?: () => void;
 }) {
+  const { darkMode } = useDarkMode();
+
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-
   const [textInput, setTextInput] = useState('');
   const [linkInput, setLinkInput] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -22,13 +26,11 @@ export default function AddInfoButton({
     { key: 'text', label: 'Agregar texto manualmente', icon: <FileText size={18} /> },
     { key: 'link', label: 'Agregar enlace web', icon: <Link size={18} /> },
     { key: 'file', label: 'Subir archivo', icon: <Upload size={18} /> },
-    { key: 'integration', label: 'Conectar una plataforma', icon: <Plug size={18} /> },
   ];
 
   const handleSubmit = async () => {
     if (!storeKey) return;
-
-    const userId = 'demo-user'; // TODO: reemplazar por user real
+    const userId = 'demo-user';
 
     try {
       if (selectedOption === 'text' && textInput) {
@@ -38,6 +40,7 @@ export default function AddInfoButton({
           body: JSON.stringify({
             userId,
             storeKey,
+            folderId: folderId || null,
             type: 'text',
             content: textInput,
             title: '',
@@ -53,6 +56,7 @@ export default function AddInfoButton({
           body: JSON.stringify({
             userId,
             storeKey,
+            folderId: folderId || null,
             type: 'link',
             content: linkInput,
             title: '',
@@ -67,6 +71,7 @@ export default function AddInfoButton({
         formData.append('userId', userId);
         formData.append('storeKey', storeKey);
         formData.append('type', 'file');
+        if (folderId) formData.append('folderId', folderId);
 
         await fetch('/api/brain/add', {
           method: 'POST',
@@ -74,12 +79,9 @@ export default function AddInfoButton({
         });
       }
 
-      // Actualizar la lista de items sin recargar
-      if (onInfoAdded) {
-        onInfoAdded();
-      }
+      // ✅ Asegurarse de ejecutar la recarga
+      if (onInfoAdded) onInfoAdded();
 
-      // Reset UI
       setIsOpen(false);
       setSelectedOption(null);
       setTextInput('');
@@ -92,19 +94,43 @@ export default function AddInfoButton({
 
   return (
     <>
-      <button className="add-button" onClick={() => setIsOpen(true)}>
+      <button
+        className="add-button"
+        onClick={() => setIsOpen(true)}
+        style={{ backgroundColor: '#371866', color: '#fff' }}
+      >
         + Add info manually
       </button>
 
       {isOpen && (
-        <div className="modal-overlay" onClick={() => setIsOpen(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+        <div
+          className="modal-overlay"
+          onClick={() => setIsOpen(false)}
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        >
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: darkMode ? '#1c1c1c' : '#fff',
+              color: darkMode ? '#f4f4f5' : '#111',
+              boxShadow: darkMode ? '0 8px 30px rgba(0,0,0,0.5)' : '0 8px 30px rgba(0,0,0,0.1)',
+            }}
+          >
             {!selectedOption ? (
               <div>
                 <h2 className="modal-title">¿Qué deseas agregar?</h2>
                 <div className="option-list">
                   {options.map(({ key, label, icon }) => (
-                    <button key={key} className="option-button" onClick={() => setSelectedOption(key)}>
+                    <button
+                      key={key}
+                      className="option-button"
+                      onClick={() => setSelectedOption(key)}
+                      style={{
+                        backgroundColor: darkMode ? '#2a2a2a' : '#f9f9f9',
+                        color: darkMode ? '#eee' : '#111',
+                      }}
+                    >
                       {icon}
                       <span>{label}</span>
                     </button>
@@ -113,7 +139,13 @@ export default function AddInfoButton({
               </div>
             ) : (
               <div>
-                <button className="back-button" onClick={() => setSelectedOption(null)}>← Volver</button>
+                <button
+                  className="back-button"
+                  onClick={() => setSelectedOption(null)}
+                  style={{ color: darkMode ? '#ccc' : '#333' }}
+                >
+                  ← Volver
+                </button>
 
                 {selectedOption === 'text' && (
                   <>
@@ -122,7 +154,12 @@ export default function AddInfoButton({
                       className="textarea"
                       placeholder="Escribe tu contenido aquí..."
                       value={textInput}
-                      onChange={e => setTextInput(e.target.value)}
+                      onChange={(e) => setTextInput(e.target.value)}
+                      style={{
+                        backgroundColor: darkMode ? '#2a2a2a' : '#fff',
+                        color: darkMode ? '#eee' : '#111',
+                        border: `1px solid ${darkMode ? '#555' : '#ccc'}`,
+                      }}
                     />
                   </>
                 )}
@@ -135,7 +172,12 @@ export default function AddInfoButton({
                       className="input"
                       placeholder="https://ejemplo.com"
                       value={linkInput}
-                      onChange={e => setLinkInput(e.target.value)}
+                      onChange={(e) => setLinkInput(e.target.value)}
+                      style={{
+                        backgroundColor: darkMode ? '#2a2a2a' : '#fff',
+                        color: darkMode ? '#eee' : '#111',
+                        border: `1px solid ${darkMode ? '#555' : '#ccc'}`,
+                      }}
                     />
                   </>
                 )}
@@ -146,23 +188,27 @@ export default function AddInfoButton({
                     <input
                       type="file"
                       className="input"
-                      onChange={e => setFile(e.target.files?.[0] || null)}
+                      onChange={(e) => setFile(e.target.files?.[0] || null)}
+                      style={{
+                        backgroundColor: darkMode ? '#2a2a2a' : '#fff',
+                        color: darkMode ? '#eee' : '#111',
+                        border: `1px solid ${darkMode ? '#555' : '#ccc'}`,
+                      }}
                     />
                   </>
                 )}
 
-                {selectedOption === 'integration' && (
-                  <>
-                    <h3>Conectar plataforma</h3>
-                    <p>Próximamente podrás conectar tu CMS, ecommerce, etc.</p>
-                  </>
-                )}
-
-                {selectedOption !== 'integration' && (
-                  <button className="add-button" style={{ marginTop: '1rem' }} onClick={handleSubmit}>
-                    Guardar
-                  </button>
-                )}
+                <button
+                  className="add-button"
+                  style={{
+                    marginTop: '1rem',
+                    backgroundColor: '#371866',
+                    color: '#fff',
+                  }}
+                  onClick={handleSubmit}
+                >
+                  Share
+                </button>
               </div>
             )}
           </div>

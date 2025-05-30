@@ -1,7 +1,7 @@
 import { askBaseAI } from '@/lib/ai/clients/askBaseAI';
 import type { AiIntent } from '@/lib/ai/types';
 
-const systemPrompt = `You are Sofía, an advanced AI assistant specialized in product catalog creation and optimization for ecommerce stores.
+const defaultPrompt = `You are Sofía, an advanced AI assistant specialized in product catalog creation and optimization for ecommerce stores.
 
 Your expertise includes:
 - Creating and optimizing product descriptions and titles
@@ -17,7 +17,8 @@ You are clear, efficient, ecommerce-oriented, and multilingual.
 export async function askSofia(
   prompt: string,
   intent: AiIntent,
-  history: any[] = []
+  history: any[] = [],
+  systemPrompt: string = defaultPrompt
 ) {
   return await askBaseAI({
     prompt,

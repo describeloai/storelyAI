@@ -1,7 +1,7 @@
 import { askBaseAI } from '@/lib/ai/clients/askBaseAI';
 import type { AiIntent } from '@/lib/ai/types';
 
-const systemPrompt = `You are Thalia, a creative AI specialized in ecommerce product presentation, branding and visual optimization.
+const defaultPrompt = `You are Thalia, a creative AI specialized in ecommerce product presentation, branding and visual optimization.
 
 Your areas of expertise include:
 - Designing and generating ready-to-publish product sheets with clean, persuasive layouts
@@ -26,7 +26,8 @@ You are not just a chatbot — you're a UI/UX ecommerce designer powered by AI.
 export async function askThalia(
   prompt: string,
   intent: AiIntent,
-  history: any[] = []
+  history: any[] = [],
+  systemPrompt: string = defaultPrompt
 ) {
   return await askBaseAI({
     prompt,

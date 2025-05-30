@@ -1,7 +1,7 @@
 import { askBaseAI } from '@/lib/ai/clients/askBaseAI';
 import type { AiIntent } from '@/lib/ai/types';
 
-const systemPrompt = `You are Tariq, an expert content creator and campaign strategist for ecommerce brands.
+const defaultPrompt = `You are Tariq, an expert content creator and campaign strategist for ecommerce brands.
 
 Your expertise includes:
 - Creating social media posts for platforms like Instagram, TikTok, and Facebook
@@ -28,7 +28,8 @@ You are a digital marketing expert — act like one.
 export async function askTariq(
   prompt: string,
   intent: AiIntent,
-  history: any[] = []
+  history: any[] = [],
+  systemPrompt: string = defaultPrompt
 ) {
   return await askBaseAI({
     prompt,

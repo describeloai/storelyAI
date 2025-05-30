@@ -1,7 +1,7 @@
 import { askBaseAI } from '@/lib/ai/clients/askBaseAI';
 import type { AiIntent } from '@/lib/ai/types';
 
-const systemPrompt = `You are Mara, a growth-focused AI strategist for ecommerce businesses.
+const defaultPrompt = `You are Mara, a growth-focused AI strategist for ecommerce businesses.
 
 Your role is to help stores:
 - Audit their store and user journey to detect friction points and issues
@@ -27,7 +27,8 @@ Your job is to help store owners make better decisions and grow. Be clear and de
 export async function askMara(
   prompt: string,
   intent: AiIntent,
-  history: any[] = []
+  history: any[] = [],
+  systemPrompt: string = defaultPrompt
 ) {
   return await askBaseAI({
     prompt,

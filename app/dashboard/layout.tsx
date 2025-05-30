@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Home, Brain, Settings, Plug, Moon, Sun } from 'lucide-react';
+import { DarkModeProvider, useDarkMode } from '@/context/DarkModeContext';
 
 const navItems = [
   { icon: <Home size={20} />, path: '/dashboard', color: 'blue' },
@@ -13,15 +14,33 @@ const navItems = [
 
 const colorCycle = ['#1DA1F2', '#F6E27F', '#228B22', '#FF784F', '#9B59B6', '#FF6F61'];
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+// COMPONENTE PRINCIPAL
+export default function DashboardLayoutWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <DarkModeProvider>
+      <DashboardLayout>{children}</DashboardLayout>
+    </DarkModeProvider>
+  );
+}
+
+// LAYOUT INTERNO
+function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { darkMode, toggleDarkMode } = useDarkMode();
+
   const [activeColor, setActiveColor] = useState('gray');
   const [sColor, setSColor] = useState(0);
-  const [mounted, setMounted] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Cambiar clase body para dark mode
+    if (darkMode) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setSColor((prev) => (prev + 1) % colorCycle.length);
     }, 1000);
@@ -44,8 +63,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       document.body.style.overflow = originalOverflow;
     };
   }, []);
-
-  const toggleDarkMode = () => setDarkMode(prev => !prev);
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', overflowX: 'hidden' }}>
@@ -96,7 +113,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 ? '#FF6EC7'
                 : isActive
                 ? `var(--${item.color})`
-                : darkMode ? '#ccc' : '#888';
+                : darkMode
+                ? '#ccc'
+                : '#888';
 
             return (
               <Link
@@ -113,7 +132,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        <div style={{ marginBottom: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+        <div
+          style={{
+            marginBottom: '4rem',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '1rem',
+          }}
+        >
           <button
             onClick={toggleDarkMode}
             aria-label="Toggle dark mode"

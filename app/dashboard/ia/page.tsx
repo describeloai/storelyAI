@@ -5,17 +5,21 @@ import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AddInfoButton from '@/components/dashboard/ui/AddInfoButton';
 import KnowledgeList from '@/components/dashboard/brain/KnowledgeList';
+import { useDarkMode } from '@/context/DarkModeContext';
+import { useKnowledgeStats } from '@/hooks/useKnowledgeStats';
 
 export default function StorelyBrainPage() {
-  const backgroundColor = '#f4f2f9';
+  const { darkMode } = useDarkMode();
+
+  const backgroundColor = darkMode ? '#121212' : '#f4f2f9';
   const purple = '#371866';
   const blue = '#1A73E8';
-  const textColor = '#ffffff';
+  const textColor = darkMode ? '#f4f4f5' : '#ffffff';
 
   const [activeCard, setActiveCard] = useState<'purple' | 'blue'>('purple');
-
-  // Creamos el ref para controlar KnowledgeList
   const knowledgeListRef = useRef<{ refetch: () => void }>(null);
+
+  const { stats, refetch } = useKnowledgeStats(activeCard);
 
   const handleToggle = () => {
     setActiveCard(prev => (prev === 'purple' ? 'blue' : 'purple'));
@@ -35,14 +39,15 @@ export default function StorelyBrainPage() {
       <h1 style={{
         fontSize: '2.25rem',
         fontWeight: 800,
-        color: purple,
+        color: darkMode ? '#ffffff' : purple,
+        transition: 'color 0.3s ease',
       }}>
         Storely Brain
       </h1>
 
-      {/* WRAPPER de ambas cards */}
+      {/* Cards */}
       <div style={{ position: 'relative', height: '200px' }}>
-        {/* CARD 1 */}
+        {/* Purple Card */}
         <motion.div
           onClick={activeCard !== 'purple' ? handleToggle : undefined}
           initial={false}
@@ -68,7 +73,7 @@ export default function StorelyBrainPage() {
           <AnimatePresence>
             {activeCard === 'purple' && (
               <motion.div
-                key="purpleText"
+                key="purpleStats"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -85,9 +90,9 @@ export default function StorelyBrainPage() {
                   fontSize: '1.1rem',
                   marginTop: '0.5rem'
                 }}>
-                  <div><strong>0</strong> Snippets</div>
-                  <div><strong>0</strong> Websites</div>
-                  <div><strong>0</strong> Files</div>
+                  <div><strong>{stats.text}</strong> Text</div>
+                  <div><strong>{stats.link}</strong> Link</div>
+                  <div><strong>{stats.file}</strong> File</div>
                 </div>
               </motion.div>
             )}
@@ -107,7 +112,7 @@ export default function StorelyBrainPage() {
           </div>
         </motion.div>
 
-        {/* CARD 2 */}
+        {/* Blue Card */}
         <motion.div
           onClick={activeCard !== 'blue' ? handleToggle : undefined}
           initial={false}
@@ -133,14 +138,14 @@ export default function StorelyBrainPage() {
           <AnimatePresence>
             {activeCard === 'blue' && (
               <motion.div
-                key="blueText"
+                key="blueStats"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.4 }}
               >
                 <p style={{ fontSize: '1rem', color: textColor, opacity: 0.9, marginBottom: '0.25rem' }}>
-                  AI Memory
+                  Knowledge Status
                 </p>
                 <div style={{
                   display: 'flex',
@@ -150,9 +155,9 @@ export default function StorelyBrainPage() {
                   fontSize: '1.1rem',
                   marginTop: '0.5rem'
                 }}>
-                  <div><strong>0</strong> Prompts</div>
-                  <div><strong>0</strong> Tags</div>
-                  <div><strong>0</strong> Notes</div>
+                  <div><strong>{stats.text}</strong> Text</div>
+                  <div><strong>{stats.link}</strong> Link</div>
+                  <div><strong>{stats.file}</strong> File</div>
                 </div>
               </motion.div>
             )}
@@ -173,9 +178,9 @@ export default function StorelyBrainPage() {
         </motion.div>
       </div>
 
-      {/* CONTENIDO PRINCIPAL */}
+      {/* Content */}
       <div style={{
-        background: '#fff',
+        background: darkMode ? '#1c1c1c' : '#fff',
         borderRadius: '1.5rem',
         padding: '2.5rem 2.5rem',
         minHeight: '300px',
@@ -183,11 +188,17 @@ export default function StorelyBrainPage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
+        boxShadow: darkMode ? '0 1px 6px rgba(0,0,0,0.4)' : '0 1px 6px rgba(0,0,0,0.04)',
       }}>
         <KnowledgeList ref={knowledgeListRef} storeKey={activeCard} />
         <div style={{ marginTop: '2rem' }}>
-          <AddInfoButton storeKey={activeCard} onInfoAdded={() => knowledgeListRef.current?.refetch()} />
+          <AddInfoButton
+            storeKey={activeCard}
+            onInfoAdded={() => {
+              knowledgeListRef.current?.refetch(); // actualiza lista
+              refetch(); // actualiza contador del card
+            }}
+          />
         </div>
       </div>
     </div>

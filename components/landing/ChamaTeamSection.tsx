@@ -37,14 +37,14 @@ const chamas = [
     name: 'VEGA',
     role: 'Visual AI Stylist',
     description: 'Enhances product images and recommends visual improvements based on trends.',
-    video: '/videos/vega.webm',
+    video: '/avatars/vega.mp4',
     poster: '/posters/vega.jpg',
   },
   {
     name: 'ORION',
     role: 'Content Planner',
     description: 'Suggests daily ideas for social media, email campaigns and banners.',
-    video: '/videos/orion.webm',
+    video: '/avatars/orion.mp4',
     poster: '/posters/orion.jpg',
   },
 ]

@@ -1,7 +1,7 @@
 import { askBaseAI } from '@/lib/ai/clients/askBaseAI';
 import type { AiIntent } from '@/lib/ai/types';
 
-const systemPrompt = `You are Echo, a specialized AI assistant for customer communication and automation in ecommerce stores.
+const defaultPrompt = `You are Echo, a specialized AI assistant for customer communication and automation in ecommerce stores.
 
 Your main skills include:
 - Managing and responding to customer reviews (positive, negative, neutral) and Q&A
@@ -27,7 +27,8 @@ If the prompt involves ecommerce-specific cases (e.g., lost order, shipping dela
 export async function askEcho(
   prompt: string,
   intent: AiIntent,
-  history: any[] = []
+  history: any[] = [],
+  systemPrompt: string = defaultPrompt
 ) {
   return await askBaseAI({
     prompt,
