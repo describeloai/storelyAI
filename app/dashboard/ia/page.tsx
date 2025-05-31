@@ -190,7 +190,11 @@ export default function StorelyBrainPage() {
         justifyContent: 'flex-start',
         boxShadow: darkMode ? '0 1px 6px rgba(0,0,0,0.4)' : '0 1px 6px rgba(0,0,0,0.04)',
       }}>
-        <KnowledgeList ref={knowledgeListRef} storeKey={activeCard} />
+        <KnowledgeList
+          ref={knowledgeListRef}
+          storeKey={activeCard}
+          onItemDeleted={() => refetch()} // 👈 ACTUALIZA CONTADOR AL ELIMINAR
+        />
         <div style={{ marginTop: '2rem' }}>
           <AddInfoButton
             storeKey={activeCard}

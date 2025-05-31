@@ -27,7 +27,13 @@ const filterOptions = ['all', 'text', 'link', 'file'] as const;
 type FilterType = (typeof filterOptions)[number];
 
 const KnowledgeList = forwardRef(function KnowledgeList(
-  { storeKey }: { storeKey: 'purple' | 'blue' },
+  {
+    storeKey,
+    onItemDeleted,
+  }: {
+    storeKey: 'purple' | 'blue';
+    onItemDeleted?: () => void; // 👈 NUEVO
+  },
   ref
 ) {
   const [items, setItems] = useState<BrainItem[]>([]);
@@ -59,6 +65,7 @@ const KnowledgeList = forwardRef(function KnowledgeList(
     if (res.ok) {
       setItems(prev => prev.filter(i => i.id !== id));
       console.log('✅ Item deleted');
+      if (onItemDeleted) onItemDeleted(); // 👈 ACTUALIZA CONTADOR
     } else {
       console.error('❌ Delete failed with status:', res.status);
     }

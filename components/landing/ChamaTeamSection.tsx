@@ -34,18 +34,18 @@ const chamas = [
     poster: '/posters/kai.jpg',
   },
   {
-    name: 'VEGA',
-    role: 'Visual AI Stylist',
-    description: 'Enhances product images and recommends visual improvements based on trends.',
-    video: '/avatars/vega.mp4',
-    poster: '/posters/vega.jpg',
+    name: 'Ciro',
+    role: 'Profitability Analyst',
+    description: 'Ciro uses smart analytics to optimize pricing, forecast inventory, track margins, and stay ahead of competitors—helping you boost profit with every decision.',
+    video: '/avatars/ciro.mp4',
+    poster: '/posters/ciro.jpg',
   },
   {
-    name: 'ORION',
-    role: 'Content Planner',
-    description: 'Suggests daily ideas for social media, email campaigns and banners.',
-    video: '/avatars/orion.mp4',
-    poster: '/posters/orion.jpg',
+    name: 'Echo',
+    role: 'Customer Experience Specialist',
+    description: 'Your AI-powered expert in customer communication, automating responses, managing reviews, and boosting engagement with multilingual chatbots and intelligent email flows.',
+    video: '/avatars/echo.mp4',
+    poster: '/posters/echo.jpg',
   },
 ]
 

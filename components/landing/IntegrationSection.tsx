@@ -11,7 +11,7 @@ export default function IntegrationSection() {
         <div className="text-content">
           <h2 className="section-title">Powerful Integrations.</h2>
           <p>
-            StorelySync connects your favorite tools — Shopify, Amazon, Notion, Gmail, and more — with AI-powered automation through a smart, chat-based interface. One conversation, endless possibilities.
+            Storely connects your favorite tools — Shopify, Amazon, Notion, Gmail, and more — with AI-powered automation through a smart, chat-based interface. One conversation, endless possibilities.
           </p>
 
           <div className="integration-logos-grid">

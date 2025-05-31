@@ -31,24 +31,25 @@ export default function NewHero() {
     >
       {/* Video de fondo */}
       <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          zIndex: 0,
-        }}
-      >
-        <source src="/blue-camaleon-hero.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+  autoPlay
+  loop
+  muted
+  playsInline
+  preload="auto"
+  poster="/posters/ciro.jpg" // ✅ Imagen de respaldo
+  style={{
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    zIndex: 0,
+  }}
+>
+  <source src="/blue-camaleon-hero.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
 
       {/* Overlay oscuro */}
       <div
@@ -82,7 +83,7 @@ export default function NewHero() {
             textShadow: '2px 2px 6px rgba(0,0,0,0.6)',
           }}
         >
-          Transform the future of ecommerce with{' '}
+          Transform your ecommerce with{' '}
           {isMobile ? <br /> : null}
           AI-powered intelligence.
         </h1>
