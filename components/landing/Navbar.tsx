@@ -107,19 +107,19 @@ export default function NewNavbar() {
 
       <style jsx>{`
         .navbar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.2rem 2rem;
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          z-index: 100;
-          background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), transparent);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-        }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 2rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
 
         .logo {
           font-size: 2.4rem;
