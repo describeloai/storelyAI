@@ -36,7 +36,7 @@ export default function NewHero() {
   muted
   playsInline
   preload="auto"
-  poster="/posters/ciro.jpg" // ✅ Imagen de respaldo
+  poster="/posters/ciro.jpg"
   style={{
     position: 'absolute',
     top: 0,
@@ -47,9 +47,11 @@ export default function NewHero() {
     zIndex: 0,
   }}
 >
+  <source src="/blue-camaleon-hero.webm" type="video/webm" />
   <source src="/blue-camaleon-hero.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
+
 
       {/* Overlay oscuro */}
       <div
