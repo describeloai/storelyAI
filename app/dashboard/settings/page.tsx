@@ -58,6 +58,7 @@ export default function SettingsPage() {
         minHeight: '100vh',
         backgroundColor: darkMode ? '#121212' : '#f9f9f9',
         color: darkMode ? '#f4f4f5' : '#111',
+        fontFamily: `'Inter', 'Segoe UI', sans-serif`,
         transition: 'background 0.3s ease, color 0.3s ease',
       }}
     >
@@ -71,8 +72,8 @@ export default function SettingsPage() {
       >
         <h2
           style={{
-            fontSize: '1.25rem',
-            fontWeight: 600,
+            fontSize: '1.4rem',
+            fontWeight: 700,
             marginBottom: '2rem',
             color: darkMode ? '#fff' : '#111',
           }}
@@ -85,7 +86,7 @@ export default function SettingsPage() {
             padding: 0,
             display: 'flex',
             flexDirection: 'column',
-            gap: '1rem',
+            gap: '0.75rem',
           }}
         >
           {sections.map((section) => (
@@ -96,13 +97,16 @@ export default function SettingsPage() {
                   background: 'none',
                   border: 'none',
                   fontSize: '1rem',
-                  color: activeSection === section.key
-                    ? (darkMode ? '#fff' : '#000')
-                    : (darkMode ? '#aaa' : '#666'),
                   fontWeight: activeSection === section.key ? 600 : 400,
+                  color:
+                    activeSection === section.key
+                      ? (darkMode ? '#fff' : '#000')
+                      : (darkMode ? '#aaa' : '#666'),
                   cursor: 'pointer',
+                  padding: '0.35rem 0',
+                  width: '100%',
                   textAlign: 'left',
-                  padding: '0.25rem 0',
+                  transition: 'color 0.2s ease',
                 }}
               >
                 {section.label}
@@ -113,7 +117,15 @@ export default function SettingsPage() {
       </aside>
 
       {/* Main content */}
-      <main style={{ flex: 1, paddingLeft: '2rem' }}>
+      <main
+        style={{
+          flex: 1,
+          paddingLeft: '2.5rem',
+          paddingTop: '0.5rem',
+          paddingBottom: '2rem',
+          transition: 'color 0.3s ease',
+        }}
+      >
         {renderSection()}
       </main>
     </div>
