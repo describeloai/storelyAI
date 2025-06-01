@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
   const intent = detectCiroIntent(prompt, true);
 
-  // 🔍 Buscar configuración del usuario para Ciro
+  // 🔍 Configuración del usuario
   let tone = 'friendly';
   let detailed = true;
 
@@ -32,22 +32,21 @@ export async function POST(req: NextRequest) {
     console.warn('No assistant_settings found for Ciro:', err);
   }
 
-  // 🧪 Logs de depuración
-  console.log('📥 Prompt recibido:', prompt);
-  console.log('👤 userId:', userId);
-  console.log('🧠 Assistant ID: ciro');
+  // 🔍 Detectar si el prompt es irrelevante (ej. "gracias", "ok", etc.)
+  const isTrivialPrompt = /gracias|ok|vale|de nada|perfecto|👌|👍|😊|entendido/i.test(prompt.trim());
+  const isFirstMessage = !history || history.length === 0;
 
-  // 🧠 Generar prompt con contexto relevante del Brain
-  const systemPrompt = await getSystemPromptWithBrain({
-    assistantId: 'ciro',
-    roleDescription: 'an SEO and performance AI assistant for ecommerce stores',
-    tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
-    detailed,
-    userId,
-    prompt
-  });
-
-  console.log('📡 systemPrompt generado:\n', systemPrompt);
+  let systemPrompt = '';
+  if (isFirstMessage || !isTrivialPrompt) {
+    systemPrompt = await getSystemPromptWithBrain({
+      assistantId: 'ciro',
+      roleDescription: 'an SEO and performance AI assistant for ecommerce stores',
+      tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
+      detailed,
+      userId,
+      prompt,
+    });
+  }
 
   try {
     const output = await askCiro(prompt, intent, history, systemPrompt);

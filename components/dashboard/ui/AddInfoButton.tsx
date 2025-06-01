@@ -21,6 +21,7 @@ export default function AddInfoButton({
   const [textInput, setTextInput] = useState('');
   const [linkInput, setLinkInput] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // 👈 NEW
 
   const options = [
     { key: 'text', label: 'Agregar texto manualmente', icon: <FileText size={18} /> },
@@ -29,7 +30,9 @@ export default function AddInfoButton({
   ];
 
   const handleSubmit = async () => {
-    if (!storeKey) return;
+    if (!storeKey || isSubmitting) return;
+
+    setIsSubmitting(true);
     const userId = 'demo-user';
 
     try {
@@ -79,9 +82,9 @@ export default function AddInfoButton({
         });
       }
 
-      // ✅ Asegurarse de ejecutar la recarga
       if (onInfoAdded) onInfoAdded();
 
+      // Reset
       setIsOpen(false);
       setSelectedOption(null);
       setTextInput('');
@@ -89,6 +92,8 @@ export default function AddInfoButton({
       setFile(null);
     } catch (err) {
       console.error('Error adding info:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -202,12 +207,15 @@ export default function AddInfoButton({
                   className="add-button"
                   style={{
                     marginTop: '1rem',
-                    backgroundColor: '#371866',
+                    backgroundColor: isSubmitting ? '#999' : '#371866',
                     color: '#fff',
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    opacity: isSubmitting ? 0.7 : 1,
                   }}
                   onClick={handleSubmit}
+                  disabled={isSubmitting}
                 >
-                  Share
+                  {isSubmitting ? 'Saving...' : 'Share'}
                 </button>
               </div>
             )}

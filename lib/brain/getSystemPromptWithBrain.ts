@@ -16,7 +16,8 @@ export async function getSystemPromptWithBrain({
   detailed = true,
   userId,
   prompt,
-  topK = 10,
+  topK = 8,
+  maxCharPerChunk = 350,
   toneInstructions = defaultToneInstructions,
 }: {
   assistantId: string;
@@ -26,9 +27,9 @@ export async function getSystemPromptWithBrain({
   userId: string;
   prompt: string;
   topK?: number;
+  maxCharPerChunk?: number;
   toneInstructions?: Record<string, string>;
 }) {
-  // 🔍 Buscar contexto relevante del Brain
   const brainChunks = await searchRelevantChunks({
     userId,
     assistantId,
@@ -36,15 +37,22 @@ export async function getSystemPromptWithBrain({
     topK,
   });
 
-  // ✅ Limitar a los 5 primeros para ahorrar tokens, sin perder relevancia
-  const brainContext = brainChunks
+  // 🔁 Eliminar duplicados por contenido truncado
+  const seen = new Set();
+  const filteredChunks = brainChunks.filter(chunk => {
+    const preview = chunk.slice(0, 100).trim();
+    if (seen.has(preview)) return false;
+    seen.add(preview);
+    return true;
+  });
+
+  const truncatedChunks = filteredChunks
     .slice(0, 5)
-    .map(c => `- ${c}`)
+    .map(c => `- ${c.length > maxCharPerChunk ? c.slice(0, maxCharPerChunk) + '…' : c}`)
     .join('\n');
 
-  // 🧠 Construir prompt final con tono + detalle + conocimiento del usuario
   const formattedPrompt = `
-You are ${assistantId[0].toUpperCase() + assistantId.slice(1)}, ${roleDescription}.
+You are ${capitalize(assistantId)}, ${roleDescription}.
 
 ${toneInstructions[tone] || toneInstructions.friendly}
 
@@ -53,11 +61,15 @@ ${detailed
     : 'Keep responses short, clear, and action-oriented.'}
 
 Use the user’s stored knowledge when relevant:
-${brainContext}
+${truncatedChunks}
 
 Always prioritize accuracy and clarity based on the user’s own data.
   `.trim();
 
-  console.log('🧠 Contexto generado desde Brain:\n', brainContext);
+  console.log('🧠 Contexto generado desde Brain:\n', truncatedChunks);
   return formattedPrompt;
+}
+
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

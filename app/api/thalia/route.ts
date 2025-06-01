@@ -32,20 +32,21 @@ export async function POST(req: NextRequest) {
     console.warn('⚠️ No assistant_settings found for Thalia:', err);
   }
 
-  // 🧪 Logs para depuración
-  console.log('📥 Prompt recibido:', prompt);
-  console.log('👤 userId:', userId);
-  console.log('🧠 Assistant ID: thalia');
+  // 💬 Detectar si el prompt es trivial (ej. "gracias", "ok", etc.)
+  const isTrivialPrompt = /gracias|ok|vale|de nada|perfecto|👌|👍|😊|entendido/i.test(prompt.trim());
+  const isFirstMessage = !history || history.length === 0;
 
-  // 🧠 Construir prompt completo con contexto inteligente
-  const systemPrompt = await getSystemPromptWithBrain({
-    assistantId: 'thalia',
-    roleDescription: 'an AI assistant specialized in ecommerce operations and management',
-    tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
-    detailed,
-    userId,
-    prompt
-  });
+  let systemPrompt = '';
+  if (isFirstMessage || !isTrivialPrompt) {
+    systemPrompt = await getSystemPromptWithBrain({
+      assistantId: 'thalia',
+      roleDescription: 'an AI assistant specialized in ecommerce operations and management',
+      tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
+      detailed,
+      userId,
+      prompt,
+    });
+  }
 
   console.log('📡 systemPrompt generado:\n', systemPrompt);
 

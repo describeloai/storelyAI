@@ -32,22 +32,21 @@ export async function POST(req: NextRequest) {
     console.warn('⚠️ No assistant_settings found for Echo:', err);
   }
 
-  // 🧪 Logs de verificación
-  console.log('📥 Prompt recibido:', prompt);
-  console.log('👤 userId:', userId);
-  console.log('🧠 Assistant ID: echo');
+  // 🔍 Detectar si el mensaje es trivial (ej: "gracias", "ok", "👌", etc.)
+  const isTrivialPrompt = /gracias|ok|vale|de nada|perfecto|👌|👍|😊|entendido/i.test(prompt.trim());
+  const isFirstMessage = !history || history.length === 0;
 
-  // 🧠 Crear prompt con contexto del Brain
-  const systemPrompt = await getSystemPromptWithBrain({
-    assistantId: 'echo',
-    roleDescription: 'a data analyst AI assistant for ecommerce stores',
-    tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
-    detailed,
-    userId,
-    prompt
-  });
-
-  console.log('📡 systemPrompt generado:\n', systemPrompt);
+  let systemPrompt = '';
+  if (isFirstMessage || !isTrivialPrompt) {
+    systemPrompt = await getSystemPromptWithBrain({
+      assistantId: 'echo',
+      roleDescription: 'a data analyst AI assistant for ecommerce stores',
+      tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
+      detailed,
+      userId,
+      prompt,
+    });
+  }
 
   try {
     const output = await askEcho(prompt, intent, history, systemPrompt);

@@ -196,9 +196,20 @@ function SortableItem({ item, onDelete }: { item: BrainItem; onDelete: (id: stri
         {item.type === 'text' && <FileText size={20} />}
         {item.type === 'link' && <Link size={20} />}
         {item.type === 'file' && <File size={20} />}
-        <span style={{ fontSize: '0.95rem', wordBreak: 'break-word' }}>
-          {item.title || item.content}
-        </span>
+        <span
+  title={item.title || item.content}
+  style={{
+    fontSize: '0.95rem',
+    maxWidth: '460px',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: 'inline-block',
+    verticalAlign: 'middle',
+  }}
+>
+  {item.title || item.content}
+</span>
       </div>
 
       {/* Botón de eliminar */}

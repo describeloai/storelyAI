@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unsupported content type' }, { status: 400 });
     }
 
-    // ✅ Guardar en brain_items (visual y general)
+    // ✅ Guardar en brain_items (visual)
     await pool.query(
       `INSERT INTO brain_items (id, user_id, store_key, type, title, content, file_url, created_at, position)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
@@ -59,19 +59,28 @@ export async function POST(req: NextRequest) {
       ]
     );
 
-    // ✅ Guardar embeddings si es texto o link
+    // ✅ Guardar embeddings únicos si es texto o link
     if (newItem.type === 'text' || newItem.type === 'link') {
       console.log('🧠 Generando embedding con contenido:', newItem.content);
 
       const assistantIds = ['sofia', 'mara', 'ciro', 'tariq', 'echo', 'thalia'];
 
       for (const assistantId of assistantIds) {
-        await saveBrainEmbedding({
-          userId: newItem.userId,
-          assistantId,
-          content: newItem.content,
-          type: newItem.type,
-        });
+        const existing = await pool.query(
+          `SELECT 1 FROM brain_embeddings WHERE user_id = $1 AND assistant_id = $2 AND content = $3 LIMIT 1`,
+          [newItem.userId, assistantId, newItem.content]
+        );
+
+        if (existing.rows.length === 0) {
+          await saveBrainEmbedding({
+            userId: newItem.userId,
+            assistantId,
+            content: newItem.content,
+            type: newItem.type,
+          });
+        } else {
+          console.log(`⏭ Embedding ya existente para ${assistantId}, contenido omitido.`);
+        }
       }
     }
 

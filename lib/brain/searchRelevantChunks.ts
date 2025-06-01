@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres'; // ✅ instalar si no lo tienes// ✅ importar array correctamente
+import { sql } from '@vercel/postgres';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
@@ -10,11 +10,13 @@ export async function searchRelevantChunks({
   assistantId,
   query,
   topK = 5,
+  similarityThreshold = 0.85, // ✅ NUEVO: umbral mínimo de relevancia
 }: {
   userId: string;
   assistantId: string;
   query: string;
   topK?: number;
+  similarityThreshold?: number; // 1 = idéntico, 0 = totalmente distinto
 }) {
   if (!query || query.length < 3) return [];
 
@@ -33,19 +35,22 @@ export async function searchRelevantChunks({
     queryEmbeddingPreview: queryEmbedding.slice(0, 5),
   });
 
-  // 📌 Buscar por distancia vectorial (requiere columna vector)
+  // 📌 Consultar por distancia vectorial (cuanto menor, más similar)
   const { rows } = await sql`
-  SELECT content
-  FROM brain_embeddings
-  WHERE user_id = ${userId}
-  AND assistant_id = ${assistantId}
-  ORDER BY embedding <#> ${`[${queryEmbedding.join(',')}]`} ASC
-  LIMIT ${topK};
-`;
+    SELECT content, 1 - (embedding <#> ${`[${queryEmbedding.join(',')}]`}) AS similarity
+    FROM brain_embeddings
+    WHERE user_id = ${userId}
+    AND assistant_id = ${assistantId}
+    ORDER BY similarity DESC
+    LIMIT ${topK};
+  `;
 
+  // 🎯 Filtrar por similitud mínima
+  const relevantChunks = rows.filter(r => r.similarity >= similarityThreshold).map(r => r.content);
 
-  console.log('✅ Retrieved rows:', rows.length);
-  console.log('🔎 brainChunks encontrados:', rows.length);
-  console.log('🧠 Primeros resultados:', rows.slice(0, 2));
-  return rows.map(r => r.content);
+  console.log(`✅ Retrieved rows: ${rows.length}`);
+  console.log(`🔎 Relevant chunks (similarity ≥ ${similarityThreshold}): ${relevantChunks.length}`);
+  console.log('🧠 Primeros resultados:', relevantChunks.slice(0, 2));
+
+  return relevantChunks;
 }

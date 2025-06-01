@@ -1,5 +1,6 @@
 import { sql } from '@vercel/postgres';
 import OpenAI from 'openai';
+import { splitIntoChunks } from './splitIntoChunks'; // ✅ nuevo import
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -23,34 +24,39 @@ export async function saveBrainEmbedding({
   if (!content || content.length < 10) return;
 
   try {
-    console.log('🧠 Generando embedding con contenido:', content);
+    // 🧠 Dividir en chunks optimizados (~200 tokens máx.)
+    const chunks = splitIntoChunks(content);
 
-    const embeddingRes = await openai.embeddings.create({
-      model: 'text-embedding-3-small',
-      input: content,
-    });
+    for (const chunk of chunks) {
+      console.log(`🧩 Embedding para chunk:\n`, chunk.slice(0, 80) + '...');
 
-    const vector = embeddingRes.data[0].embedding;
+      const embeddingRes = await openai.embeddings.create({
+        model: 'text-embedding-3-small',
+        input: chunk,
+      });
 
-await sql`
-  INSERT INTO brain_embeddings (
-    user_id,
-    assistant_id,
-    content,
-    embedding,     -- ✅ nombre correcto de la columna
-    type,
-    folder
-  ) VALUES (
-    ${userId},
-    ${assistantId},
-    ${content},
-    ${`[${vector.join(',')}]`},
-    ${type},
-    ${folder}
-  )
-`;
+      const vector = embeddingRes.data[0].embedding;
 
-    console.log('✅ Embedding guardado correctamente');
+      await sql`
+        INSERT INTO brain_embeddings (
+          user_id,
+          assistant_id,
+          content,
+          embedding,
+          type,
+          folder
+        ) VALUES (
+          ${userId},
+          ${assistantId},
+          ${chunk},
+          ${`[${vector.join(',')}]`},
+          ${type},
+          ${folder}
+        )
+      `;
+    }
+
+    console.log(`✅ ${chunks.length} embedding(s) guardados para ${assistantId}`);
   } catch (err) {
     console.error('🧠 Error generating or saving embedding:', err);
   }

@@ -32,20 +32,21 @@ export async function POST(req: NextRequest) {
     console.warn('⚠️ No assistant_settings found for Tariq:', err);
   }
 
-  // 🧪 Logs para verificación
-  console.log('📥 Prompt recibido:', prompt);
-  console.log('👤 userId:', userId);
-  console.log('🧠 Assistant ID: tariq');
+  // 🧠 Evitar recalcular prompt para respuestas triviales
+  const isTrivialPrompt = /gracias|ok|vale|de nada|perfecto|👌|👍|😊|entendido/i.test(prompt.trim());
+  const isFirstMessage = !history || history.length === 0;
 
-  // 🧠 Construir systemPrompt con contexto y estilo
-  const systemPrompt = await getSystemPromptWithBrain({
-    assistantId: 'tariq',
-    roleDescription: 'an AI customer support assistant for ecommerce businesses',
-    tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
-    detailed,
-    userId,
-    prompt
-  });
+  let systemPrompt = '';
+  if (isFirstMessage || !isTrivialPrompt) {
+    systemPrompt = await getSystemPromptWithBrain({
+      assistantId: 'tariq',
+      roleDescription: 'an AI customer support assistant for ecommerce businesses',
+      tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
+      detailed,
+      userId,
+      prompt,
+    });
+  }
 
   console.log('📡 systemPrompt generado:\n', systemPrompt);
 
