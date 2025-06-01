@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { askTariq } from '@/lib/ai/clients/askTariq';
 import { detectTariqIntent } from '@/lib/ai/intent/tariq';
 import { sql } from '@vercel/postgres';
+import { getSystemPromptWithBrain } from '@/lib/brain/getSystemPromptWithBrain';
 
 export async function POST(req: NextRequest) {
   const { prompt, userId, history } = await req.json();
@@ -28,21 +29,25 @@ export async function POST(req: NextRequest) {
       detailed = rows[0].detailed ?? detailed;
     }
   } catch (err) {
-    console.warn('No assistant_settings found for user:', err);
+    console.warn('⚠️ No assistant_settings found for Tariq:', err);
   }
 
-  const toneInstructions: Record<string, string> = {
-    friendly: 'Use a warm, empathetic and helpful tone.',
-    professional: 'Be formal, informative and respectful.',
-    playful: 'Use light-hearted language, emojis, and a friendly vibe.',
-    direct: 'Be brief, clear and get straight to the point.',
-  };
+  // 🧪 Logs para verificación
+  console.log('📥 Prompt recibido:', prompt);
+  console.log('👤 userId:', userId);
+  console.log('🧠 Assistant ID: tariq');
 
-  const systemPrompt = `
-You are Tariq, an AI customer support assistant for ecommerce businesses.
-${toneInstructions[tone] || 'Use a friendly tone.'}
-${detailed ? 'Provide complete, structured responses including steps or solutions.' : 'Respond concisely and clearly.'}
-`;
+  // 🧠 Construir systemPrompt con contexto y estilo
+  const systemPrompt = await getSystemPromptWithBrain({
+    assistantId: 'tariq',
+    roleDescription: 'an AI customer support assistant for ecommerce businesses',
+    tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
+    detailed,
+    userId,
+    prompt
+  });
+
+  console.log('📡 systemPrompt generado:\n', systemPrompt);
 
   try {
     const output = await askTariq(prompt, intent, history, systemPrompt);
@@ -52,7 +57,7 @@ ${detailed ? 'Provide complete, structured responses including steps or solution
       model: intent.model,
     });
   } catch (err) {
-    console.error('Tariq API error:', err);
+    console.error('❌ Tariq API error:', err);
     return NextResponse.json({ error: 'AI request failed' }, { status: 500 });
   }
 }

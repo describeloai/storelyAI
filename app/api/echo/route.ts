@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { askEcho } from '@/lib/ai/clients/askEcho';
 import { detectEchoIntent } from '@/lib/ai/intent/echo';
 import { sql } from '@vercel/postgres';
+import { getSystemPromptWithBrain } from '@/lib/brain/getSystemPromptWithBrain';
 
 export async function POST(req: NextRequest) {
   const { prompt, userId, history } = await req.json();
@@ -28,27 +29,31 @@ export async function POST(req: NextRequest) {
       detailed = rows[0].detailed ?? detailed;
     }
   } catch (err) {
-    console.warn('No assistant_settings found for Echo:', err);
+    console.warn('⚠️ No assistant_settings found for Echo:', err);
   }
 
-  const toneInstructions: Record<string, string> = {
-    friendly: 'Use a warm, helpful and engaging tone.',
-    professional: 'Be formal, concise and business-like.',
-    playful: 'Use fun, light-hearted language, emojis and humor where appropriate.',
-    direct: 'Be short, straightforward and to the point.',
-  };
+  // 🧪 Logs de verificación
+  console.log('📥 Prompt recibido:', prompt);
+  console.log('👤 userId:', userId);
+  console.log('🧠 Assistant ID: echo');
 
-  const systemPrompt = `
-You are Echo, a data analyst AI assistant for ecommerce stores.
-${toneInstructions[tone] || 'Use a friendly tone.'}
-${detailed ? 'Give detailed insights with clear explanations.' : 'Summarize findings quickly and clearly.'}
-`;
+  // 🧠 Crear prompt con contexto del Brain
+  const systemPrompt = await getSystemPromptWithBrain({
+    assistantId: 'echo',
+    roleDescription: 'a data analyst AI assistant for ecommerce stores',
+    tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
+    detailed,
+    userId,
+    prompt
+  });
+
+  console.log('📡 systemPrompt generado:\n', systemPrompt);
 
   try {
     const output = await askEcho(prompt, intent, history, systemPrompt);
     return NextResponse.json({ output, tool: intent.tool, model: intent.model });
   } catch (err) {
-    console.error('Echo API error:', err);
+    console.error('❌ Echo API error:', err);
     return NextResponse.json({ error: 'AI request failed' }, { status: 500 });
   }
 }

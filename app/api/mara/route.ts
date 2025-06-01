@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { askMara } from '@/lib/ai/clients/askMara';
 import { detectMaraIntent } from '@/lib/ai/intent/mara';
 import { sql } from '@vercel/postgres';
+import { getSystemPromptWithBrain } from '@/lib/brain/getSystemPromptWithBrain';
 
 export async function POST(req: NextRequest) {
   const { prompt, userId, history } = await req.json();
@@ -28,21 +29,25 @@ export async function POST(req: NextRequest) {
       detailed = rows[0].detailed ?? detailed;
     }
   } catch (err) {
-    console.warn('No assistant_settings found for Mara:', err);
+    console.warn('⚠️ No assistant_settings found for Mara:', err);
   }
 
-  const toneInstructions: Record<string, string> = {
-    friendly: 'Use a warm and engaging tone.',
-    professional: 'Use a formal and concise tone.',
-    playful: 'Use a fun, informal tone with humor or emojis where fitting.',
-    direct: 'Be straightforward and efficient.',
-  };
+  // 🧪 Logs para verificación
+  console.log('📥 Prompt recibido:', prompt);
+  console.log('👤 userId:', userId);
+  console.log('🧠 Assistant ID: mara');
 
-  const systemPrompt = `
-You are Mara, an AI copywriter for ecommerce stores.
-${toneInstructions[tone] || 'Use a friendly tone.'}
-${detailed ? 'Write detailed, high-converting content.' : 'Keep copy short and punchy.'}
-  `;
+  // 🧠 Construir prompt con contexto y estilo
+  const systemPrompt = await getSystemPromptWithBrain({
+    assistantId: 'mara',
+    roleDescription: 'an AI copywriter for ecommerce stores',
+    tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
+    detailed,
+    userId,
+    prompt
+  });
+
+  console.log('📡 systemPrompt generado:\n', systemPrompt);
 
   try {
     const output = await askMara(prompt, intent, history, systemPrompt);
@@ -52,7 +57,7 @@ ${detailed ? 'Write detailed, high-converting content.' : 'Keep copy short and p
       model: intent.model,
     });
   } catch (err) {
-    console.error('Mara API error:', err);
+    console.error('❌ Mara API error:', err);
     return NextResponse.json({ error: 'AI request failed' }, { status: 500 });
   }
 }

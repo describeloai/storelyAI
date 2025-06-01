@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { askSofia } from '@/lib/ai/clients/askSofia';
 import { detectSofiaIntent } from '@/lib/ai/intent/sofia';
 import { sql } from '@vercel/postgres';
+import { getSystemPromptWithBrain } from '@/lib/brain/getSystemPromptWithBrain';
 
 export async function POST(req: NextRequest) {
   const { prompt, userId, history } = await req.json();
@@ -28,32 +29,31 @@ export async function POST(req: NextRequest) {
       detailed = rows[0].detailed ?? detailed;
     }
   } catch (err) {
-    console.warn('No assistant_settings found for user:', err);
+    console.warn('⚠️ No assistant_settings found for user:', err);
   }
 
-  // 🧠 Construir prompt dinámico según tono y detalle
-  const toneInstructions: Record<string, string> = {
-    friendly: 'Speak in a warm, supportive and helpful way, using clear and encouraging language.',
-    professional: 'Use formal, polite, and concise language appropriate for business settings.',
-    playful: 'Be fun, engaging and humorous. Use emojis and light-hearted expressions where appropriate.',
-    direct: 'Be clear, assertive and to the point. Avoid unnecessary elaboration.',
-  };
+  // 🧪 Logs para depurar
+  console.log('📥 Prompt recibido:', prompt);
+  console.log('👤 userId:', userId);
+  console.log('🧠 Assistant ID: sofia');
 
-  const systemPrompt = `
-You are Sofía, an AI marketing assistant for ecommerce stores.
+  // 🧠 Crear prompt inteligente con contexto + tono
+  const systemPrompt = await getSystemPromptWithBrain({
+    assistantId: 'sofia',
+    roleDescription: 'an AI marketing assistant for ecommerce stores',
+    tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
+    detailed,
+    userId,
+    prompt
+  });
 
-${toneInstructions[tone] || toneInstructions.friendly}
-
-${detailed
-    ? 'Give detailed and structured answers with useful context and explanation.'
-    : 'Keep responses brief, action-oriented and straight to the point.'}
-`;
+  console.log('📡 systemPrompt generado:\n', systemPrompt);
 
   try {
     const output = await askSofia(prompt, intent, history, systemPrompt);
     return NextResponse.json({ output, tool: intent.tool, model: intent.model });
   } catch (err) {
-    console.error('Sofía API error:', err);
+    console.error('❌ Sofía API error:', err);
     return NextResponse.json({ error: 'AI request failed' }, { status: 500 });
   }
 }

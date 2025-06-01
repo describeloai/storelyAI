@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import pool from '@/lib/db/client';
+import { saveBrainEmbedding } from '@/lib/brain/saveEmbedding';
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,6 +42,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unsupported content type' }, { status: 400 });
     }
 
+    // ✅ Guardar en brain_items (visual y general)
     await pool.query(
       `INSERT INTO brain_items (id, user_id, store_key, type, title, content, file_url, created_at, position)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
@@ -57,9 +59,25 @@ export async function POST(req: NextRequest) {
       ]
     );
 
+    // ✅ Guardar embeddings si es texto o link
+    if (newItem.type === 'text' || newItem.type === 'link') {
+      console.log('🧠 Generando embedding con contenido:', newItem.content);
+
+      const assistantIds = ['sofia', 'mara', 'ciro', 'tariq', 'echo', 'thalia'];
+
+      for (const assistantId of assistantIds) {
+        await saveBrainEmbedding({
+          userId: newItem.userId,
+          assistantId,
+          content: newItem.content,
+          type: newItem.type,
+        });
+      }
+    }
+
     return NextResponse.json({ success: true, item: newItem });
   } catch (err) {
-    console.error('Error saving to Neon:', err);
+    console.error('❌ Error saving to Neon:', err);
     return NextResponse.json({ success: false, error: 'Failed to save item' }, { status: 500 });
   }
 }
