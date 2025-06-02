@@ -37,18 +37,14 @@ export async function getSystemPromptWithBrain({
     topK,
   });
 
-  // 🔁 Eliminar duplicados por contenido truncado
-  const seen = new Set();
-  const filteredChunks = brainChunks.filter(chunk => {
-    const preview = chunk.slice(0, 100).trim();
-    if (seen.has(preview)) return false;
-    seen.add(preview);
-    return true;
-  });
-
-  const truncatedChunks = filteredChunks
-    .slice(0, 5)
-    .map(c => `- ${c.length > maxCharPerChunk ? c.slice(0, maxCharPerChunk) + '…' : c}`)
+  const truncatedChunks = brainChunks
+    .slice(0, topK)
+    .map(c => {
+      const trimmed = c.trim();
+      return `- ${trimmed.length > maxCharPerChunk
+        ? trimmed.slice(0, maxCharPerChunk).replace(/\s\S*$/, '') + '…'
+        : trimmed}`;
+    })
     .join('\n');
 
   const formattedPrompt = `

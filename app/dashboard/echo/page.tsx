@@ -7,6 +7,7 @@ import { summarizeMessage } from '@/utils/summarize';
 import { useMessageRefs } from '@/hooks/useMessageRefs';
 import HistoryItem from '@/components/dashboard/HistoryItem';
 import { useDarkMode } from '@/context/DarkModeContext';
+import MarkdownMessage from '@/components/common/MarkdownMessage';
 
 export default function EchoPage() {
   const { darkMode } = useDarkMode();
@@ -257,7 +258,7 @@ export default function EchoPage() {
                 boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
               }}
             >
-              <ReactMarkdown>{msg.text}</ReactMarkdown>
+              <MarkdownMessage text={msg.text} />
             </div>
           ))}
 

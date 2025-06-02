@@ -1,6 +1,7 @@
 import { sql } from '@vercel/postgres';
 import OpenAI from 'openai';
-import { splitIntoChunks } from './splitIntoChunks'; // ✅ nuevo import
+import { splitIntoChunks } from './splitIntoChunks';
+import { randomUUID } from 'crypto';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -24,8 +25,8 @@ export async function saveBrainEmbedding({
   if (!content || content.length < 10) return;
 
   try {
-    // 🧠 Dividir en chunks optimizados (~200 tokens máx.)
     const chunks = splitIntoChunks(content);
+    const documentId = randomUUID(); // ID único para agrupar chunks del mismo texto
 
     for (const chunk of chunks) {
       console.log(`🧩 Embedding para chunk:\n`, chunk.slice(0, 80) + '...');
@@ -36,6 +37,7 @@ export async function saveBrainEmbedding({
       });
 
       const vector = embeddingRes.data[0].embedding;
+      const vectorString = `[${vector.join(',')}]`; // ✅ Seguro para Neon y Vercel/Postgres
 
       await sql`
         INSERT INTO brain_embeddings (
@@ -44,14 +46,18 @@ export async function saveBrainEmbedding({
           content,
           embedding,
           type,
-          folder
+          folder,
+          document_id,
+          created_at
         ) VALUES (
           ${userId},
           ${assistantId},
           ${chunk},
-          ${`[${vector.join(',')}]`},
+          ${vectorString},
           ${type},
-          ${folder}
+          ${folder},
+          ${documentId},
+          NOW()
         )
       `;
     }

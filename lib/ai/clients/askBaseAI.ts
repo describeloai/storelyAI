@@ -15,12 +15,19 @@ export async function askBaseAI({
   const isGpt4 = intent.model === 'gpt-4';
   const model = isGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';
 
-  const trimmedHistory = history.slice(-1); // ✅ solo último mensaje para ahorrar tokens
+  // 🧠 Usamos solo el último mensaje previo como contexto conversacional
+  const trimmedHistory = history.slice(-1);
 
   const messages: ChatMessage[] = [
-    { role: 'system', content: systemPrompt }, // ✅ siempre incluir el systemPrompt
+    {
+      role: 'system',
+      content: systemPrompt, // ✅ Instrucciones base + contexto del Brain
+    },
     ...trimmedHistory,
-    { role: 'user', content: prompt },
+    {
+      role: 'user',
+      content: prompt, // ✅ Pregunta actual del usuario
+    },
   ];
 
   return await askCoreAI({
