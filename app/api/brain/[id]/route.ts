@@ -33,6 +33,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error('❌ Error deleting from Neon:', err);
+    console.log('🧠 Incoming DELETE for ID:', id);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }

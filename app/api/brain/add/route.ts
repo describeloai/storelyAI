@@ -73,11 +73,12 @@ export async function POST(req: NextRequest) {
 
         if (existing.rows.length === 0) {
           await saveBrainEmbedding({
-            userId: newItem.userId,
-            assistantId,
-            content: newItem.content,
-            type: newItem.type,
-          });
+  userId: newItem.userId,
+  assistantId,
+  content: newItem.content,
+  documentId: newItem.id, // ✅ Aquí está el fix
+  type: newItem.type,
+});
         } else {
           console.log(`⏭ Embedding ya existente para ${assistantId}, contenido omitido.`);
         }

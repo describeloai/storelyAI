@@ -63,17 +63,17 @@ const KnowledgeList = forwardRef(function KnowledgeList(
   }));
 
   const handleDelete = async (id: string) => {
-    console.log('🧠 Trying to delete ID:', id);
-    const res = await fetch(`/api/brain/${id}`, { method: 'DELETE' });
-    if (res.ok) {
-      setItems(prev => prev.filter(i => i.id !== id));
-      console.log('✅ Item deleted');
-      if (onItemDeleted) onItemDeleted();
-    } else {
-      console.error('❌ Delete failed with status:', res.status);
-    }
-  };
+  console.log('🧠 Trying to delete ID:', id);
+  const res = await fetch(`/api/brain/${id}`, { method: 'DELETE' });
 
+  if (res.ok) {
+    setItems(prev => prev.filter(i => i.id !== id));
+    console.log('✅ Item deleted');
+    if (onItemDeleted) onItemDeleted();
+  } else {
+    console.error('❌ Delete failed with status:', res.status);
+  }
+};
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;

@@ -1,7 +1,6 @@
 import { sql } from '@vercel/postgres';
 import OpenAI from 'openai';
 import { splitIntoChunks } from './splitIntoChunks';
-import { randomUUID } from 'crypto';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -11,16 +10,18 @@ type EmbeddingInput = {
   userId: string;
   assistantId: string;
   content: string;
+  documentId: string; // ✅ ahora obligatorio para vincular con brain_items
   type?: 'text' | 'link' | 'file';
   folder?: string | null;
-  source?: string | null;      // 📌 Fase 3
-  category?: string | null;    // 📌 Fase 3
+  source?: string | null;
+  category?: string | null;
 };
 
 export async function saveBrainEmbedding({
   userId,
   assistantId,
   content,
+  documentId,
   type = 'text',
   folder = null,
   source = null,
@@ -30,12 +31,11 @@ export async function saveBrainEmbedding({
 
   try {
     const chunks = splitIntoChunks(content);
-    const documentId = randomUUID(); // 🧠 ID único para agrupar chunks del mismo texto
 
     for (const chunk of chunks) {
       console.log(`🧩 Embedding para chunk:\n`, chunk.slice(0, 80) + '...');
 
-      const estimatedTokens = Math.ceil(chunk.length / 4); // 🔢 Estimación rápida (Fase 2)
+      const estimatedTokens = Math.ceil(chunk.length / 4);
 
       const embeddingRes = await openai.embeddings.create({
         model: 'text-embedding-3-small',
@@ -68,7 +68,7 @@ export async function saveBrainEmbedding({
           ${folder},
           ${source},
           ${category},
-          ${documentId},
+          ${documentId}, -- ✅ ya enlazado con brain_items
           NOW()
         )
       `;

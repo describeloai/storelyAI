@@ -55,12 +55,16 @@ const allowedTypesSQL = `'{${allowedTypes.map(t => `"${t}"`).join(',')}}'`; // â
 const allowedTypesFormatted = `{"${allowedTypes.join('","')}"}`;
 
 const { rows } = await sql`
-  SELECT content, document_id, embedding, type, category, source, estimated_tokens,
-    1 - (embedding <#> ${`[${queryEmbedding.join(',')}]`}) AS similarity
-  FROM brain_embeddings
-  WHERE user_id = ${userId}
-    AND assistant_id = ${assistantId}
-    AND type = ANY(${allowedTypesFormatted}::text[])
+  SELECT e.content, e.document_id, e.embedding, e.type, e.category, e.source, e.estimated_tokens,
+    1 - (e.embedding <#> ${`[${queryEmbedding.join(',')}]`}) AS similarity
+  FROM brain_embeddings e
+  LEFT JOIN brain_access_permissions p
+    ON e.document_id = p.item_id::uuid
+    AND p.user_id = ${userId}
+    AND p.assistant_id = ${assistantId}
+  WHERE e.user_id = ${userId}
+    AND e.type = ANY(${allowedTypesFormatted}::text[])
+    AND (p.allowed IS NULL OR p.allowed = true)
   ORDER BY similarity DESC
   LIMIT ${topK * 5};
 `;
@@ -117,5 +121,6 @@ function cosineSimilarity(a: number[], b: number[]): number {
   const dot = a.reduce((sum, val, i) => sum + val * b[i], 0);
   const normA = Math.sqrt(a.reduce((sum, val) => sum + val ** 2, 0));
   const normB = Math.sqrt(b.reduce((sum, val) => sum + val ** 2, 0));
+
   return dot / (normA * normB);
 }
