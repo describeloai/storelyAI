@@ -39,11 +39,19 @@ export async function getSystemPromptWithBrain({
 
   const truncatedChunks = brainChunks
     .slice(0, topK)
-    .map(c => {
-      const trimmed = c.trim();
-      return `- ${trimmed.length > maxCharPerChunk
-        ? trimmed.slice(0, maxCharPerChunk).replace(/\s\S*$/, '') + '…'
-        : trimmed}`;
+    .map(chunk => {
+      const content = chunk.content.trim();
+      const safeText = content.length > maxCharPerChunk
+        ? content.slice(0, maxCharPerChunk).replace(/\s\S*$/, '') + '…'
+        : content;
+
+      const meta = [
+        chunk.type ? `(${chunk.type})` : '',
+        chunk.category ? `[${chunk.category}]` : '',
+        chunk.source ? `«${chunk.source}»` : '',
+      ].filter(Boolean).join(' ');
+
+      return `- ${meta ? meta + ': ' : ''}${safeText}`;
     })
     .join('\n');
 

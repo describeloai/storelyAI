@@ -20,11 +20,18 @@ export async function askCoreAI({
   debug = false,
 }: AskCoreInput): Promise<string> {
   try {
+    const estimatedPromptTokens = Math.ceil(
+      messages.reduce((acc, msg) => acc + msg.content.length, 0) / 4
+    );
+
+    const modelLimit = model.includes('gpt-4') ? 8192 : 4096;
+    const defaultMaxTokens = modelLimit - estimatedPromptTokens - 200;
+
     const completion = await openai.chat.completions.create({
       model,
       messages,
       temperature,
-      max_tokens,
+      max_tokens: max_tokens ?? Math.max(300, defaultMaxTokens),
     });
 
     const content = completion.choices[0]?.message?.content?.trim() ?? '';
