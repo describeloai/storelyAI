@@ -1,4 +1,5 @@
 import { searchRelevantChunks } from './searchRelevantChunks';
+import pool from '@/lib/db/client';
 
 type ToneType = 'friendly' | 'professional' | 'playful' | 'direct';
 
@@ -16,9 +17,10 @@ export async function getSystemPromptWithBrain({
   detailed = true,
   userId,
   prompt,
-  topK = 8,
+  topK = 2,
   maxCharPerChunk = 350,
   toneInstructions = defaultToneInstructions,
+  isFirstMessage = false,
 }: {
   assistantId: string;
   roleDescription: string;
@@ -29,6 +31,7 @@ export async function getSystemPromptWithBrain({
   topK?: number;
   maxCharPerChunk?: number;
   toneInstructions?: Record<string, string>;
+  isFirstMessage?: boolean;
 }) {
   const brainChunks = await searchRelevantChunks({
     userId,
@@ -37,40 +40,66 @@ export async function getSystemPromptWithBrain({
     topK,
   });
 
-  const truncatedChunks = brainChunks
-    .slice(0, topK)
-    .map(chunk => {
-      const content = chunk.content.trim();
-      const safeText = content.length > maxCharPerChunk
+  // 🧠 Cargar contexto desde Account Settings (solo en primer mensaje)
+  const accountChunk = isFirstMessage
+    ? await pool.query(
+        `SELECT content FROM brain_items
+         WHERE user_id = $1 AND store_key = 'purple' AND source = 'account-settings'
+         ORDER BY created_at DESC LIMIT 1`,
+        [userId]
+      )
+    : null;
+
+  const accountContent: string | null = accountChunk?.rows?.[0]?.content ?? null;
+
+  const accountLines =
+    accountContent && isFirstMessage
+      ? accountContent
+          .split('\n')
+          .map(line => `- (text): ${line.trim()}`)
+          .filter(Boolean)
+      : [];
+
+  const brainLines = brainChunks.map(chunk => {
+    const content = chunk.content.trim();
+    const shortened =
+      content.length > maxCharPerChunk
         ? content.slice(0, maxCharPerChunk).replace(/\s\S*$/, '') + '…'
         : content;
 
-      const meta = [
-        chunk.type ? `(${chunk.type})` : '',
-        chunk.category ? `[${chunk.category}]` : '',
-        chunk.source ? `«${chunk.source}»` : '',
-      ].filter(Boolean).join(' ');
+    const meta = [
+      chunk.type ? `(${chunk.type})` : '',
+      chunk.category ? `[${chunk.category}]` : '',
+      chunk.source ? `«${chunk.source}»` : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
 
-      return `- ${meta ? meta + ': ' : ''}${safeText}`;
-    })
-    .join('\n');
+    return `- ${meta ? meta + ': ' : ''}${shortened}`;
+  });
+
+  const promptChunks = [...accountLines, ...brainLines];
+
+  const introPrompt = isFirstMessage
+    ? `${toneInstructions[tone] || toneInstructions.friendly}
+
+${detailed
+        ? 'Provide detailed, structured responses with relevant examples or steps.'
+        : 'Keep responses short, clear, and action-oriented.'}
+
+Use the user’s stored knowledge when relevant:`
+    : 'Relevant context:';
 
   const formattedPrompt = `
 You are ${capitalize(assistantId)}, ${roleDescription}.
 
-${toneInstructions[tone] || toneInstructions.friendly}
+${introPrompt}
+${promptChunks.join('\n')}
 
-${detailed
-    ? 'Provide detailed, structured responses with relevant examples or steps.'
-    : 'Keep responses short, clear, and action-oriented.'}
-
-Use the user’s stored knowledge when relevant:
-${truncatedChunks}
-
-Always prioritize accuracy and clarity based on the user’s own data.
+${isFirstMessage ? 'Always prioritize accuracy and clarity based on the user’s own data.' : ''}
   `.trim();
 
-  console.log('🧠 Contexto generado desde Brain:\n', truncatedChunks);
+  console.log('🧠 Prompt generado:\n', formattedPrompt);
   return formattedPrompt;
 }
 

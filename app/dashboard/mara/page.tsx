@@ -7,19 +7,27 @@ import { summarizeMessage } from '@/utils/summarize';
 import { useMessageRefs } from '@/hooks/useMessageRefs';
 import HistoryItem from '@/components/dashboard/HistoryItem';
 import { useDarkMode } from '@/context/DarkModeContext';
-import MarkdownMessage from '@/components/common/MarkdownMessage';
+import MarkdownMessage from '@/components/dashboard/MarkdownMessage';
 
 export default function MaraPage() {
   const { darkMode } = useDarkMode();
   const [messages, setMessages] = useState([
-    { from: 'mara', text: 'Hey! **I’m Mara**, your AI strategist. Need help with conversions, growth or product ideas?' },
+    {
+      from: 'mara',
+      text: 'Hey! **I’m Mara**, your AI strategist. Need help with conversions, growth or product ideas?',
+    },
   ]);
   const [historyItems, setHistoryItems] = useState<{ summary: string; index: number }[]>([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const messageRefs = useMessageRefs(messages.length);
+
+  const gradient = 'linear-gradient(135deg, #4f73e5, #a447e7)';
   const primaryColor = '#7C3AED';
+  const userBubbleColor = darkMode ? gradient : primaryColor;
+  const assistantBubbleColor = darkMode ? '#2b2b2e' : '#fff';
+  const assistantTextColor = darkMode ? '#f0f0f0' : '#333';
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -48,7 +56,6 @@ export default function MaraPage() {
       const data = await res.json();
       if (data.output) {
         setMessages(prev => [...prev, { from: 'mara', text: data.output }]);
-
         if (value.length > 8) {
           const summary = summarizeMessage(value);
           setHistoryItems(prev => [...prev, { summary, index: messages.length }]);
@@ -65,7 +72,10 @@ export default function MaraPage() {
 
   const handleNewChat = () => {
     setMessages([
-      { from: 'mara', text: 'Hey! **I’m Mara**, your AI strategist. Need help with conversions, growth or product ideas?' },
+      {
+        from: 'mara',
+        text: 'Hey! **I’m Mara**, your AI strategist. Need help with conversions, growth or product ideas?',
+      },
     ]);
     setHistoryItems([]);
   };
@@ -95,7 +105,7 @@ export default function MaraPage() {
       <aside
         style={{
           width: '300px',
-          backgroundColor: primaryColor,
+          background: darkMode ? gradient : primaryColor,
           color: '#fff',
           padding: '2rem 1.5rem',
           display: 'flex',
@@ -108,7 +118,7 @@ export default function MaraPage() {
             style={{
               width: '100%',
               height: '160px',
-              backgroundColor: '#f3e8ff',
+              backgroundColor: darkMode ? '#2a2a2a' : '#f3e8ff',
               borderRadius: '1rem',
               marginBottom: '1.5rem',
               display: 'flex',
@@ -183,7 +193,18 @@ export default function MaraPage() {
               color: darkMode ? '#fff' : '#2b2b2b',
             }}
           >
-            Hey, it's <span style={{ color: primaryColor }}>Mara</span> 👋
+            Hey, it's{' '}
+            <span
+              style={{
+                background: darkMode ? gradient : 'none',
+                WebkitBackgroundClip: darkMode ? 'text' : undefined,
+                WebkitTextFillColor: darkMode ? 'transparent' : undefined,
+                color: darkMode ? undefined : primaryColor,
+              }}
+            >
+              Mara
+            </span>{' '}
+            👋
           </h1>
           <p style={{ fontSize: '1.1rem', color: darkMode ? '#ccc' : '#555' }}>
             Let’s grow your business together.
@@ -205,13 +226,13 @@ export default function MaraPage() {
                   }
                 }}
                 style={{
-                  backgroundColor: darkMode ? '#2b2b2e' : '#fff',
-                  border: `1px solid ${primaryColor}`,
+                  background: darkMode ? gradient : '#fff',
+                  border: 'none',
                   borderRadius: '1rem',
                   padding: '0.5rem 1rem',
                   fontSize: '0.95rem',
                   cursor: 'pointer',
-                  color: darkMode ? '#eee' : '#000',
+                  color: '#fff',
                 }}
               >
                 {suggestion}
@@ -220,7 +241,6 @@ export default function MaraPage() {
           </div>
         </div>
 
-        {/* Chat scroll area */}
         <div
           ref={scrollRef}
           style={{
@@ -239,13 +259,8 @@ export default function MaraPage() {
               ref={messageRefs[i]}
               style={{
                 alignSelf: msg.from === 'user' ? 'flex-end' : 'flex-start',
-                background:
-                  msg.from === 'user'
-                    ? primaryColor
-                    : darkMode
-                    ? '#2b2b2e'
-                    : '#fff',
-                color: msg.from === 'user' ? '#fff' : darkMode ? '#f0f0f0' : '#333',
+                background: msg.from === 'user' ? userBubbleColor : assistantBubbleColor,
+                color: msg.from === 'user' ? '#fff' : assistantTextColor,
                 padding: '0.75rem 1rem',
                 borderRadius: '1rem',
                 borderTopLeftRadius: msg.from === 'user' ? '1rem' : '0.25rem',
@@ -262,8 +277,8 @@ export default function MaraPage() {
             <div
               style={{
                 alignSelf: 'flex-start',
-                background: darkMode ? '#2b2b2e' : '#fff',
-                color: darkMode ? '#eee' : '#333',
+                background: assistantBubbleColor,
+                color: assistantTextColor,
                 padding: '0.75rem 1rem',
                 borderRadius: '1rem',
                 maxWidth: '50%',
@@ -280,7 +295,6 @@ export default function MaraPage() {
           )}
         </div>
 
-        {/* Input */}
         <form
           onSubmit={handleSubmit}
           style={{
@@ -312,7 +326,7 @@ export default function MaraPage() {
             type="submit"
             disabled={loading}
             style={{
-              backgroundColor: primaryColor,
+              background: userBubbleColor,
               color: '#fff',
               border: 'none',
               padding: '0.75rem',

@@ -33,5 +33,6 @@ export async function askBaseAI({
   return await askCoreAI({
     messages,
     model,
+    max_tokens: 400, // 🔒 Limita la longitud de la respuesta para mayor eficiencia
   });
 }

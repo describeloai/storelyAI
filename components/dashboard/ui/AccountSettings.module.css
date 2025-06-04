@@ -1,0 +1,100 @@
+.container {
+  padding: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: background 0.3s ease;
+}
+
+.dark {
+  background: #1e1e1e;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #111;
+}
+
+.dark .title {
+  color: #f4f4f5;
+}
+
+.description {
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.dark .description {
+  color: #ccc;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.dark .field label {
+  color: #e0e0e0;
+}
+
+.field input,
+.field select {
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f9f9f9;
+  color: #111;
+}
+
+.dark .field input,
+.dark .field select {
+  background: #2a2a2a;
+  color: #f4f4f5;
+  border: 1px solid #444;
+}
+
+.actions {
+  text-align: right;
+  margin-top: 2rem;
+}
+
+.saveButton:disabled,
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+  transition: opacity 0.3s ease;
+}
+
+.actions button {
+  padding: 0.6rem 1.2rem;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.actions button:hover {
+  background: #4338ca;
+}

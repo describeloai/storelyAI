@@ -5,47 +5,57 @@ import { saveBrainEmbedding } from '@/lib/brain/saveEmbedding';
 
 export async function POST(req: NextRequest) {
   try {
+    const contentType = req.headers.get('content-type');
+    const isJson = contentType?.includes('application/json');
+    const isForm = contentType?.includes('multipart/form-data');
+
     let newItem: any = {
       id: uuidv4(),
       createdAt: new Date().toISOString(),
       position: 0,
     };
 
-    const contentType = req.headers.get('content-type');
-
-    if (contentType?.includes('application/json')) {
+    if (isJson) {
       const body = await req.json();
       Object.assign(newItem, {
         userId: body.userId,
         storeKey: body.storeKey,
+        folderId: body.folderId || null,
         type: body.type,
         title: body.title || '',
         content: body.content || '',
         fileUrl: body.fileUrl || null,
+        source: body.source || null,
+        category: body.category || null,
       });
-    } else if (contentType?.includes('multipart/form-data')) {
+    } else if (isForm) {
       const formData = await req.formData();
       const file = formData.get('file') as File;
-
       const buffer = await file.arrayBuffer();
       const base64 = Buffer.from(buffer).toString('base64');
 
       Object.assign(newItem, {
         userId: formData.get('userId'),
         storeKey: formData.get('storeKey'),
+        folderId: formData.get('folderId') || null,
         type: 'file',
         title: file.name,
         content: '',
         fileUrl: `data:${file.type};base64,${base64}`,
+        source: formData.get('source') || null,
+        category: formData.get('category') || null,
       });
     } else {
       return NextResponse.json({ error: 'Unsupported content type' }, { status: 400 });
     }
 
-    // ✅ Guardar en brain_items (visual)
+    // ✅ Guardar en brain_items
     await pool.query(
-      `INSERT INTO brain_items (id, user_id, store_key, type, title, content, file_url, created_at, position)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      `INSERT INTO brain_items (
+        id, user_id, store_key, type, title, content, file_url,
+        created_at, position, folder_id, source, category
+      )
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
       [
         newItem.id,
         newItem.userId,
@@ -56,29 +66,31 @@ export async function POST(req: NextRequest) {
         newItem.fileUrl,
         newItem.createdAt,
         newItem.position,
+        newItem.folderId,
+        newItem.source,
+        newItem.category,
       ]
     );
 
-    // ✅ Guardar embeddings únicos si es texto o link
+    // ✅ Guardar embeddings si es texto o link
     if (newItem.type === 'text' || newItem.type === 'link') {
-      console.log('🧠 Generando embedding con contenido:', newItem.content);
-
       const assistantIds = ['sofia', 'mara', 'ciro', 'tariq', 'echo', 'thalia'];
 
       for (const assistantId of assistantIds) {
-        const existing = await pool.query(
+        const exists = await pool.query(
           `SELECT 1 FROM brain_embeddings WHERE user_id = $1 AND assistant_id = $2 AND content = $3 LIMIT 1`,
           [newItem.userId, assistantId, newItem.content]
         );
 
-        if (existing.rows.length === 0) {
+        if (exists.rows.length === 0) {
+          console.log('🧠 Generando embedding con contenido:', newItem.content);
           await saveBrainEmbedding({
-  userId: newItem.userId,
-  assistantId,
-  content: newItem.content,
-  documentId: newItem.id, // ✅ Aquí está el fix
-  type: newItem.type,
-});
+            userId: newItem.userId,
+            assistantId,
+            content: newItem.content,
+            documentId: newItem.id,
+            type: newItem.type,
+          });
         } else {
           console.log(`⏭ Embedding ya existente para ${assistantId}, contenido omitido.`);
         }

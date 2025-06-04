@@ -7,7 +7,7 @@ import { summarizeMessage } from '@/utils/summarize';
 import { useMessageRefs } from '@/hooks/useMessageRefs';
 import HistoryItem from '@/components/dashboard/HistoryItem';
 import { useDarkMode } from '@/context/DarkModeContext';
-import MarkdownMessage from '@/components/common/MarkdownMessage';
+import MarkdownMessage from '@/components/dashboard/MarkdownMessage';
 
 export default function EchoPage() {
   const { darkMode } = useDarkMode();

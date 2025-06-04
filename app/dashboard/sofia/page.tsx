@@ -7,7 +7,7 @@ import { summarizeMessage } from '@/utils/summarize';
 import { useMessageRefs } from '@/hooks/useMessageRefs';
 import HistoryItem from '@/components/dashboard/HistoryItem';
 import { useDarkMode } from '@/context/DarkModeContext';
-import MarkdownMessage from '@/components/common/MarkdownMessage';
+import MarkdownMessage from '@/components/dashboard/MarkdownMessage';
 
 export default function SofiaPage() {
   const { darkMode } = useDarkMode();
@@ -22,7 +22,11 @@ export default function SofiaPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const messageRefs = useMessageRefs(messages.length);
-  const primaryColor = '#ea580c'; // naranja sólido
+
+  const sofiaGradient = 'linear-gradient(135deg, #4f73e5, #a447e7)';
+  const userBubbleColor = darkMode ? sofiaGradient : '#ea580c';
+  const assistantBubbleColor = darkMode ? '#2b2b2e' : '#fff';
+  const assistantTextColor = darkMode ? '#e2e2e2' : '#333';
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -109,8 +113,8 @@ export default function SofiaPage() {
       <aside
         style={{
           width: '300px',
-          backgroundColor: primaryColor,
-          color: '#000',
+          background: darkMode ? sofiaGradient : '#ea580c',
+          color: darkMode ? '#eee' : '#000',
           padding: '2rem 1.5rem',
           display: 'flex',
           flexDirection: 'column',
@@ -122,13 +126,13 @@ export default function SofiaPage() {
             style={{
               width: '100%',
               height: '160px',
-              backgroundColor: '#fff7ed',
+              backgroundColor: darkMode ? '#2a2a2a' : '#fff7ed',
               borderRadius: '1rem',
               marginBottom: '1.5rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: primaryColor,
+              color: darkMode ? '#aaa' : '#ea580c',
               fontWeight: 600,
             }}
           >
@@ -143,8 +147,8 @@ export default function SofiaPage() {
             style={{
               marginTop: '2rem',
               padding: '0.6rem 1rem',
-              background: '#000',
-              color: '#fff',
+              background: darkMode ? '#fff' : '#000',
+              color: darkMode ? '#000' : '#fff',
               borderRadius: '0.75rem',
               border: 'none',
               fontWeight: 600,
@@ -197,7 +201,18 @@ export default function SofiaPage() {
               color: darkMode ? '#fff' : '#2b2b2b',
             }}
           >
-            Hey, it's <span style={{ color: primaryColor }}>Sofía</span> 👋
+            Hey, it's{' '}
+            <span
+              style={{
+                background: darkMode ? sofiaGradient : 'none',
+                WebkitBackgroundClip: darkMode ? 'text' : undefined,
+                WebkitTextFillColor: darkMode ? 'transparent' : undefined,
+                color: darkMode ? undefined : '#ea580c',
+              }}
+            >
+              Sofía
+            </span>{' '}
+            👋
           </h1>
           <p style={{ fontSize: '1.1rem', color: darkMode ? '#ccc' : '#555' }}>
             Let’s level up your marketing!
@@ -218,13 +233,14 @@ export default function SofiaPage() {
                   }
                 }}
                 style={{
-                  backgroundColor: darkMode ? '#2b2b2e' : '#fff',
-                  border: `1px solid ${primaryColor}`,
+                  background: darkMode ? sofiaGradient : '#ea580c',
+                  border: 'none',
                   borderRadius: '1rem',
                   padding: '0.5rem 1rem',
                   fontSize: '0.95rem',
                   cursor: 'pointer',
-                  color: darkMode ? '#eee' : '#000',
+                  color: '#fff',
+                  fontWeight: 500,
                 }}
               >
                 {suggestion}
@@ -251,13 +267,8 @@ export default function SofiaPage() {
               ref={messageRefs[i]}
               style={{
                 alignSelf: msg.from === 'user' ? 'flex-end' : 'flex-start',
-                background:
-                  msg.from === 'user'
-                    ? primaryColor
-                    : darkMode
-                    ? '#2b2b2e'
-                    : '#fff',
-                color: msg.from === 'user' ? '#fff' : darkMode ? '#f0f0f0' : '#333',
+                background: msg.from === 'user' ? userBubbleColor : assistantBubbleColor,
+                color: msg.from === 'user' ? '#fff' : assistantTextColor,
                 padding: '0.75rem 1rem',
                 borderRadius: '1rem',
                 borderTopLeftRadius: msg.from === 'user' ? '1rem' : '0.25rem',
@@ -274,8 +285,8 @@ export default function SofiaPage() {
             <div
               style={{
                 alignSelf: 'flex-start',
-                background: darkMode ? '#2b2b2e' : '#fff',
-                color: darkMode ? '#eee' : '#333',
+                background: assistantBubbleColor,
+                color: assistantTextColor,
                 padding: '0.75rem 1rem',
                 borderRadius: '1rem',
                 maxWidth: '50%',
@@ -323,7 +334,7 @@ export default function SofiaPage() {
             type="submit"
             disabled={loading}
             style={{
-              backgroundColor: primaryColor,
+              background: userBubbleColor,
               color: '#fff',
               border: 'none',
               padding: '0.75rem',

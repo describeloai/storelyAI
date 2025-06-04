@@ -2,24 +2,29 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
 import { summarizeMessage } from '@/utils/summarize';
 import { useMessageRefs } from '@/hooks/useMessageRefs';
 import HistoryItem from '@/components/dashboard/HistoryItem';
 import { useDarkMode } from '@/context/DarkModeContext';
-import MarkdownMessage from '@/components/common/MarkdownMessage';
+import MarkdownMessage from '@/components/dashboard/MarkdownMessage';
 
 export default function TariqPage() {
   const { darkMode } = useDarkMode();
   const [messages, setMessages] = useState([
-    { from: 'tariq', text: 'Hello! **I’m Tariq.** Ask me anything related to content, campaigns or ad copy.' },
+    {
+      from: 'tariq',
+      text: 'Hello! **I’m Tariq.** Ask me anything related to content, campaigns or ad copy.',
+    },
   ]);
   const [historyItems, setHistoryItems] = useState<{ summary: string; index: number }[]>([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const messageRefs = useMessageRefs(messages.length);
+
+  const tariqGradient = 'linear-gradient(135deg, #4f73e5, #a447e7)';
   const primaryColor = '#FFD600';
+  const userBubbleColor = darkMode ? tariqGradient : primaryColor;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -63,7 +68,9 @@ export default function TariqPage() {
   };
 
   const handleNewChat = () => {
-    setMessages([{ from: 'tariq', text: 'Hello! **I’m Tariq.** Ask me anything related to content, campaigns or ad copy.' }]);
+    setMessages([
+      { from: 'tariq', text: 'Hello! **I’m Tariq.** Ask me anything related to content, campaigns or ad copy.' },
+    ]);
     setHistoryItems([]);
   };
 
@@ -84,17 +91,17 @@ export default function TariqPage() {
         background: darkMode ? '#0f0f11' : '#fff',
         color: darkMode ? '#f2f2f2' : '#111',
         fontFamily: `'Inter', 'Segoe UI', sans-serif`,
-        transition: 'background 0.3s ease, color 0.3s ease',
         borderRadius: '1rem',
         overflow: 'hidden',
+        transition: 'background 0.3s ease',
       }}
     >
       {/* Sidebar */}
       <aside
         style={{
           width: '300px',
-          backgroundColor: primaryColor,
-          color: '#000',
+          background: darkMode ? tariqGradient : primaryColor,
+          color: darkMode ? '#fff' : '#000',
           padding: '2rem 1.5rem',
           display: 'flex',
           flexDirection: 'column',
@@ -105,7 +112,7 @@ export default function TariqPage() {
             style={{
               width: '100%',
               height: '160px',
-              backgroundColor: '#fffde7',
+              backgroundColor: darkMode ? '#1e1e1e' : '#fffde7',
               borderRadius: '1rem',
               marginBottom: '1.5rem',
               display: 'flex',
@@ -125,8 +132,8 @@ export default function TariqPage() {
             style={{
               marginTop: '2rem',
               padding: '0.6rem 1rem',
-              background: '#000',
-              color: '#fff',
+              background: '#fff',
+              color: darkMode ? '#4f73e5' : '#000',
               borderRadius: '0.75rem',
               border: 'none',
               fontWeight: 600,
@@ -158,7 +165,7 @@ export default function TariqPage() {
         </div>
       </aside>
 
-      {/* Main Chat */}
+      {/* Main chat */}
       <section
         style={{
           flex: 1,
@@ -167,7 +174,6 @@ export default function TariqPage() {
           padding: '2rem',
           background: darkMode ? '#1a1a1d' : '#fffdf2',
           transition: 'background 0.3s ease',
-          overflow: 'hidden',
         }}
       >
         <div style={{ flexShrink: 0 }}>
@@ -179,18 +185,28 @@ export default function TariqPage() {
               color: darkMode ? '#fff' : '#2b2b2b',
             }}
           >
-            Hey, it's <span style={{ color: primaryColor }}>Tariq</span> 👋
+            Hey, it's{' '}
+            <span
+              style={{
+                background: darkMode ? tariqGradient : 'none',
+                WebkitBackgroundClip: darkMode ? 'text' : undefined,
+                WebkitTextFillColor: darkMode ? 'transparent' : undefined,
+                color: darkMode ? undefined : primaryColor,
+              }}
+            >
+              Tariq
+            </span>{' '}
+            👋
           </h1>
           <p style={{ fontSize: '1.1rem', color: darkMode ? '#ccc' : '#555' }}>
             Let’s create amazing content together.
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '1rem' }}>
-            {[
-              'Escribe un anuncio para redes sociales',
-              'Genera un correo para carrito abandonado',
-              'Crea un título llamativo para un banner',
-              'Escribe un guion para video en TikTok',
+            {[ 'Escribe un anuncio para redes sociales',
+               'Genera un correo para carrito abandonado',
+               'Crea un título llamativo para un banner',
+               'Escribe un guion para video en TikTok',
             ].map((suggestion, idx) => (
               <button
                 key={idx}
@@ -201,13 +217,13 @@ export default function TariqPage() {
                   }
                 }}
                 style={{
-                  backgroundColor: darkMode ? '#2b2b2e' : '#fff',
-                  border: `1px solid ${primaryColor}`,
+                  background: darkMode ? tariqGradient : '#fff',
+                  border: 'none',
                   borderRadius: '1rem',
                   padding: '0.5rem 1rem',
                   fontSize: '0.95rem',
                   cursor: 'pointer',
-                  color: darkMode ? '#eee' : '#000',
+                  color: '#fff',
                 }}
               >
                 {suggestion}
@@ -237,11 +253,11 @@ export default function TariqPage() {
                 alignSelf: msg.from === 'user' ? 'flex-end' : 'flex-start',
                 background:
                   msg.from === 'user'
-                    ? primaryColor
+                    ? userBubbleColor
                     : darkMode
                     ? '#2b2b2e'
                     : '#fff',
-                color: msg.from === 'user' ? '#000' : darkMode ? '#f0f0f0' : '#333',
+                color: msg.from === 'user' ? '#fff' : darkMode ? '#f0f0f0' : '#333',
                 padding: '0.75rem 1rem',
                 borderRadius: '1rem',
                 borderTopLeftRadius: msg.from === 'user' ? '1rem' : '0.25rem',
@@ -307,8 +323,8 @@ export default function TariqPage() {
             type="submit"
             disabled={loading}
             style={{
-              backgroundColor: primaryColor,
-              color: '#000',
+              background: userBubbleColor,
+              color: '#fff',
               border: 'none',
               padding: '0.75rem',
               borderRadius: '9999px',

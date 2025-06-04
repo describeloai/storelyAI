@@ -27,12 +27,12 @@ export async function askCoreAI({
     const modelLimit = model.includes('gpt-4') ? 8192 : 4096;
     const defaultMaxTokens = modelLimit - estimatedPromptTokens - 200;
 
-    const completion = await openai.chat.completions.create({
-      model,
-      messages,
-      temperature,
-      max_tokens: max_tokens ?? Math.max(300, defaultMaxTokens),
-    });
+   const completion = await openai.chat.completions.create({
+  model,
+  messages,
+  temperature,
+  max_tokens: max_tokens ?? 600, // ✅ Límite seguro y eficiente
+});
 
     const content = completion.choices[0]?.message?.content?.trim() ?? '';
 

@@ -32,12 +32,14 @@ export async function POST(req: NextRequest) {
     console.warn('⚠️ No assistant_settings found for Thalia:', err);
   }
 
-  // 💬 Detectar si el prompt es trivial (ej. "gracias", "ok", etc.)
+  // 💬 Detectar si es el primer mensaje y si el prompt es trivial
   const isTrivialPrompt = /gracias|ok|vale|de nada|perfecto|👌|👍|😊|entendido/i.test(prompt.trim());
   const isFirstMessage = !history || history.length === 0;
 
   let systemPrompt = '';
-  if (isFirstMessage || !isTrivialPrompt) {
+
+  if (isFirstMessage) {
+    // 👉 Solo incluir info de Account Settings al inicio
     systemPrompt = await getSystemPromptWithBrain({
       assistantId: 'thalia',
       roleDescription: 'an AI assistant specialized in ecommerce operations and management',
@@ -45,6 +47,20 @@ export async function POST(req: NextRequest) {
       detailed,
       userId,
       prompt,
+      isFirstMessage: true,
+      topK: 0, // NO buscar en el Brain
+    });
+  } else if (!isTrivialPrompt) {
+    // 👉 Para mensajes normales, buscar chunks del Brain
+    systemPrompt = await getSystemPromptWithBrain({
+      assistantId: 'thalia',
+      roleDescription: 'an AI assistant specialized in ecommerce operations and management',
+      tone: tone as 'friendly' | 'professional' | 'playful' | 'direct',
+      detailed,
+      userId,
+      prompt,
+      isFirstMessage: false,
+      topK: 2, // Buscar hasta 2 chunks
     });
   }
 

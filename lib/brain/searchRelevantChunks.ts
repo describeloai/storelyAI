@@ -48,69 +48,66 @@ export async function searchRelevantChunks({
     queryEmbeddingPreview: queryEmbedding.slice(0, 5),
   });
 
-  const allowedTypesArray = `{${allowedTypes.join(',')}}`;
+  const allowedTypesFormatted = `{"${allowedTypes.join('","')}"}`;
 
-const allowedTypesSQL = `'{${allowedTypes.map(t => `"${t}"`).join(',')}}'`; // → '{\"text\",\"link\",\"file\"}'
-
-const allowedTypesFormatted = `{"${allowedTypes.join('","')}"}`;
-
-const { rows } = await sql`
-  SELECT e.content, e.document_id, e.embedding, e.type, e.category, e.source, e.estimated_tokens,
-    1 - (e.embedding <#> ${`[${queryEmbedding.join(',')}]`}) AS similarity
-  FROM brain_embeddings e
-  LEFT JOIN brain_access_permissions p
-    ON e.document_id = p.item_id::uuid
-    AND p.user_id = ${userId}
-    AND p.assistant_id = ${assistantId}
-  WHERE e.user_id = ${userId}
-    AND e.type = ANY(${allowedTypesFormatted}::text[])
-    AND (p.allowed IS NULL OR p.allowed = true)
-  ORDER BY similarity DESC
-  LIMIT ${topK * 5};
-`;
-
+  const { rows } = await sql`
+    SELECT e.content, e.document_id, e.embedding, e.type, e.category, e.source, e.estimated_tokens,
+      1 - (e.embedding <#> ${`[${queryEmbedding.join(',')}]`}) AS similarity
+    FROM brain_embeddings e
+    LEFT JOIN brain_access_permissions p
+      ON e.document_id = p.item_id::uuid
+      AND p.user_id = ${userId}
+      AND p.assistant_id = ${assistantId}
+    WHERE e.user_id = ${userId}
+      AND e.type = ANY(${allowedTypesFormatted}::text[])
+      AND (p.allowed IS NULL OR p.allowed = true)
+    ORDER BY similarity DESC
+    LIMIT 30;
+  `;
 
   let filtered = rows.filter(r => r.similarity >= similarityThreshold);
 
-  if (filtered.length > topK * 4) {
+  if (filtered.length > 20) {
     similarityThreshold = Math.min(similarityThreshold + 0.05, 0.95);
     filtered = filtered.filter(r => r.similarity >= similarityThreshold);
     console.log(`⚠️ Threshold ajustado a ${similarityThreshold} por saturación`);
   }
 
-  // Agrupar por documento
-  const grouped: Record<string, ChunkWithVector[]> = {};
-  for (const row of filtered) {
-    if (!grouped[row.document_id]) grouped[row.document_id] = [];
+  const topCandidates = filtered.slice(0, 10); // 🧠 Solo procesamos los 10 más similares
+  const final: ChunkWithVector[] = [];
+  const seenBaseTexts = new Set<string>();
 
-    grouped[row.document_id].push({
+  for (const row of topCandidates) {
+    const embedding = JSON.parse(row.embedding);
+    const candidate: ChunkWithVector = {
       content: row.content,
       similarity: row.similarity,
-      embedding: JSON.parse(row.embedding),
+      embedding,
       type: row.type,
       category: row.category,
       source: row.source,
       estimated_tokens: row.estimated_tokens,
-    });
-  }
+    };
 
-  // Top por documento
-  const topByDocument = Object.values(grouped)
-    .flatMap(docChunks =>
-      docChunks
-        .sort((a, b) => b.similarity - a.similarity)
-        .slice(0, 2)
-    )
-    .sort((a, b) => b.similarity - a.similarity);
+    const baseText = candidate.content
+      .toLowerCase()
+      .replace(/[^\w\s]/g, '')
+      .slice(0, 50);
 
-  // Filtro de duplicados semánticos
-  const final: ChunkWithVector[] = [];
-  for (const candidate of topByDocument) {
-    const isDuplicate = final.some(existing =>
-      cosineSimilarity(candidate.embedding, existing.embedding) > 0.93
-    );
-    if (!isDuplicate) final.push(candidate);
-    if (final.length >= topK) break;
+    const isDuplicate =
+      final.some(existing => {
+        const cos = cosineSimilarity(candidate.embedding, existing.embedding);
+        const jac = jaccardSimilarity(candidate.content, existing.content);
+        const sameStart = candidate.content.slice(0, 30) === existing.content.slice(0, 30);
+        return cos > 0.85 || jac > 0.5 || sameStart;
+      }) || seenBaseTexts.has(baseText);
+
+    if (!isDuplicate) {
+      final.push(candidate);
+      seenBaseTexts.add(baseText);
+    }
+
+    if (final.length >= 2) break; // ⚡ Solo queremos hasta 2
   }
 
   console.log(`✅ Retrieved: ${rows.length} rows → ${filtered.length} filtered → ${final.length} final chunks`);
@@ -121,6 +118,13 @@ function cosineSimilarity(a: number[], b: number[]): number {
   const dot = a.reduce((sum, val, i) => sum + val * b[i], 0);
   const normA = Math.sqrt(a.reduce((sum, val) => sum + val ** 2, 0));
   const normB = Math.sqrt(b.reduce((sum, val) => sum + val ** 2, 0));
-
   return dot / (normA * normB);
+}
+
+function jaccardSimilarity(a: string, b: string): number {
+  const setA = new Set(a.toLowerCase().split(/\W+/));
+  const setB = new Set(b.toLowerCase().split(/\W+/));
+  const intersection = new Set([...setA].filter(x => setB.has(x)));
+  const union = new Set([...setA, ...setB]);
+  return intersection.size / union.size;
 }

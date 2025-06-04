@@ -8,7 +8,7 @@ import { useMessageRefs } from '@/hooks/useMessageRefs';
 import HistoryItem from '@/components/dashboard/HistoryItem';
 import { detectCiroIntent } from '@/lib/ai/intent/ciro';
 import { useDarkMode } from '@/context/DarkModeContext';
-import MarkdownMessage from '@/components/common/MarkdownMessage';
+import MarkdownMessage from '@/components/dashboard/MarkdownMessage';
 
 export default function CiroPage() {
   const { darkMode } = useDarkMode();

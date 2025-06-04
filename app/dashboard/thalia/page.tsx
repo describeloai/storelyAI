@@ -2,12 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
 import { summarizeMessage } from '@/utils/summarize';
 import { useMessageRefs } from '@/hooks/useMessageRefs';
 import HistoryItem from '@/components/dashboard/HistoryItem';
 import { useDarkMode } from '@/context/DarkModeContext';
-import MarkdownMessage from '@/components/common/MarkdownMessage';
+import MarkdownMessage from '@/components/dashboard/MarkdownMessage';
 
 export default function ThaliaPage() {
   const { darkMode } = useDarkMode();
@@ -22,7 +21,10 @@ export default function ThaliaPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const messageRefs = useMessageRefs(messages.length);
+
   const primaryColor = '#D946EF';
+  const gradient = 'linear-gradient(135deg, #4f73e5, #a447e7)';
+  const userBubbleColor = darkMode ? gradient : primaryColor;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -88,20 +90,22 @@ export default function ThaliaPage() {
     <div
       style={{
         display: 'flex',
-        height: '100vh',
+        height: 'calc(100vh - 2rem)',
+        margin: '1rem',
         background: darkMode ? '#0f0f11' : '#fff',
         color: darkMode ? '#f2f2f2' : '#111',
         fontFamily: `'Inter', 'Segoe UI', sans-serif`,
         borderRadius: '1rem',
         overflow: 'hidden',
         transition: 'background 0.3s ease, color 0.3s ease',
+        boxShadow: '0 4px 30px rgba(0,0,0,0.2)',
       }}
     >
       {/* Sidebar */}
       <aside
         style={{
           width: '300px',
-          backgroundColor: primaryColor,
+          background: darkMode ? gradient : primaryColor,
           color: '#fff',
           padding: '2rem 1.5rem',
           display: 'flex',
@@ -187,41 +191,22 @@ export default function ThaliaPage() {
               color: darkMode ? '#fff' : '#2b2b2b',
             }}
           >
-            Hey, it's <span style={{ color: primaryColor }}>Thalia</span> 👋
+            Hey, it's{' '}
+            <span
+              style={{
+                background: darkMode ? gradient : 'none',
+                WebkitBackgroundClip: darkMode ? 'text' : undefined,
+                WebkitTextFillColor: darkMode ? 'transparent' : undefined,
+                color: darkMode ? undefined : primaryColor,
+              }}
+            >
+              Thalia
+            </span>{' '}
+            👋
           </h1>
           <p style={{ fontSize: '1.1rem', color: darkMode ? '#ccc' : '#555' }}>
             Let’s optimize your store’s operations.
           </p>
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '1rem' }}>
-            {[
-              'Sugiere mejoras de logística',
-              'Ayuda a delegar tareas repetitivas',
-              'Organiza prioridades para esta semana',
-              'Genera un resumen de operaciones',
-            ].map((suggestion, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  if (inputRef.current) {
-                    inputRef.current.value = suggestion;
-                    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
-                  }
-                }}
-                style={{
-                  backgroundColor: darkMode ? '#2b2b2e' : '#fff',
-                  border: `1px solid ${primaryColor}`,
-                  borderRadius: '1rem',
-                  padding: '0.5rem 1rem',
-                  fontSize: '0.95rem',
-                  cursor: 'pointer',
-                  color: darkMode ? '#eee' : '#000',
-                }}
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
         </div>
 
         <div
@@ -245,7 +230,7 @@ export default function ThaliaPage() {
                 alignSelf: msg.from === 'user' ? 'flex-end' : 'flex-start',
                 background:
                   msg.from === 'user'
-                    ? primaryColor
+                    ? userBubbleColor
                     : darkMode
                     ? '#2b2b2e'
                     : '#fff',
@@ -315,7 +300,7 @@ export default function ThaliaPage() {
             type="submit"
             disabled={loading}
             style={{
-              backgroundColor: primaryColor,
+              background: userBubbleColor,
               color: '#fff',
               border: 'none',
               padding: '0.75rem',
