@@ -6,21 +6,35 @@ import ReactMarkdown from 'react-markdown';
 import { summarizeMessage } from '@/utils/summarize';
 import { useMessageRefs } from '@/hooks/useMessageRefs';
 import HistoryItem from '@/components/dashboard/HistoryItem';
-import { detectCiroIntent } from '@/lib/ai/intent/ciro';
 import { useDarkMode } from '@/context/DarkModeContext';
 import MarkdownMessage from '@/components/dashboard/MarkdownMessage';
+import { useUser } from '@clerk/nextjs';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function CiroPage() {
   const { darkMode } = useDarkMode();
+  const { user, isLoaded } = useUser();
+  const { t } = useLanguage();
+
+  const assistantName = "Ciro";
+
   const [messages, setMessages] = useState([
-    { from: 'ciro', text: 'Hi! **I’m Ciro**, your data advisor. Ask me anything about pricing, inventory or campaign performance.' },
+    {
+      from: 'ciro',
+      text: t('ciroPage.initialGreeting', { assistantName: assistantName }),
+    },
   ]);
   const [historyItems, setHistoryItems] = useState<{ summary: string; index: number }[]>([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const messageRefs = useMessageRefs(messages.length);
-  const primaryColor = '#1E40AF'; // azul oscuro
+
+  const ciroGradient = 'linear-gradient(135deg, #2a5298, #1e3c72)';
+  const primaryColor = '#4285f4';
+  const userBubbleColor = darkMode ? ciroGradient : primaryColor;
+  const assistantBubbleColor = darkMode ? '#2b2b2e' : '#fff';
+  const assistantTextColor = darkMode ? '#e2e2e2' : '#333';
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -31,48 +45,60 @@ export default function CiroPage() {
     const value = inputRef.current?.value.trim();
     if (!value) return;
 
+    if (!isLoaded || !user || !user.id) {
+      setMessages(prev => [...prev, { from: 'ciro', text: t('ciroPage.authError') }]);
+      console.error('Error: Usuario no autenticado o ID no disponible para Ciro.');
+      return;
+    }
+    const currentUserId = user.id;
+
     const userMessage = { from: 'user', text: value };
     setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
 
-    const prevHistory = messages.slice(-4).filter(m => m.from === 'user' || m.from === 'ciro')
+    const prevHistory = messages.slice(-4).filter(m => (m.from === 'user' || m.from === 'ciro') && m.text.length < 500)
       .map(m => ({ role: m.from === 'user' ? 'user' : 'assistant', content: m.text }));
 
-    const intent = detectCiroIntent(value, true);
-    setLoading(true);
+    const neutralMessages = ['ok', 'vale', 'gracias', 'entendido', 'de acuerdo', 'ajá', 'sí', 'bueno', 'perfecto'];
+    const isTrivial = value.length < 10 && neutralMessages.some(m => value.toLowerCase().includes(m));
 
+    setLoading(true);
     try {
       const res = await fetch('/api/ciro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: value,
-          userId: 'demo-user',
-          history: prevHistory,
-          model: intent.model,
-          tool: intent.tool,
-        }),
+        body: JSON.stringify({ prompt: value, userId: currentUserId, history: prevHistory, isTrivial }),
       });
 
       const data = await res.json();
       if (data.output) {
         setMessages(prev => [...prev, { from: 'ciro', text: data.output }]);
-        if (value.length > 8) {
+
+        const intentKeywords =
+          /seo|meta|título|página|ranking|palabras clave|búsqueda|tráfico|web|análisis/i;
+        const isLikelyRelevant = value.length > 12 && (intentKeywords.test(value) || intentKeywords.test(data.output));
+
+        if (isLikelyRelevant) {
           const summary = summarizeMessage(value);
           setHistoryItems(prev => [...prev, { summary, index: messages.length }]);
         }
       } else {
-        setMessages(prev => [...prev, { from: 'ciro', text: 'Ups, no pude procesarlo.' }]);
+        setMessages(prev => [...prev, { from: 'ciro', text: t('ciroPage.processError') }]);
       }
     } catch {
-      setMessages(prev => [...prev, { from: 'ciro', text: 'Error al contactar con la IA.' }]);
+      setMessages(prev => [...prev, { from: 'ciro', text: t('ciroPage.contactError') }]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleNewChat = () => {
-    setMessages([{ from: 'ciro', text: 'Hi! **I’m Ciro**, your data advisor. Ask me anything about pricing, inventory or campaign performance.' }]);
+    setMessages([
+      {
+        from: 'ciro',
+        text: t('ciroPage.initialGreeting', { assistantName: assistantName }),
+      },
+    ]);
     setHistoryItems([]);
   };
 
@@ -85,6 +111,45 @@ export default function CiroPage() {
     }
   };
 
+  // --- Manejo de estados de carga o no autenticación al inicio del render ---
+  // Conditionally render the content within a single return statement
+  if (!isLoaded) {
+    return (
+      <div style={{
+        display: 'flex',
+        height: '100vh',
+        background: darkMode ? '#0f0f11' : '#fff',
+        fontFamily: `'Inter', 'Segoe UI', sans-serif`,
+        color: darkMode ? '#f2f2f2' : '#111',
+        borderRadius: '1rem',
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        Cargando asistente...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div style={{
+        display: 'flex',
+        height: '100vh',
+        background: darkMode ? '#0f0f11' : '#fff',
+        fontFamily: `'Inter', 'Segoe UI', sans-serif`,
+        color: darkMode ? '#f2f2f2' : '#111',
+        borderRadius: '1rem',
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        {t('ciroPage.notAuthenticated')}
+      </div>
+    );
+  }
+
+  // Main component rendering
   return (
     <div
       style={{
@@ -93,20 +158,21 @@ export default function CiroPage() {
         background: darkMode ? '#0f0f11' : '#fff',
         color: darkMode ? '#f2f2f2' : '#111',
         fontFamily: `'Inter', 'Segoe UI', sans-serif`,
-        transition: 'background 0.3s ease, color 0.3s ease',
         borderRadius: '1rem',
         overflow: 'hidden',
+        transition: 'background 0.3s ease',
+        boxShadow: '0 4px 30px rgba(0,0,0,0.2)',
       }}
     >
-      {/* Sidebar */}
       <aside
         style={{
           width: '300px',
-          backgroundColor: primaryColor,
-          color: '#fff',
+          background: darkMode ? ciroGradient : primaryColor,
+          color: darkMode ? '#eee' : '#000',
           padding: '2rem 1.5rem',
           display: 'flex',
           flexDirection: 'column',
+          justifyContent: 'space-between',
         }}
       >
         <div>
@@ -114,13 +180,13 @@ export default function CiroPage() {
             style={{
               width: '100%',
               height: '160px',
-              backgroundColor: '#e0ecff',
+              backgroundColor: darkMode ? '#2a2a2a' : '#e6e6fa',
               borderRadius: '1rem',
               marginBottom: '1.5rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: primaryColor,
+              color: darkMode ? '#aaa' : '#4285f4',
               fontWeight: 600,
             }}
           >
@@ -128,55 +194,57 @@ export default function CiroPage() {
           </div>
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>Ciro</h2>
-          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>Data Advisor</p>
+          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>{t('ciroPage.assistantRole')}</p>
 
           <button
             onClick={handleNewChat}
             style={{
               marginTop: '2rem',
+              marginBottom: '1rem',
               padding: '0.6rem 1rem',
-              background: '#fff',
-              color: primaryColor,
+              background: darkMode ? '#fff' : '#000',
+              color: darkMode ? '#000' : '#fff',
               borderRadius: '0.75rem',
               border: 'none',
               fontWeight: 600,
               cursor: 'pointer',
-              width: '100%',
             }}
           >
-            + New Chat
+            {t('ciroPage.newChatButton')}
           </button>
-        </div>
 
-        <div
-          style={{
-            flex: 1,
-            marginTop: '2rem',
-            overflowY: 'auto',
-            scrollbarWidth: 'thin',
-            paddingRight: '0.25rem',
-          }}
-        >
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>History</h4>
-          {historyItems.length === 0 ? (
-            <p style={{ opacity: 0.7, fontSize: '0.85rem' }}>No chat history</p>
-          ) : (
-            historyItems.map((item, idx) => (
-              <HistoryItem key={idx} summary={item.summary} onClick={() => scrollToMessage(item.index)} />
-            ))
-          )}
+          <div style={{ marginTop: '3rem' }}>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>{t('ciroPage.historyTitle')}</h4>
+            <div
+              style={{
+                maxHeight: '240px',
+                overflowY: 'auto',
+                paddingRight: '0.25rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
+              {historyItems.length === 0 ? (
+                <p style={{ opacity: 0.7, fontSize: '0.85rem' }}>{t('ciroPage.noChatHistory')}</p>
+              ) : (
+                historyItems.map((item, idx) => (
+                  <HistoryItem key={idx} summary={item.summary} onClick={() => scrollToMessage(item.index)} />
+                ))
+              )}
+            </div>
+          </div>
         </div>
       </aside>
 
-      {/* Main Chat */}
       <section
         style={{
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
           padding: '2rem',
-          background: darkMode ? '#1a1a1d' : '#f0f6ff',
-          transition: 'background 0.3s ease',
+          background: darkMode ? '#1a1a1d' : '#e6e6fa',
+          overflow: 'hidden',
         }}
       >
         <div style={{ flexShrink: 0 }}>
@@ -188,35 +256,36 @@ export default function CiroPage() {
               color: darkMode ? '#fff' : '#2b2b2b',
             }}
           >
-            Hey, it's <span style={{ color: primaryColor }}>Ciro</span> 👋
+            {t('ciroPage.welcomeGreeting', { assistantName: assistantName })}
           </h1>
           <p style={{ fontSize: '1.1rem', color: darkMode ? '#ccc' : '#555' }}>
-            How can I help with your numbers?
+            {t('ciroPage.howCanIHelp')}
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '1rem' }}>
             {[
-              'Analiza mis márgenes de beneficio',
-              'Haz una predicción de ventas',
-              'Detecta campañas poco rentables',
-              'Sugiere un precio dinámico',
+              t('ciroPage.suggestion1'),
+              t('ciroPage.suggestion2'),
+              t('ciroPage.suggestion3'),
+              t('ciroPage.suggestion4'),
             ].map((suggestion, idx) => (
               <button
                 key={idx}
                 onClick={() => {
                   if (inputRef.current) {
                     inputRef.current.value = suggestion;
-                    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+                    handleSubmit({ preventDefault: () => { } } as React.FormEvent);
                   }
                 }}
                 style={{
-                  backgroundColor: darkMode ? '#2b2b2e' : '#fff',
-                  border: `1px solid ${primaryColor}`,
+                  background: darkMode ? ciroGradient : '#4285f4',
+                  border: 'none',
                   borderRadius: '1rem',
                   padding: '0.5rem 1rem',
                   fontSize: '0.95rem',
                   cursor: 'pointer',
-                  color: darkMode ? '#eee' : '#000',
+                  color: '#fff',
+                  fontWeight: 500,
                 }}
               >
                 {suggestion}
@@ -235,7 +304,6 @@ export default function CiroPage() {
             display: 'flex',
             flexDirection: 'column',
             gap: '1rem',
-            scrollbarWidth: 'thin',
           }}
         >
           {messages.map((msg, i) => (
@@ -246,11 +314,11 @@ export default function CiroPage() {
                 alignSelf: msg.from === 'user' ? 'flex-end' : 'flex-start',
                 background:
                   msg.from === 'user'
-                    ? primaryColor
+                    ? userBubbleColor
                     : darkMode
-                    ? '#2b2b2e'
-                    : '#fff',
-                color: msg.from === 'user' ? '#fff' : darkMode ? '#f0f0f0' : '#333',
+                      ? '#2b2b2e'
+                      : '#fff',
+                color: msg.from === 'user' ? '#fff' : assistantTextColor,
                 padding: '0.75rem 1rem',
                 borderRadius: '1rem',
                 borderTopLeftRadius: msg.from === 'user' ? '1rem' : '0.25rem',
@@ -267,8 +335,8 @@ export default function CiroPage() {
             <div
               style={{
                 alignSelf: 'flex-start',
-                background: darkMode ? '#2b2b2e' : '#fff',
-                color: darkMode ? '#eee' : '#333',
+                background: assistantBubbleColor,
+                color: assistantTextColor,
                 padding: '0.75rem 1rem',
                 borderRadius: '1rem',
                 maxWidth: '50%',
@@ -292,14 +360,14 @@ export default function CiroPage() {
             display: 'flex',
             gap: '1rem',
             alignItems: 'center',
-            backgroundColor: darkMode ? '#1a1a1d' : '#f0f6ff',
+            backgroundColor: darkMode ? '#1a1a1d' : '#e6e6fa',
             borderTop: darkMode ? '1px solid #333' : '1px solid #e4e4e4',
           }}
         >
           <input
             ref={inputRef}
             name="msg"
-            placeholder="Type your question..."
+            placeholder={t('ciroPage.typeQuestionPlaceholder')}
             disabled={loading}
             style={{
               flex: 1,
@@ -316,7 +384,7 @@ export default function CiroPage() {
             type="submit"
             disabled={loading}
             style={{
-              backgroundColor: primaryColor,
+              backgroundColor: userBubbleColor,
               color: '#fff',
               border: 'none',
               padding: '0.75rem',

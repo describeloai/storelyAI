@@ -8,13 +8,20 @@ import { useMessageRefs } from '@/hooks/useMessageRefs';
 import HistoryItem from '@/components/dashboard/HistoryItem';
 import { useDarkMode } from '@/context/DarkModeContext';
 import MarkdownMessage from '@/components/dashboard/MarkdownMessage';
+import { useUser } from '@clerk/nextjs';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function MaraPage() {
   const { darkMode } = useDarkMode();
+  const { user, isLoaded } = useUser();
+  const { t } = useLanguage();
+
+  const assistantName = "Mara";
+
   const [messages, setMessages] = useState([
     {
       from: 'mara',
-      text: 'Hey! **I’m Mara**, your AI strategist. Need help with conversions, growth or product ideas?',
+      text: t('maraPage.initialGreeting', { assistantName: assistantName }),
     },
   ]);
   const [historyItems, setHistoryItems] = useState<{ summary: string; index: number }[]>([]);
@@ -23,11 +30,11 @@ export default function MaraPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const messageRefs = useMessageRefs(messages.length);
 
-  const gradient = 'linear-gradient(135deg, #4f73e5, #a447e7)';
-  const primaryColor = '#7C3AED';
-  const userBubbleColor = darkMode ? gradient : primaryColor;
+  const maraGradient = 'linear-gradient(135deg, #8f00a8, #c100ff)';
+  const primaryColor = '#9c27b0';
+  const userBubbleColor = darkMode ? maraGradient : primaryColor;
   const assistantBubbleColor = darkMode ? '#2b2b2e' : '#fff';
-  const assistantTextColor = darkMode ? '#f0f0f0' : '#333';
+  const assistantTextColor = darkMode ? '#e2e2e2' : '#333';
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -38,33 +45,48 @@ export default function MaraPage() {
     const value = inputRef.current?.value.trim();
     if (!value) return;
 
+    if (!isLoaded || !user || !user.id) {
+      setMessages(prev => [...prev, { from: 'mara', text: t('maraPage.authError') }]);
+      console.error('Error: Usuario no autenticado o ID no disponible para Mara.');
+      return;
+    }
+    const currentUserId = user.id;
+
     const userMessage = { from: 'user', text: value };
     setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
 
-    const prevHistory = messages.slice(-4).filter(m => m.from === 'user' || m.from === 'mara')
+    const prevHistory = messages.slice(-4).filter(m => (m.from === 'user' || m.from === 'mara') && m.text.length < 500)
       .map(m => ({ role: m.from === 'user' ? 'user' : 'assistant', content: m.text }));
+
+    const neutralMessages = ['ok', 'vale', 'gracias', 'entendido', 'de acuerdo', 'ajá', 'sí', 'bueno', 'perfecto'];
+    const isTrivial = value.length < 10 && neutralMessages.some(m => value.toLowerCase().includes(m));
 
     setLoading(true);
     try {
       const res = await fetch('/api/mara', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: value, userId: 'demo-user', history: prevHistory }),
+        body: JSON.stringify({ prompt: value, userId: currentUserId, history: prevHistory, isTrivial }),
       });
 
       const data = await res.json();
       if (data.output) {
         setMessages(prev => [...prev, { from: 'mara', text: data.output }]);
-        if (value.length > 8) {
+
+        const intentKeywords =
+          /copy|texto|anuncio|marketing|creativo|contenido|eslogan|lema|descripción|producto|campaña/i;
+        const isLikelyRelevant = value.length > 12 && (intentKeywords.test(value) || intentKeywords.test(data.output));
+
+        if (isLikelyRelevant) {
           const summary = summarizeMessage(value);
           setHistoryItems(prev => [...prev, { summary, index: messages.length }]);
         }
       } else {
-        setMessages(prev => [...prev, { from: 'mara', text: 'Oops, I couldn’t process that.' }]);
+        setMessages(prev => [...prev, { from: 'mara', text: t('maraPage.processError') }]);
       }
     } catch {
-      setMessages(prev => [...prev, { from: 'mara', text: 'Error contacting AI.' }]);
+      setMessages(prev => [...prev, { from: 'mara', text: t('maraPage.contactError') }]);
     } finally {
       setLoading(false);
     }
@@ -74,7 +96,7 @@ export default function MaraPage() {
     setMessages([
       {
         from: 'mara',
-        text: 'Hey! **I’m Mara**, your AI strategist. Need help with conversions, growth or product ideas?',
+        text: t('maraPage.initialGreeting', { assistantName: assistantName }),
       },
     ]);
     setHistoryItems([]);
@@ -89,28 +111,68 @@ export default function MaraPage() {
     }
   };
 
+  // --- Manejo de estados de carga o no autenticación al inicio del render ---
+  // Conditionally render the content within a single return statement
+  if (!isLoaded) {
+    return (
+      <div style={{
+        display: 'flex',
+        height: '100vh',
+        background: darkMode ? '#0f0f11' : '#fff',
+        fontFamily: `'Inter', 'Segoe UI', sans-serif`,
+        color: darkMode ? '#f2f2f2' : '#111',
+        borderRadius: '1rem',
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        Cargando asistente...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div style={{
+        display: 'flex',
+        height: '100vh',
+        background: darkMode ? '#0f0f11' : '#fff',
+        fontFamily: `'Inter', 'Segoe UI', sans-serif`,
+        color: darkMode ? '#f2f2f2' : '#111',
+        borderRadius: '1rem',
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        {t('maraPage.notAuthenticated')}
+      </div>
+    );
+  }
+
+  // Main component rendering
   return (
     <div
       style={{
         display: 'flex',
         height: '100vh',
         background: darkMode ? '#0f0f11' : '#fff',
-        fontFamily: `'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif`,
         color: darkMode ? '#f2f2f2' : '#111',
+        fontFamily: `'Inter', 'Segoe UI', sans-serif`,
         borderRadius: '1rem',
         overflow: 'hidden',
+        transition: 'background 0.3s ease',
+        boxShadow: '0 4px 30px rgba(0,0,0,0.2)',
       }}
     >
-      {/* Sidebar */}
       <aside
         style={{
           width: '300px',
-          background: darkMode ? gradient : primaryColor,
-          color: '#fff',
+          background: darkMode ? maraGradient : primaryColor,
+          color: darkMode ? '#eee' : '#000',
           padding: '2rem 1.5rem',
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden',
+          justifyContent: 'space-between',
         }}
       >
         <div>
@@ -118,13 +180,13 @@ export default function MaraPage() {
             style={{
               width: '100%',
               height: '160px',
-              backgroundColor: darkMode ? '#2a2a2a' : '#f3e8ff',
+              backgroundColor: darkMode ? '#2a2a2a' : '#ffe6ff',
               borderRadius: '1rem',
               marginBottom: '1.5rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: primaryColor,
+              color: darkMode ? '#aaa' : '#9c27b0',
               fontWeight: 600,
             }}
           >
@@ -132,7 +194,7 @@ export default function MaraPage() {
           </div>
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>Mara</h2>
-          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>Growth Strategist</p>
+          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>{t('maraPage.assistantRole')}</p>
 
           <button
             onClick={handleNewChat}
@@ -141,46 +203,47 @@ export default function MaraPage() {
               marginBottom: '1rem',
               padding: '0.6rem 1rem',
               background: '#fff',
-              color: primaryColor,
+              color: darkMode ? '#4f73e5' : '#000',
               borderRadius: '0.75rem',
               border: 'none',
               fontWeight: 600,
               cursor: 'pointer',
-              width: '100%',
             }}
           >
-            + New Chat
+            {t('maraPage.newChatButton')}
           </button>
-        </div>
 
-        <div
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            scrollbarWidth: 'thin',
-            paddingRight: '0.25rem',
-            marginTop: '1rem',
-          }}
-        >
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>History</h4>
-          {historyItems.length === 0 ? (
-            <p style={{ opacity: 0.7, fontSize: '0.85rem' }}>No chat history</p>
-          ) : (
-            historyItems.map((item, idx) => (
-              <HistoryItem key={idx} summary={item.summary} onClick={() => scrollToMessage(item.index)} />
-            ))
-          )}
+          <div style={{ marginTop: '3rem' }}>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>{t('maraPage.historyTitle')}</h4>
+            <div
+              style={{
+                maxHeight: '240px',
+                overflowY: 'auto',
+                paddingRight: '0.25rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
+              {historyItems.length === 0 ? (
+                <p style={{ opacity: 0.7, fontSize: '0.85rem' }}>{t('maraPage.noChatHistory')}</p>
+              ) : (
+                historyItems.map((item, idx) => (
+                  <HistoryItem key={idx} summary={item.summary} onClick={() => scrollToMessage(item.index)} />
+                ))
+              )}
+            </div>
+          </div>
         </div>
       </aside>
 
-      {/* Main Chat */}
       <section
         style={{
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
           padding: '2rem',
-          background: darkMode ? '#1a1a1d' : '#f5f3ff',
+          background: darkMode ? '#1a1a1d' : '#ffe6ff',
           overflow: 'hidden',
         }}
       >
@@ -193,46 +256,36 @@ export default function MaraPage() {
               color: darkMode ? '#fff' : '#2b2b2b',
             }}
           >
-            Hey, it's{' '}
-            <span
-              style={{
-                background: darkMode ? gradient : 'none',
-                WebkitBackgroundClip: darkMode ? 'text' : undefined,
-                WebkitTextFillColor: darkMode ? 'transparent' : undefined,
-                color: darkMode ? undefined : primaryColor,
-              }}
-            >
-              Mara
-            </span>{' '}
-            👋
+            {t('maraPage.welcomeGreeting', { assistantName: assistantName })}
           </h1>
           <p style={{ fontSize: '1.1rem', color: darkMode ? '#ccc' : '#555' }}>
-            Let’s grow your business together.
+            {t('maraPage.howCanIHelp')}
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '1rem' }}>
             {[
-              'Audita mi tienda online',
-              'Sugiere mejoras de conversión',
-              'Recomiéndame un producto tendencia',
-              'Crea una estrategia de crecimiento',
+              t('maraPage.suggestion1'),
+              t('maraPage.suggestion2'),
+              t('maraPage.suggestion3'),
+              t('maraPage.suggestion4'),
             ].map((suggestion, idx) => (
               <button
                 key={idx}
                 onClick={() => {
                   if (inputRef.current) {
                     inputRef.current.value = suggestion;
-                    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+                    handleSubmit({ preventDefault: () => { } } as React.FormEvent);
                   }
                 }}
                 style={{
-                  background: darkMode ? gradient : '#fff',
+                  background: darkMode ? maraGradient : '#9c27b0',
                   border: 'none',
                   borderRadius: '1rem',
                   padding: '0.5rem 1rem',
                   fontSize: '0.95rem',
                   cursor: 'pointer',
                   color: '#fff',
+                  fontWeight: 500,
                 }}
               >
                 {suggestion}
@@ -259,7 +312,12 @@ export default function MaraPage() {
               ref={messageRefs[i]}
               style={{
                 alignSelf: msg.from === 'user' ? 'flex-end' : 'flex-start',
-                background: msg.from === 'user' ? userBubbleColor : assistantBubbleColor,
+                background:
+                  msg.from === 'user'
+                    ? userBubbleColor
+                    : darkMode
+                      ? '#2b2b2e'
+                      : '#fff',
                 color: msg.from === 'user' ? '#fff' : assistantTextColor,
                 padding: '0.75rem 1rem',
                 borderRadius: '1rem',
@@ -302,14 +360,14 @@ export default function MaraPage() {
             display: 'flex',
             gap: '1rem',
             alignItems: 'center',
-            backgroundColor: darkMode ? '#1a1a1d' : '#f5f3ff',
+            backgroundColor: darkMode ? '#1a1a1d' : '#ffe6ff',
             borderTop: darkMode ? '1px solid #333' : '1px solid #e4e4e4',
           }}
         >
           <input
             ref={inputRef}
             name="msg"
-            placeholder="Type your question..."
+            placeholder={t('maraPage.typeQuestionPlaceholder')}
             disabled={loading}
             style={{
               flex: 1,
@@ -326,7 +384,7 @@ export default function MaraPage() {
             type="submit"
             disabled={loading}
             style={{
-              background: userBubbleColor,
+              backgroundColor: userBubbleColor,
               color: '#fff',
               border: 'none',
               padding: '0.75rem',

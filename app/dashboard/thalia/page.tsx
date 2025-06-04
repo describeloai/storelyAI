@@ -2,18 +2,27 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { summarizeMessage } from '@/utils/summarize';
 import { useMessageRefs } from '@/hooks/useMessageRefs';
 import HistoryItem from '@/components/dashboard/HistoryItem';
 import { useDarkMode } from '@/context/DarkModeContext';
 import MarkdownMessage from '@/components/dashboard/MarkdownMessage';
+import { useUser } from '@clerk/nextjs';
+import { useLanguage } from '@/context/LanguageContext';
+
 
 export default function ThaliaPage() {
   const { darkMode } = useDarkMode();
+  const { user, isLoaded } = useUser();
+  const { t } = useLanguage();
+
+  const assistantName = "Thalia";
+
   const [messages, setMessages] = useState([
     {
       from: 'thalia',
-      text: 'Hey! **I’m Thalia**, your operations manager. Ask me anything to optimize processes, tareas o flujos de trabajo.',
+      text: t('thaliaPage.initialGreeting', { assistantName: assistantName }),
     },
   ]);
   const [historyItems, setHistoryItems] = useState<{ summary: string; index: number }[]>([]);
@@ -35,6 +44,13 @@ export default function ThaliaPage() {
     const value = inputRef.current?.value.trim();
     if (!value) return;
 
+    if (!isLoaded || !user || !user.id) {
+      setMessages(prev => [...prev, { from: 'thalia', text: t('thaliaPage.authError') }]);
+      console.error('Error: Usuario no autenticado o ID no disponible para Thalia.');
+      return;
+    }
+    const currentUserId = user.id;
+
     const userMessage = { from: 'user', text: value };
     setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
@@ -47,7 +63,7 @@ export default function ThaliaPage() {
       const res = await fetch('/api/thalia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: value, userId: 'demo-user', history: prevHistory }),
+        body: JSON.stringify({ prompt: value, userId: currentUserId, history: prevHistory }),
       });
 
       const data = await res.json();
@@ -58,10 +74,10 @@ export default function ThaliaPage() {
           setHistoryItems(prev => [...prev, { summary, index: messages.length }]);
         }
       } else {
-        setMessages(prev => [...prev, { from: 'thalia', text: 'Oops, I couldn’t process that.' }]);
+        setMessages(prev => [...prev, { from: 'thalia', text: t('thaliaPage.processError') }]);
       }
     } catch {
-      setMessages(prev => [...prev, { from: 'thalia', text: 'Error contacting AI.' }]);
+      setMessages(prev => [...prev, { from: 'thalia', text: t('thaliaPage.contactError') }]);
     } finally {
       setLoading(false);
     }
@@ -71,7 +87,7 @@ export default function ThaliaPage() {
     setMessages([
       {
         from: 'thalia',
-        text: 'Hey! **I’m Thalia**, your operations manager. Ask me anything to optimize processes, tareas o flujos de trabajo.',
+        text: t('thaliaPage.initialGreeting', { assistantName: assistantName }),
       },
     ]);
     setHistoryItems([]);
@@ -85,6 +101,45 @@ export default function ThaliaPage() {
       container.scrollTo({ top: relativeOffset - 40, behavior: 'smooth' });
     }
   };
+
+  // --- Manejo de estados de carga o no autenticación al inicio del render ---
+  if (!isLoaded) {
+    return (
+      <div style={{
+        display: 'flex',
+        height: 'calc(100vh - 2rem)',
+        margin: '1rem',
+        background: darkMode ? '#0f0f11' : '#fff',
+        fontFamily: `'Inter', 'Segoe UI', sans-serif`,
+        color: darkMode ? '#f2f2f2' : '#111',
+        borderRadius: '1rem',
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        Cargando asistente...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div style={{
+        display: 'flex',
+        height: 'calc(100vh - 2rem)',
+        margin: '1rem',
+        background: darkMode ? '#0f0f11' : '#fff',
+        fontFamily: `'Inter', 'Segoe UI', sans-serif`,
+        color: darkMode ? '#f2f2f2' : '#111',
+        borderRadius: '1rem',
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        {t('thaliaPage.notAuthenticated')}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -131,12 +186,13 @@ export default function ThaliaPage() {
           </div>
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>Thalia</h2>
-          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>Ops Manager</p>
+          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>{t('thaliaPage.assistantRole')}</p>
 
           <button
             onClick={handleNewChat}
             style={{
               marginTop: '2rem',
+              marginBottom: '1rem',
               padding: '0.6rem 1rem',
               background: '#fff',
               color: primaryColor,
@@ -147,7 +203,7 @@ export default function ThaliaPage() {
               width: '100%',
             }}
           >
-            + New Chat
+            {t('thaliaPage.newChatButton')}
           </button>
         </div>
 
@@ -160,9 +216,9 @@ export default function ThaliaPage() {
             paddingRight: '0.25rem',
           }}
         >
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>History</h4>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>{t('thaliaPage.historyTitle')}</h4>
           {historyItems.length === 0 ? (
-            <p style={{ opacity: 0.7, fontSize: '0.85rem' }}>No chat history</p>
+            <p style={{ opacity: 0.7, fontSize: '0.85rem' }}>{t('thaliaPage.noChatHistory')}</p>
           ) : (
             historyItems.map((item, idx) => (
               <HistoryItem key={idx} summary={item.summary} onClick={() => scrollToMessage(item.index)} />
@@ -191,21 +247,10 @@ export default function ThaliaPage() {
               color: darkMode ? '#fff' : '#2b2b2b',
             }}
           >
-            Hey, it's{' '}
-            <span
-              style={{
-                background: darkMode ? gradient : 'none',
-                WebkitBackgroundClip: darkMode ? 'text' : undefined,
-                WebkitTextFillColor: darkMode ? 'transparent' : undefined,
-                color: darkMode ? undefined : primaryColor,
-              }}
-            >
-              Thalia
-            </span>{' '}
-            👋
+            {t('thaliaPage.welcomeGreeting', { assistantName: assistantName })}
           </h1>
           <p style={{ fontSize: '1.1rem', color: darkMode ? '#ccc' : '#555' }}>
-            Let’s optimize your store’s operations.
+            {t('thaliaPage.howCanIHelp')}
           </p>
         </div>
 
@@ -283,7 +328,7 @@ export default function ThaliaPage() {
           <input
             ref={inputRef}
             name="msg"
-            placeholder="Type your question..."
+            placeholder={t('thaliaPage.typeQuestionPlaceholder')}
             disabled={loading}
             style={{
               flex: 1,
@@ -300,7 +345,7 @@ export default function ThaliaPage() {
             type="submit"
             disabled={loading}
             style={{
-              background: userBubbleColor,
+              backgroundColor: userBubbleColor,
               color: '#fff',
               border: 'none',
               padding: '0.75rem',

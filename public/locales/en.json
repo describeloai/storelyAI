@@ -1,0 +1,52 @@
+{
+  "dashboard": {
+    "welcome": "Welcome to your Dashboard",
+    "headerTitle": "Control Panel",
+    "settingsTitle": "Settings",
+    "generalSettingsLink": "General Settings",
+    "profileSettingsLink": "Profile",
+    "accountSettingsLink": "Account",
+    "aiAutomationSettingsLink": "AI & Automation",
+    "connectionsSettingsLink": "Connections",
+    "notificationsSettingsLink": "Notifications",
+    "securitySettingsLink": "Security",
+    "billingSettingsLink": "Billing",
+    "homeLink": "Home",
+    "aiLink": "AI",
+    "integrationsLink": "Integrations"
+  },
+  "generalSettings": {
+    "title": "General Settings",
+    "description": "Set the name, timezone, and default preferences for your workspace.",
+    "workspaceNameLabel": "Workspace/Store Name",
+    "languageLabel": "Language",
+    "timezoneLabel": "Timezone",
+    "interfaceThemeLabel": "Interface Theme",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "successMessage": "Settings saved successfully!",
+    "errorMessage": "Error saving settings:"
+  },
+  "addInfo": {
+    "addTextManually": "Add text manually",
+    "addWebLink": "Add web link",
+    "uploadFile": "Upload file",
+    "whatToAdd": "What do you want to add?",
+    "back": "Back",
+    "addText": "Add text",
+    "typeContentPlaceholder": "Write your content here...",
+    "addLink": "Add link",
+    "uploadFileTitle": "Upload file",
+    "saving": "Saving...",
+    "share": "Share"
+  },
+  "knowledgeList": {
+    "filterAll": "All",
+    "filterText": "Text",
+    "filterLink": "Link",
+    "filterFile": "File",
+    "loading": "Loading knowledge...",
+    "noKnowledge": "No knowledge in this filter."
+  }
+}

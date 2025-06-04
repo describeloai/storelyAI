@@ -1,29 +1,76 @@
 'use client';
 
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AddInfoButton from '@/components/dashboard/ui/AddInfoButton';
 import KnowledgeList from '@/components/dashboard/brain/KnowledgeList';
 import { useDarkMode } from '@/context/DarkModeContext';
 import { useKnowledgeStats } from '@/hooks/useKnowledgeStats';
+import { useUser } from '@clerk/nextjs';
 
 export default function StorelyBrainPage() {
+  // --- ¡TODOS los Hooks deben ser llamados aquí, en la parte superior del componente y sin condiciones! ---
   const { darkMode } = useDarkMode();
+  const { user, isLoaded } = useUser(); // Hook 1: useUser (contiene hooks internos de Clerk)
 
+  // Variables de estado y refs de React (son Hooks)
+  const [activeCard, setActiveCard] = useState<'purple' | 'blue'>('purple'); // Hook 2
+  const knowledgeListRef = useRef<{ refetch: () => void }>(null); // Hook 3
+
+  // La llamada a useKnowledgeStats DEBE ser incondicional.
+  // Su lógica interna (en el hook mismo) debe manejar cuando user.id es null o undefined al inicio.
+  // @ts-ignore - Mantenemos esto si useKnowledgeStats no acepta 'string | null | undefined'
+  const { stats, refetch } = useKnowledgeStats(activeCard, user?.id); // <--- ¡MOVEMOS ESTA LÍNEA AQUÍ ARRIBA!
+
+  // Variables normales (no son Hooks)
   const backgroundColor = darkMode ? '#121212' : '#f4f2f9';
   const purple = '#371866';
   const blue = '#1A73E8';
   const textColor = darkMode ? '#f4f4f5' : '#ffffff';
 
-  const [activeCard, setActiveCard] = useState<'purple' | 'blue'>('purple');
-  const knowledgeListRef = useRef<{ refetch: () => void }>(null);
-
-  const { stats, refetch } = useKnowledgeStats(activeCard);
-
   const handleToggle = () => {
     setActiveCard(prev => (prev === 'purple' ? 'blue' : 'purple'));
   };
+
+  // --- Las condiciones de retorno TEMPRANO deben ir DESPUÉS de todas las llamadas a Hooks ---
+  if (!isLoaded) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: backgroundColor,
+        padding: '3rem 3.5rem',
+        borderRadius: '2rem',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: darkMode ? '#f4f4f5' : '#111'
+      }}>
+        Cargando datos de usuario...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: backgroundColor,
+        padding: '3rem 3.5rem',
+        borderRadius: '2rem',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: darkMode ? '#f4f4f5' : '#111'
+      }}>
+        Por favor, inicia sesión para ver tu Storely Brain.
+      </div>
+    );
+  }
+  // --- A partir de este punto, 'user' e 'isLoaded' están garantizados como válidos ---
+
 
   return (
     <div style={{
@@ -71,32 +118,32 @@ export default function StorelyBrainPage() {
           }}
         >
           <AnimatePresence>
-            {activeCard === 'purple' && (
-              <motion.div
-                key="purpleStats"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.4 }}
-              >
-                <p style={{ fontSize: '1rem', color: textColor, opacity: 0.9, marginBottom: '0.25rem' }}>
-                  Knowledge Status
-                </p>
-                <div style={{
-                  display: 'flex',
-                  gap: '2.5rem',
-                  fontWeight: 600,
-                  color: textColor,
-                  fontSize: '1.1rem',
-                  marginTop: '0.5rem'
-                }}>
-                  <div><strong>{stats.text}</strong> Text</div>
-                  <div><strong>{stats.link}</strong> Link</div>
-                  <div><strong>{stats.file}</strong> File</div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+  {activeCard === 'purple' && (
+    <motion.div
+      key="purpleStats"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.4 }}
+    >
+      <p style={{ fontSize: '1rem', color: textColor, opacity: 0.9, marginBottom: '0.25rem' }}>
+        Knowledge Status
+      </p>
+      <div style={{
+        display: 'flex',
+        gap: '2.5rem',
+        fontWeight: 600,
+        color: textColor,
+        fontSize: '1.1rem',
+        marginTop: '0.5rem'
+      }}>
+        <div><strong>{stats.text}</strong> Text</div>
+        <div><strong>{stats.link}</strong> Link</div> {/* <--- ¡CORRECCIÓN APLICADA AQUÍ! */}
+        <div><strong>{stats.file}</strong> File</div>
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
           <div style={{ flexShrink: 0 }}>
             <Image
@@ -191,16 +238,19 @@ export default function StorelyBrainPage() {
         boxShadow: darkMode ? '0 1px 6px rgba(0,0,0,0.4)' : '0 1px 6px rgba(0,0,0,0.04)',
       }}>
         <KnowledgeList
+          key={user.id + activeCard}
           ref={knowledgeListRef}
           storeKey={activeCard}
-          onItemDeleted={() => refetch()} // 👈 ACTUALIZA CONTADOR AL ELIMINAR
+          // @ts-ignore
+          userId={user.id}
+          onItemDeleted={() => refetch()}
         />
         <div style={{ marginTop: '2rem' }}>
           <AddInfoButton
             storeKey={activeCard}
             onInfoAdded={() => {
-              knowledgeListRef.current?.refetch(); // actualiza lista
-              refetch(); // actualiza contador del card
+              knowledgeListRef.current?.refetch();
+              refetch();
             }}
           />
         </div>

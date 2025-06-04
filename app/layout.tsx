@@ -1,60 +1,30 @@
-export const dynamic = 'force-dynamic';
-
-import type { Metadata } from 'next';
-import { ClerkProvider } from '@clerk/nextjs';
+import { Inter } from 'next/font/google';
 import './globals.css';
+import { Providers } from './providers'; // <--- ¡Importa tu nuevo componente Providers!
 
-export const metadata: Metadata = {
-  title: 'StorelyAI',
-  description: 'Transforma tu ecommerce con inteligencia artificial avanzada.',
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata = {
+  title: 'StorelyAI Dashboard',
+  description: 'Your AI-powered e-commerce assistant dashboard',
 };
 
-export default async function RootLayout({
+// Este es el Root Layout de tu aplicación. Es un Server Component por defecto.
+export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <ClerkProvider
-      localization={{
-        socialButtonsBlockButton: 'Continuar con {{provider|titleize}}',
-        formFieldLabel__emailAddress: 'Correo electrónico',
-        formFieldLabel__password: 'Contraseña',
-        signIn: { start: { title: 'Inicia sesión en tu cuenta' } },
-        signUp: { start: { title: 'Crea tu cuenta' } },
-      }}
-    >
-      <html lang="es">
-        <head>
-          {/* Trustpilot widget */}
-          <script
-            type="text/javascript"
-            src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
-            async
-          ></script>
-
-          {/* Shopify App Bridge desde CDN */}
-          <meta
-            name="shopify-api-key"
-            content={process.env.NEXT_PUBLIC_SHOPIFY_API_KEY}
-          />
-          <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
-        </head>
-        <body
-          suppressHydrationWarning
-          style={{
-            margin: 0,
-            padding: 0,
-            backgroundColor: '#ffffff',
-            overflowX: 'hidden',
-            minHeight: '100vh',
-            fontFamily: "'Inter', sans-serif",
-            // 🔥 NOTA: color eliminado aquí
-          }}
-        >
+    // La etiqueta <html> y <body> deben estar aquí, en el Root Layout.
+    // El atributo lang="es" es un valor inicial que luego LanguageSetter actualizará.
+    <html lang="es">
+      <body>
+        {/* Aquí envuelves los hijos con tu componente de proveedores de cliente */}
+        <Providers>
           {children}
-        </body>
-      </html>
-    </ClerkProvider>
+        </Providers>
+      </body>
+    </html>
   );
 }

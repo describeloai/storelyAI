@@ -1,0 +1,52 @@
+{
+  "dashboard": {
+    "welcome": "Bienvenido a tu Dashboard",
+    "headerTitle": "Panel de Control",
+    "settingsTitle": "Ajustes",
+    "generalSettingsLink": "Ajustes Generales",
+    "profileSettingsLink": "Perfil",
+    "accountSettingsLink": "Cuenta",
+    "aiAutomationSettingsLink": "IA & Automatización",
+    "connectionsSettingsLink": "Conexiones",
+    "notificationsSettingsLink": "Notificaciones",
+    "securitySettingsLink": "Seguridad",
+    "billingSettingsLink": "Facturación",
+    "homeLink": "Inicio",
+    "aiLink": "IA",
+    "integrationsLink": "Integraciones"
+  },
+  "generalSettings": {
+    "title": "Ajustes Generales",
+    "description": "Establece el nombre, la zona horaria y las preferencias por defecto para tu espacio de trabajo.",
+    "workspaceNameLabel": "Nombre del Espacio de Trabajo/Tienda",
+    "languageLabel": "Idioma",
+    "timezoneLabel": "Zona Horaria",
+    "interfaceThemeLabel": "Tema de Interfaz",
+    "saveChanges": "Guardar Cambios",
+    "saving": "Guardando...",
+    "cancel": "Cancelar",
+    "successMessage": "Ajustes guardados con éxito!",
+    "errorMessage": "Error al guardar ajustes:"
+  },
+  "addInfo": {
+    "addTextManually": "Agregar texto manualmente",
+    "addWebLink": "Agregar enlace web",
+    "uploadFile": "Subir archivo",
+    "whatToAdd": "¿Qué deseas agregar?",
+    "back": "Volver",
+    "addText": "Agregar texto",
+    "typeContentPlaceholder": "Escribe tu contenido aquí...",
+    "addLink": "Agregar enlace",
+    "uploadFileTitle": "Subir archivo",
+    "saving": "Guardando...",
+    "share": "Compartir"
+  },
+  "knowledgeList": {
+    "filterAll": "Todo",
+    "filterText": "Texto",
+    "filterLink": "Enlace",
+    "filterFile": "Archivo",
+    "loading": "Cargando conocimiento...",
+    "noKnowledge": "No hay conocimiento en este filtro."
+  }
+}

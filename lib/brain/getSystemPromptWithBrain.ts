@@ -40,25 +40,50 @@ export async function getSystemPromptWithBrain({
     topK,
   });
 
+  // --- DEBUGGING START ---
+  console.log(`[getSystemPromptWithBrain] userId: ${userId}, isFirstMessage: ${isFirstMessage}`);
+
   // 🧠 Cargar contexto desde Account Settings (solo en primer mensaje)
-  const accountChunk = isFirstMessage
-    ? await pool.query(
+  let accountChunk = null;
+  if (isFirstMessage) {
+    try {
+      accountChunk = await pool.query(
         `SELECT content FROM brain_items
-         WHERE user_id = $1 AND store_key = 'purple' AND source = 'account-settings'
-         ORDER BY created_at DESC LIMIT 1`,
+          WHERE user_id = $1 AND store_key = 'purple' AND source = 'account-settings'
+          ORDER BY created_at DESC LIMIT 1`,
         [userId]
-      )
-    : null;
-
+      );
+      console.log("[getSystemPromptWithBrain] accountChunk fetched:", accountChunk.rows); // <-- LOG CRÍTICO
+    } catch (dbError) {
+      console.error("[getSystemPromptWithBrain] Error fetching accountChunk:", dbError);
+    }
+  } else {
+    console.log("[getSystemPromptWithBrain] Not first message, skipping accountChunk fetch.");
+  }
+  
   const accountContent: string | null = accountChunk?.rows?.[0]?.content ?? null;
+  console.log(`[getSystemPromptWithBrain] accountContent: "${accountContent}"`); // <-- LOG CRÍTICO
 
-  const accountLines =
-    accountContent && isFirstMessage
-      ? accountContent
-          .split('\n')
-          .map(line => `- (text): ${line.trim()}`)
-          .filter(Boolean)
-      : [];
+  // ****** ¡¡¡CAMBIO CLAVE AQUÍ!!! ****** (ya deberías tener esta lógica, pero la mantenemos para los logs)
+  const accountLines = [];
+  if (accountContent && isFirstMessage) {
+    // Dividir la cadena por los nombres de los campos seguidos de ':'
+    const parts = accountContent.split(/(Full name:|Store name:|Email:|Role:|Industry:)/g);
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      if (part.endsWith(':')) {
+        const value = parts[i + 1] ? parts[i + 1].trim() : '';
+        let combinedLine = `${part.trim()} ${value}`;
+        combinedLine = combinedLine.replace(/\s+/g, ' ').trim();
+        accountLines.push(`- (text): ${combinedLine}`);
+        i++;
+      }
+    }
+  }
+  console.log("[getSystemPromptWithBrain] accountLines generated:", accountLines); // <-- LOG CRÍTICO
+  // ************ FIN CAMBIO ************
+  // --- DEBUGGING END ---
 
   const brainLines = brainChunks.map(chunk => {
     const content = chunk.content.trim();
@@ -78,7 +103,7 @@ export async function getSystemPromptWithBrain({
     return `- ${meta ? meta + ': ' : ''}${shortened}`;
   });
 
-  const promptChunks = [...accountLines, ...brainLines];
+  const promptChunks = [...accountLines, ...brainLines]; // Asegúrate de que accountLines esté al principio si es lo que quieres
 
   const introPrompt = isFirstMessage
     ? `${toneInstructions[tone] || toneInstructions.friendly}

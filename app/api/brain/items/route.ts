@@ -15,21 +15,29 @@ export async function POST(req: NextRequest) {
       position: 0,
     };
 
+    let userIdFromRequest: string | null = null;
+
     if (isJson) {
       const body = await req.json();
+      userIdFromRequest = body.userId;
+      
+      // LOG para depurar el contenido que se va a guardar
+      console.log("Backend (items/route.ts): Content recibido y a guardar:", body.content); 
+      
       Object.assign(newItem, {
         userId: body.userId,
         storeKey: body.storeKey,
         folderId: body.folderId || null,
         type: body.type,
         title: body.title || '',
-        content: body.content || '',
+        content: body.content || '', // El contenido con \n
         fileUrl: body.fileUrl || null,
         source: body.source || null,
         category: body.category || null,
       });
     } else if (isForm) {
       const formData = await req.formData();
+      userIdFromRequest = formData.get('userId') as string;
       const file = formData.get('file') as File;
       const buffer = await file.arrayBuffer();
       const base64 = Buffer.from(buffer).toString('base64');
@@ -49,20 +57,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unsupported content type' }, { status: 400 });
     }
 
+    if (!userIdFromRequest) {
+      console.error('❌ Error: userId no proporcionado en la petición POST.');
+      return NextResponse.json({ success: false, error: 'User ID is required' }, { status: 400 });
+    }
+    newItem.userId = userIdFromRequest;
+
     // ✅ Guardar en brain_items
     await pool.query(
       `INSERT INTO brain_items (
         id, user_id, store_key, type, title, content, file_url,
         created_at, position, folder_id, source, category
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`, 
       [
         newItem.id,
         newItem.userId,
         newItem.storeKey,
         newItem.type,
         newItem.title,
-        newItem.content,
+        newItem.content, // Este es el content que ya viene con \n desde el frontend
         newItem.fileUrl,
         newItem.createdAt,
         newItem.position,

@@ -4,29 +4,31 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Home, Brain, Settings, Plug, Moon, Sun } from 'lucide-react';
-import { DarkModeProvider, useDarkMode } from '@/context/DarkModeContext';
+import { useDarkMode } from '@/context/DarkModeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
+// Definición de los elementos de navegación con sus claves de traducción
 const navItems = [
-  { icon: <Home size={20} />, path: '/dashboard', color: 'blue' },
-  { icon: <Brain size={20} />, path: '/dashboard/ia', color: 'pink' },
-  { icon: <Plug size={20} />, path: '/dashboard/integraciones', color: 'orange' },
+  { icon: <Home size={20} />, path: '/dashboard', color: 'blue', labelKey: 'dashboard.homeLink' },
+  { icon: <Brain size={20} />, path: '/dashboard/ia', color: 'pink', labelKey: 'dashboard.aiLink' },
+  { icon: <Plug size={20} />, path: '/dashboard/integraciones', color: 'orange', labelKey: 'dashboard.integrationsLink' },
 ];
 
 const colorCycle = ['#1DA1F2', '#F6E27F', '#228B22', '#FF784F', '#9B59B6', '#FF6F61'];
 
-// COMPONENTE PRINCIPAL
+// COMPONENTE PRINCIPAL (Tu DashboardLayoutWrapper, que es tu app/dashboard/layout.tsx)
+// Ya no contendrá DarkModeProvider ni LanguageProvider aquí, vienen del Root Layout
 export default function DashboardLayoutWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <DarkModeProvider>
-      <DashboardLayout>{children}</DashboardLayout>
-    </DarkModeProvider>
+    <DashboardLayout>{children}</DashboardLayout>
   );
 }
 
-// LAYOUT INTERNO
+// LAYOUT INTERNO (Este componente usa directamente los hooks de contexto)
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { darkMode, toggleDarkMode } = useDarkMode();
+  const { t } = useLanguage();
 
   const [activeColor, setActiveColor] = useState('gray');
   const [sColor, setSColor] = useState(0);
@@ -56,13 +58,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     setActiveColor(current?.color || 'gray');
   }, [pathname]);
 
-  useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, []);
+  // ELIMINADO: El useEffect que forzaba document.body.style.overflow = 'hidden';
+  // Esto permitía el scroll en la ventana completa si el contenido lo requería.
+  // Ahora el scroll se gestiona a nivel del <main> si su contenido desborda.
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', overflowX: 'hidden' }}>
@@ -124,7 +122,14 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                 style={{
                   color: iconColor,
                   transition: 'color 0.3s ease',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                  height: '40px',
                 }}
+                title={item.labelKey ? t(item.labelKey) : undefined}
+                aria-label={item.labelKey ? t(item.labelKey) : undefined}
               >
                 {item.icon}
               </Link>
@@ -158,21 +163,31 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             style={{
               color: pathname === '/dashboard/settings' ? 'var(--gray)' : darkMode ? '#ccc' : '#888',
               transition: 'color 0.2s ease-in-out',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              height: '40px',
             }}
+            title={t('dashboard.settingsTitle')}
+            aria-label={t('dashboard.settingsTitle')}
           >
             <Settings size={20} />
           </Link>
         </div>
       </aside>
 
+      {/* Main Content Area */}
       <main
         style={{
           marginLeft: '80px',
           flex: 1,
           padding: '2rem',
+          paddingBottom: '4rem', // Añadido para espacio al final del scroll
           minHeight: '100vh',
           position: 'relative',
           overflowX: 'hidden',
+          overflowY: 'auto', // ¡LA CLAVE! Permite el scroll vertical en esta área
           backgroundColor: darkMode ? '#121212' : '#f1f3f5',
           color: darkMode ? '#f4f4f5' : '#111',
           borderTopLeftRadius: '1rem',

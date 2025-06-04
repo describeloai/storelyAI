@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Check, Ban, FileText } from "lucide-react";
 import { useDarkMode } from "@/context/DarkModeContext";
+import { useUser } from "@clerk/nextjs"; // <--- ¡Importamos useUser de Clerk!
 
 const ASSISTANTS = [
   { id: "sofia", name: "Sofía", color: "#bb86fc" },
@@ -15,47 +16,82 @@ const ASSISTANTS = [
 
 export default function AiSettings() {
   const { darkMode } = useDarkMode();
-  const userId = "demo-user";
+  const { user, isLoaded } = useUser(); // <--- ¡Obtenemos el usuario y el estado de carga de Clerk!
+
+  // El userId ahora será el del usuario autenticado
   const [assistantId, setAssistantId] = useState("sofia");
   const [tone, setTone] = useState("friendly");
   const [brainItems, setBrainItems] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // useEffect para cargar los ajustes del asistente y los items del brain
   useEffect(() => {
+    // Solo hacemos fetch si el usuario está cargado y autenticado
+    if (!isLoaded || !user?.id) {
+      setLoading(false);
+      return; // No hay usuario, no se pueden cargar los datos
+    }
+
+    const currentUserId = user.id; // Usamos el ID del usuario actual de Clerk
+
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const settingsRes = await fetch(`/api/assistant-settings?userId=${userId}&assistantId=${assistantId}`);
+        // Fetch de los ajustes del asistente (si existen)
+        const settingsRes = await fetch(`/api/assistant-settings?userId=${currentUserId}&assistantId=${assistantId}`);
         const settings = await settingsRes.json();
         setTone(settings.tone || "friendly");
 
-        const brainRes = await fetch(`/api/brain-access?userId=${userId}&assistantId=${assistantId}`);
+        // Fetch de los items del brain para las restricciones
+        // Asegúrate de que /api/brain-access maneje el userId y assistantId en la URL
+        const brainRes = await fetch(`/api/brain-access?userId=${currentUserId}&assistantId=${assistantId}`); // <--- ¡userId en la URL!
         const data = await brainRes.json();
         setBrainItems(data);
       } catch (err) {
         console.error("Error loading data:", err);
+        setBrainItems([]); // Vaciar en caso de error
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [assistantId]);
+  }, [assistantId, isLoaded, user?.id]); // <--- ¡Añadimos isLoaded y user?.id como dependencias!
 
+  // useEffect para actualizar el tono del asistente
   useEffect(() => {
-    if (!loading) {
+    // Solo enviamos el PATCH si los datos iniciales han cargado y el usuario está disponible
+    if (!loading && isLoaded && user?.id) {
       fetch("/api/assistant-settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, assistantId, tone }),
+        body: JSON.stringify({ userId: user.id, assistantId, tone }), // <--- ¡userId real!
       });
     }
-  }, [tone, assistantId]);
+  }, [tone, assistantId, loading, isLoaded, user?.id]); // Añadimos dependencias
 
   const filteredItems = brainItems.filter((item) =>
     item.title.toLowerCase().includes(search.toLowerCase())
   );
 
   const currentAssistant = ASSISTANTS.find((a) => a.id === assistantId);
+
+  // Manejo de carga o no autenticación al inicio del render
+  if (!isLoaded) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center", color: darkMode ? "#fff" : "#111" }}>
+        Cargando configuración de IA...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center", color: darkMode ? "#fff" : "#111" }}>
+        Por favor, inicia sesión para configurar tus asistentes de IA.
+      </div>
+    );
+  }
 
   return (
     <div
@@ -128,61 +164,72 @@ export default function AiSettings() {
         />
 
         <div style={{ flex: 1, overflowY: "auto", paddingRight: "0.25rem" }}>
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                background: darkMode ? "#1e1e1e" : "#f5f5f5",
-                padding: "0.75rem 1rem",
-                borderRadius: "8px",
-                border: "1px solid #333",
-                marginBottom: "0.5rem",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <FileText size={18} />
-                <span>{item.title}</span>
-              </div>
-
-              <button
-                onClick={async () => {
-                  const updated = [...brainItems];
-                  const index = updated.findIndex((i) => i.id === item.id);
-                  updated[index].allowed = !item.allowed;
-                  setBrainItems(updated);
-
-                  await fetch("/api/brain-access", {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      userId,
-                      assistantId,
-                      itemId: item.id,
-                      allowed: updated[index].allowed,
-                    }),
-                  });
-                }}
+          {loading ? (
+            <p style={{ textAlign: "center", color: darkMode ? "#aaa" : "#888" }}>
+              Cargando items del brain...
+            </p>
+          ) : filteredItems.length === 0 ? (
+            <p style={{ textAlign: "center", color: darkMode ? "#aaa" : "#888" }}>
+              No se encontraron items del brain con estos filtros o para este asistente.
+            </p>
+          ) : (
+            filteredItems.map((item) => (
+              <div
+                key={item.id}
                 style={{
-                  padding: "0.25rem 0.5rem",
-                  background: item.allowed ? "#33cc3322" : "#cc333322",
-                  color: item.allowed ? "#33cc33" : "#cc3333",
-                  borderRadius: "6px",
-                  border: "1px solid #444",
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.25rem",
-                  fontWeight: 500,
-                  cursor: "pointer",
+                  justifyContent: "space-between",
+                  background: darkMode ? "#1e1e1e" : "#f5f5f5",
+                  padding: "0.75rem 1rem",
+                  borderRadius: "8px",
+                  border: "1px solid #333",
+                  marginBottom: "0.5rem",
                 }}
               >
-                {item.allowed ? <Check size={16} /> : <Ban size={16} />}
-                {item.allowed ? "Allow" : "Restrict"}
-              </button>
-            </div>
-          ))}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <FileText size={18} />
+                  <span>{item.title}</span>
+                </div>
+
+                <button
+                  onClick={async () => {
+                    const updated = [...brainItems];
+                    const index = updated.findIndex((i) => i.id === item.id);
+                    updated[index].allowed = !item.allowed;
+                    setBrainItems(updated);
+
+                    // Asegúrate de que el backend /api/brain-access (PATCH) use userId real
+                    await fetch("/api/brain-access", {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        userId: user.id, // <--- ¡userId real!
+                        assistantId,
+                        itemId: item.id,
+                        allowed: updated[index].allowed,
+                      }),
+                    });
+                  }}
+                  style={{
+                    padding: "0.25rem 0.5rem",
+                    background: item.allowed ? "#33cc3322" : "#cc333322",
+                    color: item.allowed ? "#33cc33" : "#cc3333",
+                    borderRadius: "6px",
+                    border: "1px solid #444",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.25rem",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                  }}
+                >
+                  {item.allowed ? <Check size={16} /> : <Ban size={16} />}
+                  {item.allowed ? "Allow" : "Restrict"}
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

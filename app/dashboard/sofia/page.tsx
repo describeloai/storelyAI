@@ -1,20 +1,27 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send } from 'lucide-react';
+import { Send } from 'lucide-react'; // <--- ¡CORRECCIÓN AQUÍ! Solo importamos el componente Send
 import ReactMarkdown from 'react-markdown';
 import { summarizeMessage } from '@/utils/summarize';
 import { useMessageRefs } from '@/hooks/useMessageRefs';
 import HistoryItem from '@/components/dashboard/HistoryItem';
 import { useDarkMode } from '@/context/DarkModeContext';
 import MarkdownMessage from '@/components/dashboard/MarkdownMessage';
+import { useUser } from '@clerk/nextjs';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function SofiaPage() {
   const { darkMode } = useDarkMode();
+  const { user, isLoaded } = useUser();
+  const { t } = useLanguage();
+
+  const assistantName = "Sofía";
+
   const [messages, setMessages] = useState([
     {
       from: 'sofia',
-      text: 'Hi! **I’m Sofía**, your AI marketing assistant. Ready to boost your store’s visibility and sales?',
+      text: t('sofiaPage.initialGreeting', { assistantName: assistantName }),
     },
   ]);
   const [historyItems, setHistoryItems] = useState<{ summary: string; index: number }[]>([]);
@@ -23,7 +30,7 @@ export default function SofiaPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const messageRefs = useMessageRefs(messages.length);
 
-  const sofiaGradient = 'linear-gradient(135deg, #4f73e5, #a447e7)';
+  const sofiaGradient = 'linear-gradient(135deg, #FF6F61, #FFC140)';
   const userBubbleColor = darkMode ? sofiaGradient : '#ea580c';
   const assistantBubbleColor = darkMode ? '#2b2b2e' : '#fff';
   const assistantTextColor = darkMode ? '#e2e2e2' : '#333';
@@ -37,24 +44,29 @@ export default function SofiaPage() {
     const value = inputRef.current?.value.trim();
     if (!value) return;
 
-    const neutralMessages = ['ok', 'vale', 'gracias', 'entendido', 'de acuerdo', 'ajá', 'sí', 'bueno', 'perfecto'];
-    const isTrivial = value.length < 10 && neutralMessages.some(m => value.toLowerCase().includes(m));
+    if (!isLoaded || !user || !user.id) {
+      setMessages(prev => [...prev, { from: 'sofia', text: t('sofiaPage.authError') }]);
+      console.error('Error: Usuario no autenticado o ID no disponible para Sofía.');
+      return;
+    }
+    const currentUserId = user.id;
 
     const userMessage = { from: 'user', text: value };
     setMessages(prev => [...prev, userMessage]);
     if (inputRef.current) inputRef.current.value = '';
 
-    const prevHistory = messages
-      .slice(isTrivial ? 0 : -1)
-      .filter(m => (m.from === 'user' || m.from === 'sofia') && m.text.length < 500)
+    const prevHistory = messages.slice(-4).filter(m => (m.from === 'user' || m.from === 'sofia') && m.text.length < 500)
       .map(m => ({ role: m.from === 'user' ? 'user' : 'assistant', content: m.text }));
+
+    const neutralMessages = ['ok', 'vale', 'gracias', 'entendido', 'de acuerdo', 'ajá', 'sí', 'bueno', 'perfecto'];
+    const isTrivial = value.length < 10 && neutralMessages.some(m => value.toLowerCase().includes(m));
 
     setLoading(true);
     try {
       const res = await fetch('/api/sofia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: value, userId: 'demo-user', history: prevHistory }),
+        body: JSON.stringify({ prompt: value, userId: currentUserId, history: prevHistory, isTrivial }),
       });
 
       const data = await res.json();
@@ -70,10 +82,10 @@ export default function SofiaPage() {
           setHistoryItems(prev => [...prev, { summary, index: messages.length }]);
         }
       } else {
-        setMessages(prev => [...prev, { from: 'sofia', text: 'Ups, no pude procesarlo.' }]);
+        setMessages(prev => [...prev, { from: 'sofia', text: t('sofiaPage.processError') }]);
       }
     } catch {
-      setMessages(prev => [...prev, { from: 'sofia', text: 'Error al contactar con la IA.' }]);
+      setMessages(prev => [...prev, { from: 'sofia', text: t('sofiaPage.contactError') }]);
     } finally {
       setLoading(false);
     }
@@ -83,7 +95,7 @@ export default function SofiaPage() {
     setMessages([
       {
         from: 'sofia',
-        text: 'Hi! **I’m Sofía**, your AI marketing assistant. Ready to boost your store’s visibility and sales?',
+        text: t('sofiaPage.initialGreeting', { assistantName: assistantName }),
       },
     ]);
     setHistoryItems([]);
@@ -98,16 +110,55 @@ export default function SofiaPage() {
     }
   };
 
+  // --- Manejo de estados de carga o no autenticación al inicio del render ---
+  if (!isLoaded) {
+    return (
+      <div style={{
+        display: 'flex',
+        height: '100vh',
+        background: darkMode ? '#0f0f11' : '#fff',
+        fontFamily: `'Inter', 'Segoe UI', sans-serif`,
+        color: darkMode ? '#f2f2f2' : '#111',
+        borderRadius: '1rem',
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        Cargando asistente...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div style={{
+        display: 'flex',
+        height: '100vh',
+        background: darkMode ? '#0f0f11' : '#fff',
+        fontFamily: `'Inter', 'Segoe UI', sans-serif`,
+        color: darkMode ? '#f2f2f2' : '#111',
+        borderRadius: '1rem',
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        {t('sofiaPage.notAuthenticated')}
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
         display: 'flex',
         height: '100vh',
         background: darkMode ? '#0f0f11' : '#fff',
-        fontFamily: `'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif`,
         color: darkMode ? '#f2f2f2' : '#111',
+        fontFamily: `'Inter', 'Segoe UI', sans-serif`,
         borderRadius: '1rem',
         overflow: 'hidden',
+        transition: 'background 0.3s ease',
+        boxShadow: '0 4px 30px rgba(0,0,0,0.2)',
       }}
     >
       <aside
@@ -140,12 +191,13 @@ export default function SofiaPage() {
           </div>
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>Sofía</h2>
-          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>AI Marketer</p>
+          <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>{t('sofiaPage.assistantRole')}</p>
 
           <button
             onClick={handleNewChat}
             style={{
               marginTop: '2rem',
+              marginBottom: '1rem',
               padding: '0.6rem 1rem',
               background: darkMode ? '#fff' : '#000',
               color: darkMode ? '#000' : '#fff',
@@ -155,11 +207,11 @@ export default function SofiaPage() {
               cursor: 'pointer',
             }}
           >
-            + New Chat
+            {t('sofiaPage.newChatButton')}
           </button>
 
           <div style={{ marginTop: '3rem' }}>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>History</h4>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem' }}>{t('sofiaPage.historyTitle')}</h4>
             <div
               style={{
                 maxHeight: '240px',
@@ -171,7 +223,7 @@ export default function SofiaPage() {
               }}
             >
               {historyItems.length === 0 ? (
-                <p style={{ opacity: 0.7, fontSize: '0.85rem' }}>No chat history</p>
+                <p style={{ opacity: 0.7, fontSize: '0.85rem' }}>{t('sofiaPage.noChatHistory')}</p>
               ) : (
                 historyItems.map((item, idx) => (
                   <HistoryItem key={idx} summary={item.summary} onClick={() => scrollToMessage(item.index)} />
@@ -201,28 +253,17 @@ export default function SofiaPage() {
               color: darkMode ? '#fff' : '#2b2b2b',
             }}
           >
-            Hey, it's{' '}
-            <span
-              style={{
-                background: darkMode ? sofiaGradient : 'none',
-                WebkitBackgroundClip: darkMode ? 'text' : undefined,
-                WebkitTextFillColor: darkMode ? 'transparent' : undefined,
-                color: darkMode ? undefined : '#ea580c',
-              }}
-            >
-              Sofía
-            </span>{' '}
-            👋
+            {t('sofiaPage.welcomeGreeting', { assistantName: assistantName })}
           </h1>
           <p style={{ fontSize: '1.1rem', color: darkMode ? '#ccc' : '#555' }}>
-            Let’s level up your marketing!
+            {t('sofiaPage.howCanIHelp')}
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '1rem' }}>
             {[
-              'Sugiere una campaña para aumentar ventas',
-              'Genera un asunto para email marketing',
-              'Optimiza mis textos de landing',
+              t('sofiaPage.suggestion1'),
+              t('sofiaPage.suggestion2'),
+              t('sofiaPage.suggestion3'),
             ].map((suggestion, idx) => (
               <button
                 key={idx}
@@ -317,7 +358,7 @@ export default function SofiaPage() {
           <input
             ref={inputRef}
             name="msg"
-            placeholder="Type your question..."
+            placeholder={t('sofiaPage.typeQuestionPlaceholder')}
             disabled={loading}
             style={{
               flex: 1,
@@ -334,7 +375,7 @@ export default function SofiaPage() {
             type="submit"
             disabled={loading}
             style={{
-              background: userBubbleColor,
+              backgroundColor: userBubbleColor,
               color: '#fff',
               border: 'none',
               padding: '0.75rem',

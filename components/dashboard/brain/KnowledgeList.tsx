@@ -4,6 +4,7 @@ import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { FileText, Link, File, Trash2 } from 'lucide-react';
 import { BrainItem } from '@/lib/db/schema';
 import { useDarkMode } from '@/context/DarkModeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 import {
   DndContext,
@@ -30,14 +31,17 @@ type FilterType = (typeof filterOptions)[number];
 const KnowledgeList = forwardRef(function KnowledgeList(
   {
     storeKey,
+    userId, // <--- ¡Recibimos userId como prop! Ahora será un string garantizado.
     onItemDeleted,
   }: {
     storeKey: 'purple' | 'blue';
+    userId: string; // <--- ¡Aseguramos que el tipo esperado es 'string'!
     onItemDeleted?: () => void;
   },
   ref
 ) {
   const { darkMode } = useDarkMode();
+  const { t } = useLanguage();
 
   const [items, setItems] = useState<BrainItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,34 +50,41 @@ const KnowledgeList = forwardRef(function KnowledgeList(
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
   const fetchData = async () => {
+    // Ya no necesitamos la comprobación `if (!userId)` aquí, ya que el padre la garantiza.
     setLoading(true);
-    const res = await fetch(`/api/brain?storeKey=${storeKey}`);
+    // La petición GET ahora incluye el userId en los query params
+    const res = await fetch(`/api/brain?storeKey=${storeKey}&userId=${userId}`);
     const data = await res.json();
-    const ordered = [...data.items].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
-    setItems(ordered);
+    if (data.items) {
+      const ordered = [...data.items].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+      setItems(ordered);
+    } else {
+      setItems([]);
+    }
     setLoading(false);
   };
 
   useEffect(() => {
     fetchData();
-  }, [storeKey]);
+  }, [storeKey, userId]); // Las dependencias son correctas
 
   useImperativeHandle(ref, () => ({
     refetch: fetchData,
   }));
 
   const handleDelete = async (id: string) => {
-  console.log('🧠 Trying to delete ID:', id);
-  const res = await fetch(`/api/brain/${id}`, { method: 'DELETE' });
+    console.log('🗑️ Trying to delete ID:', id);
+    const res = await fetch(`/api/brain/${id}`, { method: 'DELETE' });
 
-  if (res.ok) {
-    setItems(prev => prev.filter(i => i.id !== id));
-    console.log('✅ Item deleted');
-    if (onItemDeleted) onItemDeleted();
-  } else {
-    console.error('❌ Delete failed with status:', res.status);
-  }
-};
+    if (res.ok) {
+      setItems(prev => prev.filter(i => i.id !== id));
+      console.log('✅ Item deleted');
+      if (onItemDeleted) onItemDeleted();
+    } else {
+      console.error('❌ Delete failed with status:', res.status);
+    }
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -140,7 +151,7 @@ const KnowledgeList = forwardRef(function KnowledgeList(
               transition: 'all 0.2s',
             }}
           >
-            {option === 'all' ? 'All' : option.charAt(0).toUpperCase() + option.slice(1)}
+            {option === 'all' ? t('knowledgeList.filterAll') : t(`knowledgeList.filter${option.charAt(0).toUpperCase() + option.slice(1)}`)}
           </button>
         ))}
       </div>
@@ -166,11 +177,11 @@ const KnowledgeList = forwardRef(function KnowledgeList(
       >
         {loading ? (
           <p style={{ textAlign: 'center', color: darkMode ? '#aaa' : '#888' }}>
-            Loading knowledge...
+            {t('knowledgeList.loading')}
           </p>
         ) : filteredItems.length === 0 ? (
           <p style={{ textAlign: 'center', color: darkMode ? '#aaa' : '#888' }}>
-            No knowledge in this filter.
+            {t('knowledgeList.noKnowledge')}
           </p>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -239,24 +250,23 @@ function SortableItem({ item, onDelete }: { item: BrainItem; onDelete: (id: stri
       </div>
 
       {/* Botón de eliminar */}
-      {/* Botón de eliminar */}
-<button
-  onClick={() => {
-    console.log('🗑️ Delete button clicked:', item.id);
-    onDelete(item.id);
-  }}
-  style={{
-    cursor: 'pointer',
-    background: 'transparent',
-    border: 'none',
-    padding: 0,
-    display: 'flex',
-    alignItems: 'center',
-    color: darkMode ? '#fff' : '#333', // ← color dinámico según tema
-  }}
->
-  <Trash2 size={16} />
-</button>
+      <button
+        onClick={() => {
+          console.log('🗑️ Delete button clicked:', item.id);
+          onDelete(item.id);
+        }}
+        style={{
+          cursor: 'pointer',
+          background: 'transparent',
+          border: 'none',
+          padding: 0,
+          display: 'flex',
+          alignItems: 'center',
+          color: darkMode ? '#fff' : '#333',
+        }}
+      >
+        <Trash2 size={16} />
+      </button>
     </div>
   );
 }

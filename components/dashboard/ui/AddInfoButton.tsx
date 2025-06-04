@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { FileText, Link, Upload } from 'lucide-react';
 import '@/components/dashboard/ui/AddInfoButton.css';
 import { useDarkMode } from '@/context/DarkModeContext';
+import { useUser } from '@clerk/nextjs';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function AddInfoButton({
   storeKey,
@@ -15,33 +17,38 @@ export default function AddInfoButton({
   onInfoAdded?: () => void;
 }) {
   const { darkMode } = useDarkMode();
+  const { user, isLoaded } = useUser();
+  const { t } = useLanguage();
 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [textInput, setTextInput] = useState('');
   const [linkInput, setLinkInput] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false); // 👈 NEW
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const options = [
-    { key: 'text', label: 'Agregar texto manualmente', icon: <FileText size={18} /> },
-    { key: 'link', label: 'Agregar enlace web', icon: <Link size={18} /> },
-    { key: 'file', label: 'Subir archivo', icon: <Upload size={18} /> },
+    { key: 'text', label: t('addInfo.addTextManually'), icon: <FileText size={18} /> },
+    { key: 'link', label: t('addInfo.addWebLink'), icon: <Link size={18} /> },
+    { key: 'file', label: t('addInfo.uploadFile'), icon: <Upload size={18} /> },
   ];
 
   const handleSubmit = async () => {
-    if (!storeKey || isSubmitting) return;
+    if (!isLoaded || !user || !user.id || isSubmitting) {
+      console.error('Error: Usuario no autenticado o ID de usuario no disponible.');
+      return;
+    }
 
     setIsSubmitting(true);
-    const userId = 'demo-user';
+    const currentUserId = user.id; // Obtenemos el ID de usuario real de Clerk
 
     try {
       if (selectedOption === 'text' && textInput) {
-        await fetch('/api/brain/add', {
+        await fetch('/api/brain/items', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            userId,
+            userId: currentUserId, // <--- ¡Enviamos el userId!
             storeKey,
             folderId: folderId || null,
             type: 'text',
@@ -53,11 +60,11 @@ export default function AddInfoButton({
       }
 
       if (selectedOption === 'link' && linkInput) {
-        await fetch('/api/brain/add', {
+        await fetch('/api/brain/items', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            userId,
+            userId: currentUserId, // <--- ¡Enviamos el userId!
             storeKey,
             folderId: folderId || null,
             type: 'link',
@@ -71,12 +78,12 @@ export default function AddInfoButton({
       if (selectedOption === 'file' && file) {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('userId', userId);
+        formData.append('userId', currentUserId); // <--- ¡Enviamos el userId!
         formData.append('storeKey', storeKey);
         formData.append('type', 'file');
         if (folderId) formData.append('folderId', folderId);
 
-        await fetch('/api/brain/add', {
+        await fetch('/api/brain/items', {
           method: 'POST',
           body: formData,
         });
@@ -96,6 +103,31 @@ export default function AddInfoButton({
       setIsSubmitting(false);
     }
   };
+
+  if (!isLoaded) {
+    return (
+      <button
+        className="add-button"
+        style={{ backgroundColor: '#999', color: '#fff', cursor: 'not-allowed' }}
+        disabled
+      >
+        Cargando usuario...
+      </button>
+    );
+  }
+
+  if (!user) {
+    return (
+      <button
+        className="add-button"
+        style={{ backgroundColor: '#999', color: '#fff', cursor: 'not-allowed' }}
+        disabled
+        title="Inicia sesión para añadir información"
+      >
+        + Add info manually
+      </button>
+    );
+  }
 
   return (
     <>
@@ -124,7 +156,7 @@ export default function AddInfoButton({
           >
             {!selectedOption ? (
               <div>
-                <h2 className="modal-title">¿Qué deseas agregar?</h2>
+                <h2 className="modal-title">{t('addInfo.whatToAdd')}</h2>
                 <div className="option-list">
                   {options.map(({ key, label, icon }) => (
                     <button
@@ -149,15 +181,15 @@ export default function AddInfoButton({
                   onClick={() => setSelectedOption(null)}
                   style={{ color: darkMode ? '#ccc' : '#333' }}
                 >
-                  ← Volver
+                  ← {t('addInfo.back')}
                 </button>
 
                 {selectedOption === 'text' && (
                   <>
-                    <h3>Agregar texto</h3>
+                    <h3>{t('addInfo.addText')}</h3>
                     <textarea
                       className="textarea"
-                      placeholder="Escribe tu contenido aquí..."
+                      placeholder={t('addInfo.typeContentPlaceholder')}
                       value={textInput}
                       onChange={(e) => setTextInput(e.target.value)}
                       style={{
@@ -171,7 +203,7 @@ export default function AddInfoButton({
 
                 {selectedOption === 'link' && (
                   <>
-                    <h3>Agregar enlace</h3>
+                    <h3>{t('addInfo.addLink')}</h3>
                     <input
                       type="url"
                       className="input"
@@ -189,7 +221,7 @@ export default function AddInfoButton({
 
                 {selectedOption === 'file' && (
                   <>
-                    <h3>Subir archivo</h3>
+                    <h3>{t('addInfo.uploadFileTitle')}</h3>
                     <input
                       type="file"
                       className="input"
@@ -215,7 +247,7 @@ export default function AddInfoButton({
                   onClick={handleSubmit}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Saving...' : 'Share'}
+                  {isSubmitting ? t('addInfo.saving') : t('addInfo.share')}
                 </button>
               </div>
             )}
