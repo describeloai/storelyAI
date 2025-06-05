@@ -1,6 +1,8 @@
+// app/layout.tsx
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Providers } from './providers'; // <--- ¡Importa tu nuevo componente Providers!
+import { Providers } from './providers';
+import Script from 'next/script'; // Importa el componente Script de Next.js
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,10 +18,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // La etiqueta <html> y <body> deben estar aquí, en el Root Layout.
-    // El atributo lang="es" es un valor inicial que luego LanguageSetter actualizará.
     <html lang="es">
       <body>
+        {/*
+          IMPORTANTE: Shopify App Bridge CDN Script.
+          Debe cargarse SIEMPRE. La estrategia 'beforeInteractive'
+          asegura que esté disponible antes de que la página sea interactiva.
+        */}
+        <Script
+          src="https://cdn.shopify.com/shopifycloud/app-bridge/app-bridge.js"
+          strategy="beforeInteractive" // o 'afterInteractive' si causa problemas
+        />
+
         {/* Aquí envuelves los hijos con tu componente de proveedores de cliente */}
         <Providers>
           {children}
