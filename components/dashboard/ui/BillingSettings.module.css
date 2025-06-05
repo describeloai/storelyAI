@@ -1,0 +1,206 @@
+/* components/dashboard/ui/BillingSettings.module.css */
+
+.container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.title.dark {
+  color: #f4f4f5;
+}
+
+.title.light {
+  color: #111;
+}
+
+.description {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.description.dark {
+  color: #ccc;
+}
+
+.description.light {
+  color: #555;
+}
+
+.section {
+  padding: 2rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.section.light {
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #111;
+}
+
+.section.dark {
+  background-color: #2d2d30;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: #f4f4f5;
+}
+
+.subTitle {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.subTitle.light {
+  color: #333;
+  border-bottom: 1px solid #eee;
+}
+
+.subTitle.dark {
+  color: #e0e0e0;
+  border-bottom: 1px solid #444;
+}
+
+.text {
+  margin-bottom: 0.5rem;
+}
+
+.text.light {
+  color: #555;
+}
+
+.text.dark {
+  color: #ccc;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+  color: #ffffff; /* Common color for all buttons */
+}
+
+.button.primary {
+  background-color: #007bff;
+}
+
+.button.primary:hover {
+  background-color: #0056b3;
+}
+
+.button.danger {
+  background-color: #dc3545;
+}
+
+.button.danger:hover {
+  background-color: #c82333;
+}
+
+/* Specific styles for smaller buttons used in payment methods */
+.button.small {
+  padding: 0.5rem 1rem;
+}
+
+.link {
+  text-decoration: none;
+}
+
+.link.light {
+  color: #007bff;
+}
+
+.link.light:hover {
+  text-decoration: underline;
+}
+
+.link.dark {
+  color: #88bfff;
+}
+
+.link.dark:hover {
+  text-decoration: underline;
+}
+
+.usageGraphPlaceholder {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  margin-top: 1rem;
+}
+
+.usageGraphPlaceholder.light {
+  background: #f0f0f0;
+}
+
+.usageGraphPlaceholder.dark {
+  background: #3a3a3a;
+}
+
+.paymentMethodItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+}
+
+.paymentMethodItem.light {
+  border-bottom: 1px solid #eee;
+}
+
+.paymentMethodItem.dark {
+  border-bottom: 1px solid #3a3a3a;
+}
+
+.invoiceTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoiceTable th,
+.invoiceTable td {
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.invoiceTable th {
+  font-weight: bold;
+}
+
+.invoiceTable tr.headerRow.light {
+  background: #f8f8f8;
+}
+
+.invoiceTable tr.headerRow.dark {
+  background: #3a3a3a;
+}
+
+.invoiceTable th.light {
+  color: #111;
+}
+
+.invoiceTable th.dark {
+  color: #f4f4f5;
+}
+
+.invoiceTable tr {
+  border-bottom: 1px solid;
+}
+
+.invoiceTable tr.light {
+  border-color: #eee;
+}
+
+.invoiceTable tr.dark {
+  border-color: #3a3a3a;
+}

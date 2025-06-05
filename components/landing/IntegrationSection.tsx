@@ -18,7 +18,7 @@ export default function IntegrationSection() {
             <img src="/logos/shopify-white.png" alt="Shopify" />
             <img src="/logos/woocommerce-white.png" alt="WooCommerce" />
             <img src="/logos/gmail.png" alt="Gmail" />
-            <img src="/logos/meta.png" alt="Meta" />
+            <img src="/logos/facebook.png" alt="Meta" />
             <img src="/logos/amazon.png" alt="Amazon" />
             <img src="/logos/notion.png" alt="Notion" />
             <img src="/logos/drive.png" alt="Google Drive" />

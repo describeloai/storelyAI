@@ -1,0 +1,307 @@
+/* components/dashboard/ui/NotificationsSettings.module.css */
+
+.container {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.title.dark {
+  color: #f4f4f5;
+}
+
+.title.light {
+  color: #111;
+}
+
+.description {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.description.dark {
+  color: #ccc;
+}
+
+.description.light {
+  color: #555;
+}
+
+.section {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  color: #111;
+}
+
+.section.dark {
+  background-color: #2d2d30;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: #f4f4f5;
+}
+
+.subTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.75rem;
+}
+
+.subTitle.dark {
+  color: #e0e0e0;
+  border-bottom: 1px solid #444;
+}
+
+.category {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 0.4rem;
+}
+
+.category.light {
+  background-color: #f8f8f8;
+  border: 1px solid #eee;
+}
+
+.category.dark {
+  background-color: #3a3a3a;
+  border: 1px solid #444;
+}
+
+.categoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.categoryTitle {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.categoryDescription {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.channelOptions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.channelOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.channelOption input[type="checkbox"] {
+  accent-color: #007bff; /* Custom color for checkbox */
+}
+
+.channelOption label {
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #007bff;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #007bff;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(16px);
+  -ms-transform: translateX(16px);
+  transform: translateX(16px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.button {
+  background-color: #007bff;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+  margin-top: 2rem;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.dndSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.dndSection label {
+  font-size: 1rem;
+}
+
+.roleSelectContainer {
+  margin-bottom: 2rem;
+}
+
+.roleSelectContainer label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.roleSelect {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  font-size: 1rem;
+}
+
+.roleSelect.dark {
+  background-color: #444;
+  color: #f4f4f5;
+  border-color: #555;
+}
+
+.notificationHistory {
+  background-color: #f4f4f5;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin-top: 2rem;
+}
+
+.notificationHistory.dark {
+  background-color: #3a3a3a;
+}
+
+.historyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.historyTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.filterInput {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+
+.filterInput.dark {
+  background-color: #555;
+  color: #f4f4f5;
+  border-color: #666;
+}
+
+.notificationList {
+  max-height: 300px;
+  overflow-y: auto;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.notificationList.dark {
+  border-top: 1px solid #555;
+}
+
+.notificationItem {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.notificationItem.dark {
+  border-bottom: 1px solid #555;
+}
+
+.notificationItem:last-child {
+  border-bottom: none;
+}
+
+.notificationType {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.notificationTime {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.notificationTime.dark {
+  color: #bbb;
+}

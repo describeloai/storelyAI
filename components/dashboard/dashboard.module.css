@@ -1,69 +1,182 @@
+/* -- CSS Variables for a modern, dark theme -- */
+:root {
+  /* Colors */
+  --color-primary: #8e44ad; /* A purple for accents if needed */
+  --color-background-dark: #1A1A2E; /* Dark base background */
+  --color-card-dark: #2C2C4D;     /* Slightly lighter for cards */
+  --color-text-light: #E0E0E0;    /* Light text for dark backgrounds */
+  --color-text-accent: #B0B7C3;   /* For subtle highlights or hero title */
+  --color-gradient-start: #6A82FB; /* Hero title gradient start */
+  --color-gradient-end: #FC5C7D;   /* Hero title gradient end */
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2.5rem;
+  --spacing-xl: 4rem;
+
+  /* Typography */
+  --font-size-hero: 3.5rem;
+  --font-size-h3: 1.8rem;
+  --font-size-p: 0.95rem;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Borders & Shadows */
+  --border-radius-card: 1.5rem;
+  --shadow-default: 0 12px 24px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.3);
+
+  /* Transitions */
+  --transition-ease: 0.3s ease;
+
+  /* Agent specific gradients (refined) */
+  --gradient-sofia: linear-gradient(135deg, #FF8A00, #FFB347); /* Orange */
+  --gradient-echo: linear-gradient(135deg, #28A745, #21DB5F); /* Green - more vibrant */
+  --gradient-ciro: linear-gradient(135deg, #1E3C72, #2A5298); /* Blue */
+  --gradient-tariq: linear-gradient(135deg, #FBD786, #F8B500); /* Yellow - slightly warmer */
+  --gradient-mara: linear-gradient(135deg, #A020F0, #DDA0DD); /* Lavender/Purple - more distinct */
+  --gradient-thalia: linear-gradient(135deg, #7F00FF, #E100FF); /* Purple - more distinct */
+}
+
+
+/* -- General Wrapper & Layout -- */
 .wrapper {
-  padding: 4rem 2rem;
-  max-width: 1280px;
+  padding: var(--spacing-xl) var(--spacing-md); /* Use variables for padding */
+  max-width: 1280px; /* Kept your max-width */
   margin: 0 auto;
   text-align: center;
-}
-
-.heroTitle {
-  font-size: 2.7rem;
-  font-weight: 800;
-  letter-spacing: -1px;
-  line-height: 1.2;
-  background: linear-gradient(to right, #0a2540, #b0b7c3);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 3rem;
-  transition: color 0.4s ease, -webkit-text-fill-color 0.4s ease;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-}
-
-.card {
-  border-radius: 1.5rem;
-  padding: 1.5rem;
-  color: white;
+  background-color: var(--color-background-dark); /* Set a background for the whole page */
+  color: var(--color-text-light); /* Default text color */
+  font-family: 'Inter', sans-serif; /* Recommended modern font, ensure it's imported in _app.tsx or layout.tsx */
+  min-height: 100vh; /* Ensure wrapper takes full viewport height */
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 330px;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-6px);
-}
-
-.cardHeader h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.cardHeader p {
-  margin-top: 0.25rem;
-  font-size: 0.95rem;
-  opacity: 0.85;
-}
-
-.cardImage {
-  margin-top: auto;
-  display: flex;
-  justify-content: center;
   align-items: center;
 }
 
-.imagePlaceholder {
+/* -- Hero Title Styling -- */
+.heroTitle {
+  font-size: var(--font-size-hero); /* Larger and more impactful */
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: -0.05em; /* Tighter letter spacing for impact */
+  line-height: 1.1; /* Tighter line height */
+  background: linear-gradient(to right, var(--color-gradient-start), var(--color-gradient-end));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--spacing-xl); /* Increased bottom margin */
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Subtle text shadow for depth */
+  transition: all var(--transition-ease);
+}
+
+/* -- Grid Container -- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* More flexible and responsive grid */
+  gap: var(--spacing-lg); /* Use variable for gap */
+  width: 100%; /* Ensure grid takes full width */
+  max-width: 1100px; /* Max-width for the grid itself for better control */
+  margin-bottom: var(--spacing-xl); /* Space below grid for CTA */
+}
+
+/* -- Card Styling -- */
+.card {
+  border-radius: var(--border-radius-card);
+  padding: var(--spacing-lg); /* Use variable for padding */
+  background-color: var(--color-card-dark); /* Default card background */
+  color: var(--color-text-light);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center; /* Center items horizontally */
+  min-height: 330px; /* Kept your height for consistency */
+  box-shadow: var(--shadow-default);
+  transition: transform var(--transition-ease), box-shadow var(--transition-ease), border var(--transition-ease); /* All transitions */
+  text-decoration: none; /* Remove underline from Link */
+  position: relative; /* For pseudo-elements */
+  overflow: hidden; /* Ensure content stays within border-radius */
+}
+
+.card:hover {
+  transform: translateY(-10px); /* More pronounced lift */
+  box-shadow: var(--shadow-hover); /* More prominent shadow */
+}
+
+/* Add a subtle inner border/glow on hover */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--border-radius-card);
+  border: 2px solid transparent; /* Default transparent border */
+  pointer-events: none; /* Allows clicks to pass through */
+  transition: border-color var(--transition-ease);
+}
+
+.card:hover::before {
+  border-color: rgba(255, 255, 255, 0.2); /* Subtle white border on hover */
+}
+
+.cardHeader {
+  margin-bottom: var(--spacing-md);
+  z-index: 1; /* Ensure text is above any potential background effects */
+}
+
+.cardHeader h3 {
+  font-size: var(--font-size-h3); /* Larger h3 */
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.cardHeader p {
+  margin-top: var(--spacing-xs); /* Smaller top margin for p */
+  font-size: var(--font-size-p);
+  opacity: 0.85;
+  line-height: 1.4;
+}
+
+.tagline { /* New style for the tagline */
+  font-size: 0.85rem; /* Slightly smaller */
+  font-style: italic;
+  opacity: 0.7;
+  margin-top: var(--spacing-sm);
+  color: var(--color-text-light); /* Ensure consistent color */
+}
+
+.cardImage {
+  margin-top: auto; /* Pushes image to the bottom */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px; /* Fixed size for circular images */
+  height: 100px;
+  border-radius: 50%; /* Make it circular */
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle background for the circle */
+  overflow: hidden; /* Crucial to clip image within circle */
+  position: relative; /* For z-index or other effects */
+  flex-shrink: 0; /* Prevent it from shrinking */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for the image circle */
+  z-index: 1;
+}
+
+.agentImage {
   width: 100%;
-  height: 140px;
-  border-radius: 1rem;
+  height: 100%;
+  object-fit: cover; /* Ensures image covers the circular container */
+  border-radius: 50%; /* Apply to image itself for safety */
+}
+
+.imagePlaceholder { /* This will be mostly replaced by actual images */
+  width: 100%;
+  height: 100%; /* Adjusted to fill the circular cardImage */
+  border-radius: 50%; /* Make it circular */
   background-color: rgba(255, 255, 255, 0.25);
   display: flex;
   justify-content: center;
@@ -72,28 +185,108 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* Colores */
-.orange {
-  background: linear-gradient(135deg, #ff8a00, #ffb347);
+
+/* -- Agent Specific Background Gradients (more vibrant/distinct) -- */
+.sofia {
+  background: var(--gradient-sofia);
+  /* If text color needs to change for lighter backgrounds */
+  /* color: #333; */
 }
 
-.green {
-  background: linear-gradient(135deg, #21db5f, #e6d92c);
+.echo {
+  background: var(--gradient-echo);
+  /* color: #333; */
 }
 
-.blue {
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
+.ciro {
+  background: var(--gradient-ciro);
 }
 
-.yellow {
-  background: linear-gradient(135deg, #fbd786, #ecf009);
-  color: #333;
+.tariq {
+  background: var(--gradient-tariq);
+  color: #333; /* Darker text for a lighter background */
 }
 
-.lavender {
-  background: linear-gradient(135deg, #41058f, #6b0380);
+.mara {
+  background: var(--gradient-mara);
 }
 
-.purple {
-  background: linear-gradient(135deg, #7f00ff, #e100ff);
+.thalia {
+  background: var(--gradient-thalia);
+}
+
+/* -- Call to Action Section (Optional) -- */
+.callToActionSection {
+  margin-top: var(--spacing-xl);
+  font-size: 1.1rem;
+  max-width: 800px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.primaryButton {
+  display: inline-block;
+  background: linear-gradient(90deg, #6a82fb, #fc5c7d);
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: var(--font-weight-bold);
+  margin-top: var(--spacing-lg);
+  transition: all var(--transition-ease);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.primaryButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  filter: brightness(1.1);
+}
+
+/* -- Responsive Adjustments -- */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+  }
+  .heroTitle {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: var(--spacing-lg) var(--spacing-sm); /* Reduce padding on smaller screens */
+  }
+  .heroTitle {
+    font-size: 2.2rem;
+    margin-bottom: var(--spacing-lg);
+  }
+  .grid {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    gap: var(--spacing-md);
+  }
+  .card {
+    min-height: 280px; /* Slightly reduce height on mobile */
+    padding: var(--spacing-md);
+  }
+  .cardHeader h3 {
+    font-size: 1.5rem;
+  }
+  .cardImage {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroTitle {
+    font-size: 1.8rem;
+    letter-spacing: -0.03em;
+  }
+  .cardHeader h3 {
+    font-size: 1.3rem;
+  }
+  .tagline {
+    font-size: 0.8rem;
+  }
 }

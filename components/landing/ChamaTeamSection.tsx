@@ -2,9 +2,12 @@
 
 import useEmblaCarousel from 'embla-carousel-react'
 import { useCallback } from 'react'
+import Particles from 'react-tsparticles'
+import { loadSlim } from 'tsparticles-slim'
+import type { Engine } from 'tsparticles-engine'
 import styles from './ChamaCarousel.module.css'
 
-const chamas = [
+const chamas =  [
   {
     name: 'NOVA',
     role: 'Product Analyzer',
@@ -49,71 +52,116 @@ const chamas = [
   },
 ]
 
+
 export default function ChamaTeamSection() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, slidesToScroll: 1 })
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi])
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi])
 
+  const particlesInit = useCallback(async (engine: Engine) => {
+    await loadSlim(engine)
+  }, [])
+
   return (
-    <section style={{ backgroundColor: '#0d011f', padding: '6rem 1rem', position: 'relative' }}>
-      <h2
-        style={{
-          textAlign: 'center',
-          fontSize: '3.2rem',
-          fontWeight: 800,
-          letterSpacing: '-1px',
-          lineHeight: 1.2,
-          marginBottom: '3rem',
-          background: 'linear-gradient(to right, #ffffff, #888888)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+    <section style={{ backgroundColor: '#000', padding: '6rem 1rem', position: 'relative', overflow: 'hidden' }}>
+      <Particles
+        id="tsparticles-chama"
+        init={particlesInit}
+        options={{
+          fullScreen: { enable: false },
+          particles: {
+            number: { value: 40, density: { enable: true, area: 800 } },
+            color: { value: '#ffffff' },
+            shape: { type: 'circle' },
+            opacity: { value: 0.2 },
+            size: { value: 3 },
+            move: {
+              enable: true,
+              speed: 1,
+              direction: 'none',
+              outModes: { default: 'bounce' },
+            },
+          },
+          interactivity: {
+            events: {
+              onHover: { enable: true, mode: 'repulse' },
+              resize: true,
+            },
+            modes: {
+              repulse: { distance: 100 },
+            },
+          },
         }}
-      >
-        Meet your Chama team.
-      </h2>
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 0,
+        }}
+      />
 
-      <div className={styles.embla}>
-        <div className={styles.viewport} ref={emblaRef}>
-          <div className={styles.container}>
-            {chamas.map((chama, index) => (
-              <div className={styles.slide} key={index}>
-                <div
-                  className={styles.card}
-                  style={{
-                    aspectRatio: '2 / 3', // Mantiene proporción vertical
-                    position: 'relative',
-                    overflow: 'hidden',
-                    borderRadius: '1rem',
-                  }}
-                >
-                  <video
-                    src={chama.video}
-                    poster={chama.poster}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <h2
+          style={{
+            textAlign: 'center',
+            fontSize: '3.2rem',
+            fontWeight: 800,
+            letterSpacing: '-1px',
+            lineHeight: 1.2,
+            marginBottom: '3rem',
+            background: 'linear-gradient(to right, #ffffff, #888888)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          Meet your Chama team.
+        </h2>
+
+        <div className={styles.embla}>
+          <div className={styles.viewport} ref={emblaRef}>
+            <div className={styles.container}>
+              {chamas.map((chama, index) => (
+                <div className={styles.slide} key={index}>
+                  <div
+                    className={styles.card}
                     style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      display: 'block',
+                      aspectRatio: '2 / 3',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      borderRadius: '1rem',
                     }}
-                  />
+                  >
+                    <video
+                      src={chama.video}
+                      poster={chama.poster}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                  </div>
+                  <div className={styles.textBlock}>
+                    <h3>{chama.name}</h3>
+                    <p className={styles.role}>{chama.role}</p>
+                    <p className={styles.desc}>{chama.description}</p>
+                  </div>
                 </div>
-                <div className={styles.textBlock}>
-                  <h3>{chama.name}</h3>
-                  <p className={styles.role}>{chama.role}</p>
-                  <p className={styles.desc}>{chama.description}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
 
-        <button className={styles.prev} onClick={scrollPrev}>‹</button>
-        <button className={styles.next} onClick={scrollNext}>›</button>
+          <button className={styles.prev} onClick={scrollPrev}>‹</button>
+          <button className={styles.next} onClick={scrollNext}>›</button>
+        </div>
       </div>
     </section>
   )
