@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import styles from '@/components/dashboard/dashboard.module.css';
+import styles from '@/styles/dashboard.module.css';
 
 type Props = {
   text: string;
