@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image'; // Import Image component
-import styles from '@/components/dashboard/dashboard.module.css';
+import styles from '@/styles/dashboard.module.css';
 
 interface AgentCard {
   name: string;
