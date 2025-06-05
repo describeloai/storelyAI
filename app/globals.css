@@ -1,4 +1,4 @@
- /* === Reset básico === */
+/* === Reset básico === */
 * {
   margin: 0;
   padding: 0;
@@ -8,7 +8,7 @@
 /* === Tipografía base y scroll === */
 html, body {
   height: 100%;
-  overflow-x: hidden; /* bloquea scroll horizontal, permite vertical */
+  overflow-x: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 16px;
@@ -71,4 +71,49 @@ input, textarea, select {
   --purple: #7e57c2;
   --gray: #9ca3af;
   --orange: #f57c00;
+
+  /* === Variables del dashboard refinado === */
+  --color-primary: #8e44ad;
+  --color-background-dark: #1A1A2E;
+  --color-card-dark: #2C2C4D;
+  --color-text-light: #E0E0E0;
+  --color-text-accent: #B0B7C3;
+  --color-gradient-start: #6A82FB;
+  --color-gradient-end: #FC5C7D;
+
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2.5rem;
+  --spacing-xl: 4rem;
+
+  --font-size-hero: 3.5rem;
+  --font-size-h3: 1.8rem;
+  --font-size-p: 0.95rem;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  --border-radius-card: 1.5rem;
+  --shadow-default: 0 12px 24px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.3);
+
+  --transition-ease: 0.3s ease;
+
+  --gradient-sofia: linear-gradient(135deg, #FF8A00, #FFB347);
+  --gradient-echo: linear-gradient(135deg, #28A745, #21DB5F);
+  --gradient-ciro: linear-gradient(135deg, #1E3C72, #2A5298);
+  --gradient-tariq: linear-gradient(135deg, #FBD786, #F8B500);
+  --gradient-mara: linear-gradient(135deg, #A020F0, #DDA0DD);
+  --gradient-thalia: linear-gradient(135deg, #7F00FF, #E100FF);
+}
+
+:root {
+  --color-background-main: #ffffff;
+  --color-text-main: #111111;
+  /* otras variables */
+}
+
+body.dark {
+  --color-background-main: #1a1a2e; /* azul marino oscuro */
+  --color-text-main: #e0e0e0;
 }
