@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
    const redirectUrl = new URL(`https://admin.shopify.com/store/${shop.replace('.myshopify.com', '')}/app/grant`);
 return NextResponse.redirect(redirectUrl.toString());
 
-    return NextResponse.redirect(redirectUrl);
+    
   } catch (error) {
     console.error('❌ Callback error:', error);
     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/error`);
