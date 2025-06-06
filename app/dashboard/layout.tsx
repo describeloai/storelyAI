@@ -6,8 +6,9 @@ import { useEffect, useState } from 'react';
 import { Home, Brain, Settings, Plug, Moon, Sun } from 'lucide-react';
 import { useDarkMode } from '@/context/DarkModeContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { UserButton } from '@clerk/nextjs';
+import { useIsEmbedded } from '@/hooks/useIsEmbedded';
 
-// Definición de los elementos de navegación con sus claves de traducción
 const navItems = [
   { icon: <Home size={20} />, path: '/dashboard', color: 'blue', labelKey: 'dashboard.homeLink' },
   { icon: <Brain size={20} />, path: '/dashboard/ia', color: 'pink', labelKey: 'dashboard.aiLink' },
@@ -16,25 +17,20 @@ const navItems = [
 
 const colorCycle = ['#1DA1F2', '#F6E27F', '#228B22', '#FF784F', '#9B59B6', '#FF6F61'];
 
-// COMPONENTE PRINCIPAL (Tu DashboardLayoutWrapper, que es tu app/dashboard/layout.tsx)
-// Ya no contendrá DarkModeProvider ni LanguageProvider aquí, vienen del Root Layout
 export default function DashboardLayoutWrapper({ children }: { children: React.ReactNode }) {
-  return (
-    <DashboardLayout>{children}</DashboardLayout>
-  );
+  return <DashboardLayout>{children}</DashboardLayout>;
 }
 
-// LAYOUT INTERNO (Este componente usa directamente los hooks de contexto)
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { darkMode, toggleDarkMode } = useDarkMode();
   const { t } = useLanguage();
+  const isEmbedded = useIsEmbedded();
 
   const [activeColor, setActiveColor] = useState('gray');
   const [sColor, setSColor] = useState(0);
 
   useEffect(() => {
-    // Cambiar clase body para dark mode
     if (darkMode) {
       document.body.classList.add('dark');
     } else {
@@ -57,10 +53,6 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     });
     setActiveColor(current?.color || 'gray');
   }, [pathname]);
-
-  // ELIMINADO: El useEffect que forzaba document.body.style.overflow = 'hidden';
-  // Esto permitía el scroll en la ventana completa si el contenido lo requería.
-  // Ahora el scroll se gestiona a nivel del <main> si su contenido desborda.
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', overflowX: 'hidden' }}>
@@ -158,6 +150,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           >
             {darkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
+
           <Link
             href="/dashboard/settings"
             style={{
@@ -174,6 +167,12 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           >
             <Settings size={20} />
           </Link>
+
+          {!isEmbedded && (
+            <div style={{ marginTop: '1rem' }}>
+              <UserButton afterSignOutUrl="/sign-in" />
+            </div>
+          )}
         </div>
       </aside>
 
@@ -183,11 +182,11 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           marginLeft: '80px',
           flex: 1,
           padding: '2rem',
-          paddingBottom: '4rem', // Añadido para espacio al final del scroll
+          paddingBottom: '4rem',
           minHeight: '100vh',
           position: 'relative',
           overflowX: 'hidden',
-          overflowY: 'auto', // ¡LA CLAVE! Permite el scroll vertical en esta área
+          overflowY: 'auto',
           backgroundColor: darkMode ? '#121212' : '#f1f3f5',
           color: darkMode ? '#f4f4f5' : '#111',
           borderTopLeftRadius: '1rem',

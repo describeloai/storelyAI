@@ -4,11 +4,13 @@ import { SignUp } from '@clerk/nextjs';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useMemo } from 'react';
+import { useIsEmbedded } from '@/hooks/useIsEmbedded';
 
 export default function SignUpClient() {
   const { isSignedIn } = useUser();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const isEmbedded = useIsEmbedded();
 
   const redirectUrl = searchParams.get('redirect_url') || '/dashboard';
   const host = searchParams.get('host');
@@ -30,7 +32,7 @@ export default function SignUpClient() {
     }
   }, [isSignedIn, finalRedirectUrl, router]);
 
-  if (isSignedIn) return null;
+  if (isSignedIn || isEmbedded) return null;
 
   return (
     <div

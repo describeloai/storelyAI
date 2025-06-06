@@ -25,10 +25,8 @@ export async function GET(req: NextRequest) {
     const accessToken = response.data.access_token;
 
     // Redirige con shop y token a una página cliente
-    const redirectUrl = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/finish-auth`);
-    redirectUrl.searchParams.set('shop', shop);
-    redirectUrl.searchParams.set('host', host);
-    redirectUrl.searchParams.set('accessToken', accessToken);
+   const redirectUrl = new URL(`https://admin.shopify.com/store/${shop.replace('.myshopify.com', '')}/app/grant`);
+return NextResponse.redirect(redirectUrl.toString());
 
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
