@@ -71,7 +71,7 @@ export default function DashboardHome() {
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.heroTitle}>
-        Unlock Your Potential with AI-Powered Intelligence.
+        Unlock Your Potential 
       </h1>
 
       <div className={styles.grid}>

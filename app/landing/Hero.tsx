@@ -106,11 +106,11 @@ export default function NewHero() {
           <span
             style={{
               // Gradient for "AI-powered intelligence" to make it stand out
-              background: 'linear-gradient(45deg, #a78bfa, #818cf8)', // A vibrant purple-blue gradient
+              background: 'linear-gradient(45deg, #FFD700, #FFF380)', // A vibrant purple-blue gradient
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               // Adding an even stronger shadow for this specific part
-              textShadow: '0px 4px 12px rgba(167, 139, 250, 0.6), 0px 0px 30px rgba(129, 140, 248, 0.4)',
+              textShadow: '0px 4px 12px rgba(255, 255, 200, 0.35), 0px 0px 30px rgba(255, 252, 71, 0.4)',
             }}
           >
             AI-powered intelligence.
@@ -140,12 +140,12 @@ export default function NewHero() {
             fontSize: 'clamp(1rem, 2vw, 1.15rem)', // Responsive font size
             borderRadius: '0.75rem', // Slightly more rounded corners
             // Enhanced button background with a subtle gradient for a modern feel
-            background: 'linear-gradient(45deg, #6366f1, #8b5cf6)', // Blue to purple gradient
+            background: 'linear-gradient(45deg, #B8860B, #DAA520)', // Blue to purple gradient
             color: '#fff',
             border: 'none',
             cursor: 'pointer',
             // More pronounced and vibrant box shadow
-            boxShadow: '0 8px 30px rgba(99, 102, 241, 0.6), 0 0 40px rgba(139, 92, 246, 0.4)',
+            boxShadow: '0 8px 30px rgba(255, 255, 200, 0.35), 0 0 40px rgba(255, 255, 200, 0.35)',
             transition: 'all 0.3s ease', // Smooth transition for hover effects
             fontWeight: 600, // Bolder text for the button
             textTransform: 'uppercase', // Uppercase for call to action
@@ -155,11 +155,11 @@ export default function NewHero() {
           // Hover effect for the button
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-3px)'
-            e.currentTarget.style.boxShadow = '0 12px 35px rgba(99, 102, 241, 0.8), 0 0 50px rgba(139, 92, 246, 0.6)'
+            e.currentTarget.style.boxShadow = '0 12px 35px rgba(255, 255, 200, 0.35), 0 0 50px rgba(255, 255, 200, 0.35)'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = '0 8px 30px rgba(99, 102, 241, 0.6), 0 0 40px rgba(139, 92, 246, 0.4)'
+            e.currentTarget.style.boxShadow = '0 8px 30px rgba(255, 255, 200, 0.35), 0 0 40px rgba(255, 255, 200, 0.35)'
           }}
         >
           Get Started
