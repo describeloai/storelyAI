@@ -1,8 +1,8 @@
 // app/layout.tsx
 import { Inter } from 'next/font/google';
-import './globals.css';
-import { Providers } from './providers';
-import Script from 'next/script'; // Importa el componente Script de Next.js
+import './globals.css'; // ¡Importante! Aquí se importan tus estilos globales
+import { Providers } from './providers'; // Este componente será un Client Component
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -11,7 +11,6 @@ export const metadata = {
   description: 'Your AI-powered e-commerce assistant dashboard',
 };
 
-// Este es el Root Layout de tu aplicación. Es un Server Component por defecto.
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -20,17 +19,12 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        {/*
-          IMPORTANTE: Shopify App Bridge CDN Script.
-          Debe cargarse SIEMPRE. La estrategia 'beforeInteractive'
-          asegura que esté disponible antes de que la página sea interactiva.
-        */}
         <Script
           src="https://cdn.shopify.com/shopifycloud/app-bridge/app-bridge.js"
-          strategy="beforeInteractive" // o 'afterInteractive' si causa problemas
+          strategy="beforeInteractive"
         />
 
-        {/* Aquí envuelves los hijos con tu componente de proveedores de cliente */}
+        {/* Providers es donde se manejará el estado de DarkMode */}
         <Providers>
           {children}
         </Providers>

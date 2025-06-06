@@ -6,16 +6,21 @@
 }
 
 /* === Tipografía base y scroll === */
-html, body {
+html,
+body {
   height: 100%;
   overflow-x: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 16px;
-  color: #111;
-  background-color: #fff;
   line-height: 1.6;
   scroll-behavior: smooth;
+  /* Aplica las variables de color globales aquí */
+  color: var(--color-text-main);
+  background-color: var(--color-background-main);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease; /* Transición suave para el modo oscuro */
 }
 
 /* === Enlaces === */
@@ -40,7 +45,9 @@ img {
 }
 
 /* === Inputs === */
-input, textarea, select {
+input,
+textarea,
+select {
   font: inherit;
   outline: none;
 }
@@ -50,21 +57,24 @@ input, textarea, select {
   width: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background: var(--scrollbar-thumb-color, #ccc); /* Variable para modo oscuro */
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: var(--scrollbar-thumb-hover-color, #999); /* Variable para modo oscuro */
 }
 
-/* === Root variables === */
-:root {
-  --primary: #6f3ff5;
-  --background: #ffffff;
-  --foreground: #111111;
-  --radius: 12px;
+/* --- */
 
-  /* === Colores dinámicos del sidebar === */
+/* === Root variables y Modo Oscuro === */
+/* Variables por defecto (Light Mode) */
+:root {
+  --primary: #6f3ff5; /* Un púrpura vibrante para acentos */
+  --background: #ffffff; /* Fondo principal claro */
+  --foreground: #111111; /* Texto principal oscuro */
+  --radius: 12px; /* Radio de borde general */
+
+  /* Colores dinámicos del sidebar/elementos */
   --blue: #2196f3;
   --lavender: #b388ff;
   --green: #4caf50;
@@ -72,48 +82,114 @@ input, textarea, select {
   --gray: #9ca3af;
   --orange: #f57c00;
 
-  /* === Variables del dashboard refinado === */
-  --color-primary: #8e44ad;
-  --color-background-dark: #1A1A2E;
-  --color-card-dark: #2C2C4D;
-  --color-text-light: #E0E0E0;
-  --color-text-accent: #B0B7C3;
-  --color-gradient-start: #6A82FB;
-  --color-gradient-end: #FC5C7D;
+  /* Variables del dashboard refinado (Light Mode) */
+  --color-primary: #8e44ad; /* Un color primario general */
+  --color-background-main: #ffffff; /* Fondo principal del cuerpo */
+  --color-text-main: #111111; /* Texto principal del cuerpo */
 
+  --text-color-primary: #1a202c; /* Títulos y texto importante en light mode */
+  --text-color-secondary: #4a5568; /* Texto secundario en light mode */
+
+  --card-bg-light: #ffffff; /* Fondo de tarjeta en light mode */
+  --card-shadow-light: rgba(0, 0, 0, 0.1); /* Sombra de tarjeta en light mode */
+  --card-hover-shadow-light: rgba(0, 0, 0, 0.2); /* Sombra de tarjeta al hover en light mode */
+  --card-title-color: #fff; /* Color del título de tarjeta (asume fondo oscuro de tarjeta) */
+  --card-text-color: rgba(255, 255, 255, 0.8); /* Color del texto de tarjeta */
+  --card-tagline-color: #fff; /* Color del tagline de tarjeta */
+
+  --cta-bg: #f0f4f8; /* Fondo del CTA en light mode */
+  --cta-text-color: #333; /* Texto del CTA en light mode */
+
+  --gradient-start: #3f51b5; /* Inicio del gradiente para títulos en light mode */
+  --gradient-end: #2196f3; /* Fin del gradiente para títulos en light mode */
+
+  /* Variables de espaciado */
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
   --spacing-md: 1.5rem;
   --spacing-lg: 2.5rem;
   --spacing-xl: 4rem;
 
+  /* Variables de tipografía */
   --font-size-hero: 3.5rem;
   --font-size-h3: 1.8rem;
   --font-size-p: 0.95rem;
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
 
+  /* Variables de bordes y sombras */
   --border-radius-card: 1.5rem;
   --shadow-default: 0 12px 24px rgba(0, 0, 0, 0.1);
   --shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.3);
 
+  /* Variables de transición */
   --transition-ease: 0.3s ease;
 
-  --gradient-sofia: linear-gradient(135deg, #FF8A00, #FFB347);
-  --gradient-echo: linear-gradient(135deg, #28A745, #21DB5F);
-  --gradient-ciro: linear-gradient(135deg, #1E3C72, #2A5298);
-  --gradient-tariq: linear-gradient(135deg, #FBD786, #F8B500);
-  --gradient-mara: linear-gradient(135deg, #A020F0, #DDA0DD);
-  --gradient-thalia: linear-gradient(135deg, #7F00FF, #E100FF);
+  /* Gradientes de tarjetas específicos (ya definidos en el CSS del dashboard) */
+  /* Los dejé aquí como referencia, pero el CSS del dashboard los usa directamente */
+  /* --gradient-sofia: linear-gradient(135deg, #FF8A00, #FFB347); */
+  /* ... y así sucesivamente para los demás */
+
+  /* Scrollbar */
+  --scrollbar-thumb-color: #ccc;
+  --scrollbar-thumb-hover-color: #999;
 }
 
-:root {
-  --color-background-main: #ffffff;
-  --color-text-main: #111111;
-  /* otras variables */
+/* Estilos de Modo Oscuro */
+body[data-theme='dark'] {
+  --color-background-main: #1a1a2e; /* Fondo principal oscuro (azul marino) */
+  --color-text-main: #e0e0e0; /* Texto principal claro */
+
+  --text-color-primary: #e2e8f0; /* Títulos y texto importante en dark mode */
+  --text-color-secondary: #a0aec0; /* Texto secundario en dark mode */
+
+  --card-bg-light: #2d3748; /* Fondo de tarjeta en dark mode */
+  --card-shadow-light: rgba(0, 0, 0, 0.3); /* Sombra de tarjeta en dark mode */
+  --card-hover-shadow-light: rgba(0, 0, 0, 0.5); /* Sombra de tarjeta al hover en dark mode */
+  --card-title-color: #fff; /* Color del título de tarjeta en dark mode */
+  --card-text-color: rgba(255, 255, 255, 0.9); /* Color del texto de tarjeta en dark mode */
+  --card-tagline-color: #fff; /* Color del tagline de tarjeta en dark mode */
+
+  --cta-bg: #2d3748; /* Fondo del CTA en dark mode */
+  --cta-text-color: #e2e8f0; /* Texto del CTA en dark mode */
+
+  --gradient-start: #6366f1; /* Inicio del gradiente para títulos en dark mode */
+  --gradient-end: #8b5cf6; /* Fin del gradiente para títulos en dark mode */
+
+  /* Scrollbar */
+  --scrollbar-thumb-color: #555;
+  --scrollbar-thumb-hover-color: #777;
 }
 
-body.dark {
-  --color-background-main: #1a1a2e; /* azul marino oscuro */
-  --color-text-main: #e0e0e0;
-}
+/* --- */
+
+/* Ahora los estilos del dashboard.module.css que antes referenciaban
+   a las variables globales pueden usar las variables definidas aquí.
+   Por ejemplo, en dashboard.module.css:
+
+   .heroTitle {
+     color: var(--text-color-primary);
+     background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+     -webkit-background-clip: text;
+     -webkit-text-fill-color: transparent;
+   }
+
+   .card {
+     background-color: var(--card-bg-light); // Si necesitas un fondo de tarjeta base
+     box-shadow: 0 10px 30px var(--card-shadow-light), 0 0 15px rgba(0, 0, 0, 0.05);
+   }
+   .card:hover {
+     box-shadow: 0 15px 40px var(--card-hover-shadow-light), 0 0 20px rgba(0, 0, 0, 0.1);
+   }
+
+   .callToActionSection {
+     background-color: var(--cta-bg);
+   }
+   .callToActionSection p {
+     color: var(--cta-text-color);
+   }
+
+   Recuerda que los gradientes específicos de las tarjetas (sofia, echo, etc.)
+   los sigues definiendo con sus propias variables `--card-bg-start` y `--card-bg-end`
+   en el `dashboard.module.css` ya que son específicos de la clase de la tarjeta.
+*/

@@ -1,4 +1,5 @@
-'use client'; // ¡Es crucial que sea un Client Component!
+// app/providers.tsx
+'use client';
 
 import { useEffect } from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
@@ -6,15 +7,15 @@ import { LanguageProvider } from '@/context/LanguageContext';
 import { DarkModeProvider, useDarkMode } from '@/context/DarkModeContext';
 import LanguageSetter from './LanguageSetter';
 
-// Envoltura para manejar la clase `dark` en el body según contexto
-function BodyClassManager({ children }: { children: React.ReactNode }) {
+// Envoltura para manejar el atributo `data-theme` en el body según contexto
+function BodyThemeManager({ children }: { children: React.ReactNode }) { // Renombré para claridad
   const { darkMode } = useDarkMode();
 
   useEffect(() => {
     if (darkMode) {
-      document.body.classList.add('dark');
+      document.body.setAttribute('data-theme', 'dark'); // <-- ¡Cambio aquí!
     } else {
-      document.body.classList.remove('dark');
+      document.body.removeAttribute('data-theme'); // <-- ¡Cambio aquí!
     }
   }, [darkMode]);
 
@@ -27,11 +28,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ClerkProvider>
       <LanguageProvider>
         <DarkModeProvider>
-          <BodyClassManager>
+          <BodyThemeManager> {/* <-- Usar el nuevo nombre del componente */}
             <LanguageSetter>
               {children}
             </LanguageSetter>
-          </BodyClassManager>
+          </BodyThemeManager>
         </DarkModeProvider>
       </LanguageProvider>
     </ClerkProvider>
