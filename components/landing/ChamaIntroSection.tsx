@@ -14,12 +14,13 @@ export default function ChamaIntroSection() {
     <section
       style={{
         position: 'relative',
-        padding: '6rem 2rem',
+        display: 'flex',
+        justifyContent: 'center', // Center content horizontally
+        alignItems: 'center', // Center content vertically
+        minHeight: '100vh', // Take full viewport height for better centering
+        padding: 'clamp(4rem, 10vw, 8rem) clamp(1rem, 5vw, 4rem)', // Responsive padding
         textAlign: 'center',
         backgroundColor: '#000',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
         overflow: 'hidden',
       }}
     >
@@ -27,7 +28,7 @@ export default function ChamaIntroSection() {
         id="tsparticles"
         init={particlesInit}
         options={{
-          fullScreen: { enable: false },
+          fullScreen: { enable: false }, // Keep as false since it's within a section
           particles: {
             number: { value: 50, density: { enable: true, area: 800 } },
             color: { value: '#ffffff' },
@@ -59,19 +60,29 @@ export default function ChamaIntroSection() {
           width: '100%',
           height: '100%',
         }}
+        aria-hidden="true" // Decorative element, hide from screen readers
       />
 
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          maxWidth: '800px', // Limit content width for readability
+          width: '100%', // Ensure it takes full width up to max-width
+          boxSizing: 'border-box', // Include padding in element's total width and height
+        }}
+      >
         <h2
           style={{
-            fontSize: '3.2rem',
+            fontSize: 'clamp(2rem, 5vw, 4rem)', // Responsive font size
             fontWeight: 800,
-            letterSpacing: '-1px',
-            lineHeight: 1.2,
+            letterSpacing: '-0.03em', // Slightly tighter letter spacing
+            lineHeight: 1.1, // Tighter line height for large text
             marginBottom: '1.5rem',
-            background: 'linear-gradient(to right, #ffffff, #888888)',
+            background: 'linear-gradient(to right, #ffffff, #aaaaaa)', // Slightly softer gradient for text
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
+            textShadow: '0 2px 4px rgba(0,0,0,0.3)', // Subtle text shadow for depth
           }}
         >
           Your ecommerce, powered by Chamas.
@@ -79,15 +90,17 @@ export default function ChamaIntroSection() {
 
         <p
           style={{
-            fontSize: '1.15rem',
-            color: '#ccc',
-            maxWidth: '720px',
-            marginTop: '1.2rem',
-            lineHeight: 1.75,
-            fontWeight: 500,
+            fontSize: 'clamp(1rem, 2.2vw, 1.25rem)', // Responsive font size
+            color: '#c0c0c0', // Slightly brighter grey for better contrast
+            maxWidth: '720px', // Maintain max-width for paragraph
+            margin: '1.2rem auto 0 auto', // Center paragraph with auto margins
+            lineHeight: 1.7, // Optimal line height for body text
+            fontWeight: 400, // Standard font weight for readability
           }}
         >
-          The Chamas are your 24/7 AI team, automating content, engagement, and operations with precision, so your business grows even when you're offline.
+          The Chamas are your 24/7 AI team, automating content, engagement, and
+          operations with precision, so your business grows even when you're
+          offline.
         </p>
       </div>
     </section>

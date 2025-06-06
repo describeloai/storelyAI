@@ -1,101 +1,358 @@
-/* Variables encapsuladas para evitar el error de :root en CSS Modules */
-.vars {
-  /* Colors */
-  --color-primary: #8e44ad;
-  --color-background-dark: #1A1A2E;
-  --color-card-dark: #2C2C4D;
-  --color-text-light: #E0E0E0;
-  --color-text-accent: #B0B7C3;
-  --color-gradient-start: #6A82FB;
-  --color-gradient-end: #FC5C7D;
+/* dashboard.module.css */
 
-  /* Spacing */
-  --spacing-xs: 0.5rem;
-  --spacing-sm: 1rem;
-  --spacing-md: 1.5rem;
-  --spacing-lg: 2.5rem;
-  --spacing-xl: 4rem;
-
-  /* Typography */
-  --font-size-hero: 3.5rem;
-  --font-size-h3: 1.8rem;
-  --font-size-p: 0.95rem;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
-
-  /* Borders & Shadows */
-  --border-radius-card: 1.5rem;
-  --shadow-default: 0 12px 24px rgba(0, 0, 0, 0.1);
-  --shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.3);
-
-  /* Transitions */
-  --transition-ease: 0.3s ease;
-
-  /* Gradients */
-  --gradient-sofia: linear-gradient(135deg, #FF8A00, #FFB347);
-  --gradient-echo: linear-gradient(135deg, #28A745, #21DB5F);
-  --gradient-ciro: linear-gradient(135deg, #1E3C72, #2A5298);
-  --gradient-tariq: linear-gradient(135deg, #FBD786, #F8B500);
-  --gradient-mara: linear-gradient(135deg, #A020F0, #DDA0DD);
-  --gradient-thalia: linear-gradient(135deg, #7F00FF, #E100FF);
-}
-
+/* General Wrapper for Consistent Padding and Centering */
 .wrapper {
-  padding: var(--spacing-xl) var(--spacing-md);
-  background-color: var(--color-background-dark);
-  color: var(--color-text-light);
+  max-width: 1200px; /* Limit overall content width */
+  margin: 0 auto; /* Center the wrapper */
+  padding: 4rem 2rem; /* Generous vertical padding, responsive horizontal padding */
+  min-height: calc(100vh - var(--header-height, 0px) - var(--footer-height, 0px)); /* Ensure content takes up available space */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
+  gap: 3rem; /* Space between sections */
+  align-items: center; /* Center content horizontally */
 }
 
+/* Hero Title - Bold, Responsive, and Engaging */
+.heroTitle {
+  font-size: clamp(2.5rem, 5vw, 4.5rem); /* Responsive font size */
+  font-weight: 800; /* Extra bold */
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: -0.04em; /* Tighter letter spacing for impact */
+  color: var(--text-color-primary, #1a202c); /* Use CSS variable for dark mode compatibility */
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  background: linear-gradient(45deg, var(--gradient-start, #3f51b5), var(--gradient-end, #2196f3)); /* Blue gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem; /* Space below title */
+}
+
+/* Grid Layout for Agent Cards */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-lg);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid columns */
+  gap: 2.5rem; /* Increased gap between cards */
   width: 100%;
-  max-width: 1100px;
+  justify-content: center; /* Center cards in the grid */
 }
 
+/* Individual Agent Card Styling */
 .card {
-  background-color: var(--color-card-dark);
-  border-radius: var(--border-radius-card);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-default);
-  transition: var(--transition-ease);
-  min-height: 330px;
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: space-between; /* Push image to bottom */
+  height: 380px; /* Fixed height for consistent look */
+  padding: 2rem;
+  border-radius: 1.5rem; /* More rounded corners */
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 15px rgba(0, 0, 0, 0.05); /* Enhanced shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
+  text-decoration: none; /* Remove underline from Link */
+  color: inherit; /* Inherit color for text */
+  will-change: transform, box-shadow; /* Optimize for animations */
 }
 
+/* Card Hover Effect */
+.card:hover {
+  transform: translateY(-8px); /* Lift effect */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1); /* Stronger shadow on hover */
+}
+
+/* Card Header - Text Content */
+.cardHeader {
+  flex-grow: 1; /* Allows header to take available space */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align text to the left */
+  text-align: left; /* Ensure text alignment */
+  z-index: 2; /* Ensure text is above background elements */
+  position: relative; /* For z-index to work correctly */
+}
+
+.cardHeader h3 {
+  font-size: clamp(1.8rem, 3vw, 2.5rem); /* Responsive title font size */
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+  color: var(--card-title-color, #fff); /* Default white for card titles */
+}
+
+.cardHeader p {
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem); /* Responsive paragraph font size */
+  color: var(--card-text-color, rgba(255, 255, 255, 0.8)); /* Lighter text for contrast */
+  margin-bottom: 0.5rem;
+}
+
+.cardHeader .tagline {
+  font-size: clamp(1rem, 1.8vw, 1.2rem); /* Slightly larger for tagline */
+  font-weight: 500;
+  opacity: 0.9;
+  line-height: 1.4;
+  color: var(--card-tagline-color, #fff);
+  margin-top: 1rem; /* Space above tagline */
+}
+
+/* Card Image - Bottom Right Positioning */
+.cardImage {
+  position: absolute;
+  bottom: 1.5rem; /* Adjust position from bottom */
+  right: 1.5rem; /* Adjust position from right */
+  width: 120px; /* Larger image size */
+  height: 120px; /* Larger image size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%; /* Make it round */
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle background for image */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Shadow for the image container */
+  z-index: 1; /* Ensure image is below text initially, but part of card's flow */
+  transition: transform 0.3s ease; /* Smooth transition for image */
+}
+
+.card:hover .cardImage {
+    transform: scale(1.05); /* Slight zoom on image on hover */
+}
+
+.agentImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Ensure image fits */
+  opacity: 0.8; /* Slightly desaturate image for blend */
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .agentImage {
+  opacity: 1; /* Full opacity on hover */
+}
+
+
+/* Color Classes for Cards - Using Gradients for Modern Look */
+/* Base gradient for all cards, then specific overrides */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--card-bg-start), var(--card-bg-end));
+  opacity: 1;
+  z-index: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Darker overlay on hover for better text contrast if desired */
+/* .card:hover::before {
+  opacity: 0.9;
+} */
+
 .sofia {
-  background-color: #ff8a00; /* naranja fuerte */
-  color: #fff;
+  --card-bg-start: #f83600; /* Red-Orange */
+  --card-bg-end: #f9d423; 
+  --card-title-color: #fff;
+  --card-text-color: rgba(255, 255, 255, 0.9);
+  --card-tagline-color: #fff;
 }
 
 .echo {
-  background-color: #28a745; /* verde vibrante */
-  color: #fff;
+  --card-bg-start: #0A4A0A; /* Light Blue */
+  --card-bg-end: #6DD86D; /* Darker Blue */
+  --card-title-color: #fff;
+  --card-text-color: rgba(255, 255, 255, 0.9);
+  --card-tagline-color: #fff;
 }
 
 .ciro {
-  background-color: #1e3c72; /* azul oscuro */
-  color: #fff;
+  --card-bg-start: #00c6ff; /* Light Blue */
+  --card-bg-end: #0072ff; /* Magenta */
+  --card-title-color: #fff;
+  --card-text-color: rgba(255, 255, 255, 0.9);
+  --card-tagline-color: #fff;
 }
 
 .tariq {
-  background-color: #fbd786; /* amarillo claro */
-  color: #333; /* mejor contraste en fondo claro */
+  --card-bg-start: #FFA500; /* Orange */
+  --card-bg-end: #FFD700; /* Yellow */
+  --card-title-color: #fff;
+  --card-text-color: rgba(255, 255, 255, 0.9);
+  --card-tagline-color: #fff;
 }
 
 .mara {
-  background-color: #6b21a8; /* morado oscuro */
-  color: #fff;
+  --card-bg-start: #1cd8d2; /* Teal */
+  --card-bg-end: #93edc7; /* Light Green */
+  --card-title-color: #fff;
+  --card-text-color: rgba(255, 255, 255, 0.9);
+  --card-tagline-color: #fff;
 }
 
 .thalia {
-  background-color: #e100ff; /* fucsia brillante */
-  color: #fff;
+  --card-bg-start: #7f00ff; /* Purple */
+  --card-bg-end: #e100ff; /* Gold */
+  --card-title-color: #fff;
+  --card-text-color: rgba(255, 255, 255, 0.9);
+  --card-tagline-color: #fff;
+}
+
+/* Call to Action Section */
+.callToActionSection {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background-color: var(--cta-bg, #f0f4f8); /* Light background for light mode */
+  border-radius: 1.5rem;
+  margin-top: 3rem; /* Space above CTA */
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  width: 100%; /* Ensure it takes full width of wrapper */
+  max-width: 800px; /* Limit width for readability */
+}
+
+.callToActionSection p {
+  font-size: clamp(1.1rem, 2vw, 1.4rem); /* Responsive font size */
+  color: var(--cta-text-color, #333); /* Dark text for light mode */
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto; /* Center the text */
+  font-weight: 500;
+}
+
+/* Dark Mode Overrides */
+/* Define CSS variables for dark mode */
+:root {
+  --text-color-primary: #1a202c;
+  --text-color-secondary: #4a5568;
+  --background-color: #f7fafc;
+  --card-bg: #fff;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+  --cta-bg: #f0f4f8;
+  --cta-text-color: #333;
+  --gradient-start: #3f51b5;
+  --gradient-end: #2196f3;
+}
+
+body[data-theme='dark'] {
+  --text-color-primary: #e2e8f0;
+  --text-color-secondary: #a0aec0;
+  --background-color: #1a202c; /* Dark background */
+  --card-bg: #2d3748; /* Darker card background */
+  --card-shadow: rgba(0, 0, 0, 0.3);
+  --cta-bg: #2d3748; /* Dark CTA background */
+  --cta-text-color: #e2e8f0; /* Light CTA text */
+  --gradient-start: #6366f1; /* Adjusted gradient for dark mode hero title */
+  --gradient-end: #8b5cf6; /* Adjusted gradient for dark mode hero title */
+}
+
+/* Apply dark mode styles to body and components */
+body[data-theme='dark'] .wrapper {
+  background-color: var(--background-color);
+}
+
+body[data-theme='dark'] .heroTitle {
+  color: var(--text-color-primary);
+  background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body[data-theme='dark'] .card {
+  box-shadow: 0 10px 30px var(--card-shadow), 0 0 15px rgba(0, 0, 0, 0.2);
+}
+body[data-theme='dark'] .card:hover {
+  box-shadow: 0 15px 40px var(--card-shadow), 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme='dark'] .cardHeader h3,
+body[data-theme='dark'] .cardHeader p,
+body[data-theme='dark'] .cardHeader .tagline {
+  color: #fff; /* Ensure text is white in dark mode cards */
+}
+
+body[data-theme='dark'] .callToActionSection {
+  background-color: var(--cta-bg);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+body[data-theme='dark'] .callToActionSection p {
+  color: var(--cta-text-color);
+}
+
+/* Media Queries for fine-tuning responsiveness */
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 3rem 1.5rem;
+    gap: 2rem;
+  }
+
+  .heroTitle {
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    margin-bottom: 1.5rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .card {
+    height: 350px; /* Slightly shorter cards on mobile */
+    padding: 1.5rem;
+    border-radius: 1.2rem;
+  }
+
+  .cardHeader h3 {
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+  }
+
+  .cardHeader p {
+    font-size: clamp(0.85rem, 3vw, 1rem);
+  }
+
+  .cardHeader .tagline {
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+  }
+
+  .cardImage {
+    width: 100px;
+    height: 100px;
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  .callToActionSection {
+    padding: 2rem 1rem;
+  }
+
+  .callToActionSection p {
+    font-size: clamp(1rem, 3.5vw, 1.2rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 2rem 1rem;
+  }
+
+  .heroTitle {
+    font-size: clamp(1.8rem, 10vw, 3rem);
+  }
+
+  .grid {
+    grid-template-columns: 1fr; /* Stack cards on very small screens */
+    gap: 1.2rem;
+  }
+
+  .card {
+    height: auto; /* Auto height on very small screens to prevent cut-off */
+    min-height: 300px; /* Ensure a minimum height */
+  }
+
+  .cardHeader {
+    margin-bottom: 1rem; /* Space before image in stacked layout */
+  }
+
+  .cardImage {
+    position: static; /* Position normally in the flow */
+    margin: 1rem auto 0 auto; /* Center image below text */
+  }
 }
