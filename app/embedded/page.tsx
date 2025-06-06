@@ -1,20 +1,29 @@
 'use client';
+
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function EmbeddedRedirect() {
+function EmbeddedRedirectHandler() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const params = useSearchParams();
 
   useEffect(() => {
-    const shop = searchParams.get('shop');
-    const host = searchParams.get('host');
+    const shop = params.get('shop');
+    const host = params.get('host');
 
     if (shop && host) {
-      const embeddedUrl = `/dashboard?shop=${shop}&host=${host}&embedded=1`;
-      router.replace(embeddedUrl);
+      router.replace(`/dashboard?shop=${shop}&host=${host}&embedded=1`);
     }
-  }, [searchParams, router]);
+  }, [params, router]);
 
-  return <p>Redirigiendo a app embebida...</p>;
+  return <p>Cargando app embebida...</p>;
+}
+
+export default function EmbeddedPage() {
+  return (
+    <Suspense fallback={<p>Cargando...</p>}>
+      <EmbeddedRedirectHandler />
+    </Suspense>
+  );
 }
