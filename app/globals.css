@@ -84,24 +84,25 @@ select {
 
   /* Variables del dashboard refinado (Light Mode) */
   --color-primary: #8e44ad; /* Un color primario general */
-  --color-background-main: #ffffff; /* Fondo principal del cuerpo */
-  --color-text-main: #111111; /* Texto principal del cuerpo */
+  --color-background-main: #ffffff; /* Fondo principal del cuerpo (para body) */
+  --color-text-main: #111111; /* Texto principal del cuerpo (para body) */
 
-  --text-color-primary: #1a202c; /* Títulos y texto importante en light mode */
-  --text-color-secondary: #4a5568; /* Texto secundario en light mode */
+  /* Variables de texto, fondo y sombras para componentes (ej. dashboard cards, CTA) */
+  --text-color-primary: #1a202c; /* Títulos y texto importante (ej. heroTitle) */
+  --text-color-secondary: #4a5568; /* Texto secundario */
 
-  --card-bg-light: #ffffff; /* Fondo de tarjeta en light mode */
-  --card-shadow-light: rgba(0, 0, 0, 0.1); /* Sombra de tarjeta en light mode */
-  --card-hover-shadow-light: rgba(0, 0, 0, 0.2); /* Sombra de tarjeta al hover en light mode */
+  --card-bg-light: #ffffff; /* Fondo de tarjeta base (si aplica) */
+  --card-shadow-light: rgba(0, 0, 0, 0.1); /* Sombra de tarjeta general */
+  --card-hover-shadow-light: rgba(0, 0, 0, 0.2); /* Sombra de tarjeta al hover */
   --card-title-color: #fff; /* Color del título de tarjeta (asume fondo oscuro de tarjeta) */
   --card-text-color: rgba(255, 255, 255, 0.8); /* Color del texto de tarjeta */
   --card-tagline-color: #fff; /* Color del tagline de tarjeta */
 
-  --cta-bg: #f0f4f8; /* Fondo del CTA en light mode */
-  --cta-text-color: #333; /* Texto del CTA en light mode */
+  --cta-bg: #f0f4f8; /* Fondo del CTA */
+  --cta-text-color: #333; /* Texto del CTA */
 
-  --gradient-start: #3f51b5; /* Inicio del gradiente para títulos en light mode */
-  --gradient-end: #2196f3; /* Fin del gradiente para títulos en light mode */
+  --gradient-start: #3f51b5; /* Inicio del gradiente para títulos/elementos */
+  --gradient-end: #2196f3; /* Fin del gradiente para títulos/elementos */
 
   /* Variables de espaciado */
   --spacing-xs: 0.5rem;
@@ -125,10 +126,13 @@ select {
   /* Variables de transición */
   --transition-ease: 0.3s ease;
 
-  /* Gradientes de tarjetas específicos (ya definidos en el CSS del dashboard) */
-  /* Los dejé aquí como referencia, pero el CSS del dashboard los usa directamente */
-  /* --gradient-sofia: linear-gradient(135deg, #FF8A00, #FFB347); */
-  /* ... y así sucesivamente para los demás */
+  /* Gradientes de tarjetas específicos (pueden seguir en dashboard.module.css o aquí si son globales) */
+  --gradient-sofia: linear-gradient(135deg, #FF8A00, #FFB347);
+  --gradient-echo: linear-gradient(135deg, #28A745, #21DB5F);
+  --gradient-ciro: linear-gradient(135deg, #1E3C72, #2A5298);
+  --gradient-tariq: linear-gradient(135deg, #FBD786, #F8B500);
+  --gradient-mara: linear-gradient(135deg, #A020F0, #DDA0DD);
+  --gradient-thalia: linear-gradient(135deg, #7F00FF, #E100FF);
 
   /* Scrollbar */
   --scrollbar-thumb-color: #ccc;
@@ -153,8 +157,8 @@ body[data-theme='dark'] {
   --cta-bg: #2d3748; /* Fondo del CTA en dark mode */
   --cta-text-color: #e2e8f0; /* Texto del CTA en dark mode */
 
-  --gradient-start: #6366f1; /* Inicio del gradiente para títulos en dark mode */
-  --gradient-end: #8b5cf6; /* Fin del gradiente para títulos en dark mode */
+  --gradient-start: #6366f1; /* Inicio del gradiente para títulos/elementos en dark mode */
+  --gradient-end: #8b5cf6; /* Fin del gradiente para títulos/elementos en dark mode */
 
   /* Scrollbar */
   --scrollbar-thumb-color: #555;
@@ -163,9 +167,9 @@ body[data-theme='dark'] {
 
 /* --- */
 
-/* Ahora los estilos del dashboard.module.css que antes referenciaban
-   a las variables globales pueden usar las variables definidas aquí.
-   Por ejemplo, en dashboard.module.css:
+/* Recordatorio:
+   En dashboard.module.css, ahora usarás estas variables globales.
+   Por ejemplo:
 
    .heroTitle {
      color: var(--text-color-primary);
@@ -175,7 +179,6 @@ body[data-theme='dark'] {
    }
 
    .card {
-     background-color: var(--card-bg-light); // Si necesitas un fondo de tarjeta base
      box-shadow: 0 10px 30px var(--card-shadow-light), 0 0 15px rgba(0, 0, 0, 0.05);
    }
    .card:hover {
@@ -189,7 +192,7 @@ body[data-theme='dark'] {
      color: var(--cta-text-color);
    }
 
-   Recuerda que los gradientes específicos de las tarjetas (sofia, echo, etc.)
-   los sigues definiendo con sus propias variables `--card-bg-start` y `--card-bg-end`
-   en el `dashboard.module.css` ya que son específicos de la clase de la tarjeta.
+   Los gradientes específicos de las tarjetas (sofia, echo, etc.) seguirán siendo
+   definidos con sus propias variables (--card-bg-start, --card-bg-end) y el
+   pseudo-elemento ::before en el dashboard.module.css, ya que son únicos para cada tarjeta.
 */

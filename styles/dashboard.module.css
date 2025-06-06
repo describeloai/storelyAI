@@ -219,17 +219,7 @@
 
 /* Dark Mode Overrides */
 /* Define CSS variables for dark mode */
-:root {
-  --text-color-primary: #1a202c;
-  --text-color-secondary: #4a5568;
-  --background-color: #f7fafc;
-  --card-bg: #fff;
-  --card-shadow: rgba(0, 0, 0, 0.1);
-  --cta-bg: #f0f4f8;
-  --cta-text-color: #333;
-  --gradient-start: #3f51b5;
-  --gradient-end: #2196f3;
-}
+
 
 body[data-theme='dark'] {
   --text-color-primary: #e2e8f0;
@@ -247,13 +237,7 @@ body[data-theme='dark'] {
 body[data-theme='dark'] .wrapper {
   background-color: var(--background-color);
 }
-
-body[data-theme='dark'] .heroTitle {
-  color: var(--text-color-primary);
-  background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+ 
 
 body[data-theme='dark'] .card {
   box-shadow: 0 10px 30px var(--card-shadow), 0 0 15px rgba(0, 0, 0, 0.2);
