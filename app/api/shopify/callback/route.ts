@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    // Intercambia el code por el access_token
     const response = await axios.post(
       `https://${shop}/admin/oauth/access_token`,
       {
@@ -19,18 +20,23 @@ export async function GET(req: NextRequest) {
         client_secret: process.env.SHOPIFY_API_SECRET,
         code,
       },
-      { headers: { 'Content-Type': 'application/json' } }
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
     );
 
     const accessToken = response.data.access_token;
 
-    // ✅ Redirige a la raíz embebida de tu app con los parámetros que Shopify espera
-    const redirectUrl = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/`);
+    // (Opcional) Aquí podrías guardar el accessToken si decides hacerlo
+
+    // ✅ Redirige a tu nuevo punto embebido
+    const redirectUrl = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/embedded`);
     redirectUrl.searchParams.set('shop', shop);
     redirectUrl.searchParams.set('host', host);
-    redirectUrl.searchParams.set('embedded', '1');
 
-    return NextResponse.redirect(redirectUrl.toString());
+    return NextResponse.redirect(redirectUrl);
   } catch (error) {
     console.error('❌ Callback error:', error);
     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/error`);
