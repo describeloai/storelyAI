@@ -163,36 +163,125 @@ body[data-theme='dark'] {
   /* Scrollbar */
   --scrollbar-thumb-color: #555;
   --scrollbar-thumb-hover-color: #777;
+
+  /* Sobrescrituras directas de estilos para elementos específicos del dashboard en dark mode */
+  /* NO DEBEN USARSE SELECTORES .module.css aquí */
+  /* Estos son los bloques que tenías en dashboard.module.css y que debes mover aquí */
+  .wrapper { /* Ojo: Si .wrapper es una clase de CSS Module, esto no se aplicará. */
+             /* Se aplicará si .wrapper es una clase global definida en un lugar accesible. */
+             /* Si 'wrapper' es solo un nombre de clase en dashboard.module.css, */
+             /* NO debe estar aquí. */
+             /* El error del 'pure selector' es porque 'wrapper' es local. */
+             /* Si quieres aplicar el background al wrapper, el wrapper DEBE ser una clase global */
+             /* o tener un estilo inline o la clase CSS Module debe usar las variables directamente. */
+    background-color: var(--color-background-main); /* Usar la variable principal del body */
+  }
+
+  /* Los siguientes bloques **NO** deben estar aquí si .card, .cardHeader, .callToActionSection
+     son clases de CSS Modules (como indica tu archivo `dashboard.module.css`).
+     Si lo pones aquí, Vercel seguirá quejándose de "pure selector".
+
+     **La solución es que .card, .cardHeader, etc., en `dashboard.module.css`**
+     **usen directamente las variables que definimos en `:root` y `body[data-theme='dark']`.**
+     **No necesitas redeclarar el selector entero aquí.**
+  */
+
+  /* ESTOS BLOQUES DE ABAJO NO DEBEN ESTAR AQUÍ SI SON CLASES DE CSS MODULES */
+  /* Los dejo comentados para que veas cuáles NO debes poner aquí. */
+
+  /*
+  .card {
+    box-shadow: 0 10px 30px var(--card-shadow-light), 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+  .card:hover {
+    box-shadow: 0 15px 40px var(--card-hover-shadow-light), 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .cardHeader h3,
+  .cardHeader p,
+  .cardHeader .tagline {
+    color: #fff;
+  }
+
+  .callToActionSection {
+    background-color: var(--cta-bg);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .callToActionSection p {
+    color: var(--cta-text-color);
+  }
+  */
 }
 
 /* --- */
 
-/* Recordatorio:
-   En dashboard.module.css, ahora usarás estas variables globales.
-   Por ejemplo:
+/* IMPORTANTE:
+   En `dashboard.module.css`, no debes tener ningún selector que empiece con `:root`
+   o `body[data-theme='dark']`.
+
+   En su lugar, tus clases de `dashboard.module.css` deben referenciar directamente
+   las variables CSS definidas en este `globals.css`.
+
+   Ejemplo de cómo debería quedar `dashboard.module.css` (partes relevantes):
+
+   .wrapper {
+     max-width: 1200px;
+     margin: 0 auto;
+     padding: 4rem 2rem;
+     min-height: calc(100vh - var(--header-height, 0px) - var(--footer-height, 0px));
+     display: flex;
+     flex-direction: column;
+     gap: 3rem;
+     align-items: center;
+     // YA NO NECESITAS background-color: var(--background-color); AQUÍ
+     // porque el background del body ya lo gestiona `globals.css`
+   }
 
    .heroTitle {
-     color: var(--text-color-primary);
-     background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+     font-size: clamp(2.5rem, 5vw, 4.5rem);
+     font-weight: 800;
+     text-align: center;
+     line-height: 1.2;
+     letter-spacing: -0.04em;
+     color: var(--text-color-primary); // Utiliza la variable global
+     text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+     background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end)); // Variables globales
      -webkit-background-clip: text;
      -webkit-text-fill-color: transparent;
+     margin-bottom: 2rem;
    }
 
    .card {
-     box-shadow: 0 10px 30px var(--card-shadow-light), 0 0 15px rgba(0, 0, 0, 0.05);
+     // ... otras propiedades ...
+     box-shadow: 0 10px 30px var(--card-shadow-light), 0 0 15px rgba(0, 0, 0, 0.05); // Variable global
+     // ...
    }
    .card:hover {
-     box-shadow: 0 15px 40px var(--card-hover-shadow-light), 0 0 20px rgba(0, 0, 0, 0.1);
+     // ...
+     box-shadow: 0 15px 40px var(--card-hover-shadow-light), 0 0 20px rgba(0, 0, 0, 0.1); // Variable global
+   }
+
+   .cardHeader h3 {
+     color: var(--card-title-color); // Variable global
+   }
+   .cardHeader p {
+     color: var(--card-text-color); // Variable global
+   }
+   .cardHeader .tagline {
+     color: var(--card-tagline-color); // Variable global
    }
 
    .callToActionSection {
-     background-color: var(--cta-bg);
+     // ...
+     background-color: var(--cta-bg); // Variable global
+     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); // Si tienes una variable para esto, úsala
    }
    .callToActionSection p {
-     color: var(--cta-text-color);
+     color: var(--cta-text-color); // Variable global
    }
 
-   Los gradientes específicos de las tarjetas (sofia, echo, etc.) seguirán siendo
-   definidos con sus propias variables (--card-bg-start, --card-bg-end) y el
-   pseudo-elemento ::before en el dashboard.module.css, ya que son únicos para cada tarjeta.
+   Así es como las clases de tu `dashboard.module.css` tomarán automáticamente los valores
+   correctos de las variables CSS globales, que a su vez cambian cuando `data-theme='dark'`
+   se aplica al `body`.
 */

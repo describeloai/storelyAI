@@ -221,45 +221,8 @@
 /* Define CSS variables for dark mode */
 
 
-body[data-theme='dark'] {
-  --text-color-primary: #e2e8f0;
-  --text-color-secondary: #a0aec0;
-  --background-color: #1a202c; /* Dark background */
-  --card-bg: #2d3748; /* Darker card background */
-  --card-shadow: rgba(0, 0, 0, 0.3);
-  --cta-bg: #2d3748; /* Dark CTA background */
-  --cta-text-color: #e2e8f0; /* Light CTA text */
-  --gradient-start: #6366f1; /* Adjusted gradient for dark mode hero title */
-  --gradient-end: #8b5cf6; /* Adjusted gradient for dark mode hero title */
-}
 
 /* Apply dark mode styles to body and components */
-body[data-theme='dark'] .wrapper {
-  background-color: var(--background-color);
-}
- 
-
-body[data-theme='dark'] .card {
-  box-shadow: 0 10px 30px var(--card-shadow), 0 0 15px rgba(0, 0, 0, 0.2);
-}
-body[data-theme='dark'] .card:hover {
-  box-shadow: 0 15px 40px var(--card-shadow), 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
-body[data-theme='dark'] .cardHeader h3,
-body[data-theme='dark'] .cardHeader p,
-body[data-theme='dark'] .cardHeader .tagline {
-  color: #fff; /* Ensure text is white in dark mode cards */
-}
-
-body[data-theme='dark'] .callToActionSection {
-  background-color: var(--cta-bg);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-}
-
-body[data-theme='dark'] .callToActionSection p {
-  color: var(--cta-text-color);
-}
 
 /* Media Queries for fine-tuning responsiveness */
 @media (max-width: 768px) {
