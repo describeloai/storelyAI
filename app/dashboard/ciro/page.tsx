@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send } from 'lucide-react';
+import { Send, Plus } from 'lucide-react'; // Importamos Plus aquí
 import ReactMarkdown from 'react-markdown';
 import { summarizeMessage } from '@/utils/summarize';
 import { useMessageRefs } from '@/hooks/useMessageRefs';
@@ -17,6 +17,7 @@ export default function CiroPage() {
   const { t } = useLanguage();
 
   const assistantName = "Ciro";
+  const storeKey = 'blue'; // Usando 'blue' como el storeKey para todos los asistentes
 
   const [messages, setMessages] = useState([
     {
@@ -31,7 +32,7 @@ export default function CiroPage() {
   const messageRefs = useMessageRefs(messages.length);
 
   const ciroGradient = 'linear-gradient(135deg, #2a5298, #1e3c72)';
-  const primaryColor = '#4285f4';
+  const primaryColor = '#4285f4'; // Color primario de Ciro
   const userBubbleColor = darkMode ? ciroGradient : primaryColor;
   const assistantBubbleColor = darkMode ? '#2b2b2e' : '#fff';
   const assistantTextColor = darkMode ? '#e2e2e2' : '#333';
@@ -39,6 +40,38 @@ export default function CiroPage() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
+
+  // Función para guardar en el Brain
+  const saveToBrain = async (text: string) => {
+    if (!user || !user.id) return;
+
+    const body = {
+      userId: user.id,
+      storeKey, // Utiliza la storeKey 'blue'
+      type: 'text',
+      title: '',
+      content: text,
+      source: 'chat-ciro', // Fuente específica para Ciro
+      category: null,
+    };
+
+    try {
+      const res = await fetch('/api/brain/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        console.log('✅ Guardado en Brain:', text);
+      } else {
+        console.error('❌ Error guardando en Brain:', data.error);
+      }
+    } catch (err) {
+      console.error('❌ Error de red al guardar en Brain:', err);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +113,7 @@ export default function CiroPage() {
 
         if (isLikelyRelevant) {
           const summary = summarizeMessage(value);
-          setHistoryItems(prev => [...prev, { summary, index: messages.length }]);
+          setHistoryItems(prev => [...prev, { summary, index: messages.length + 1 }]); // Ajusta el índice
         }
       } else {
         setMessages(prev => [...prev, { from: 'ciro', text: t('ciroPage.processError') }]);
@@ -208,6 +241,7 @@ export default function CiroPage() {
               border: 'none',
               fontWeight: 600,
               cursor: 'pointer',
+              width: '100%',
             }}
           >
             {t('ciroPage.newChatButton')}
@@ -325,9 +359,35 @@ export default function CiroPage() {
                 borderTopRightRadius: msg.from === 'user' ? '0.25rem' : '1rem',
                 maxWidth: '70%',
                 boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                position: 'relative', // Necesario para posicionar el botón flotante
               }}
             >
               <MarkdownMessage text={msg.text} />
+              {msg.from !== 'user' && ( // Solo muestra el botón para mensajes del asistente
+                <button
+                  onClick={() => saveToBrain(msg.text)}
+                  title="Guardar en Brain"
+                  style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '-36px', // Ajusta esta posición si es necesario para el diseño de Ciro
+                    backgroundColor: darkMode ? '#3a3a3a' : '#eee', // Puedes ajustar estos colores para que combinen con Ciro
+                    borderRadius: '999px',
+                    padding: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s ease',
+                  }}
+                  onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.85)')}
+                  onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
+                  onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                >
+                  <Plus size={16} />
+                </button>
+              )}
             </div>
           ))}
 
