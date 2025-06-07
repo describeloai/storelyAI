@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Intercambiar el código de autorización por un access token
+    // Intercambiar el código por el access token
     const response = await axios.post(
       `https://${shop}/admin/oauth/access_token`,
       {
@@ -29,17 +29,17 @@ export async function GET(req: NextRequest) {
 
     const accessToken = response.data.access_token;
 
-    // Aquí podrías guardar el accessToken si lo deseas (en DB por tienda)
+    // (Opcional) Aquí podrías guardar el token en base de datos
 
-    // ✅ Redirigir al entorno embebido oficial de Shopify
-    const redirectUrl = `https://admin.shopify.com/store/${shop.replace(
-      '.myshopify.com',
-      ''
-    )}/apps/${process.env.NEXT_PUBLIC_SHOPIFY_API_KEY}?shop=${shop}&host=${host}`;
+    // ✅ Redirigir a tu propia app embebida
+    const redirectUrl = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/embedded`);
+    redirectUrl.searchParams.set('shop', shop);
+    redirectUrl.searchParams.set('host', host);
+    redirectUrl.searchParams.set('embedded', '1');
 
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
-    console.error('❌ Error en el callback OAuth:', error);
+    console.error('❌ Error en callback OAuth:', error);
     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/error`);
   }
 }
