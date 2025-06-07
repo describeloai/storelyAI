@@ -16,7 +16,7 @@ export default function IntegrationSection() {
 
           <div className="integration-logos-grid">
             <img src="/logos/shopify-white.png" alt="Shopify" />
-            <img src="/logos/woocommerce-white.png" alt="WooCommerce" />
+            <img src="/logos/linkedin.png" alt="Linkedin" />
             <img src="/logos/gmail.png" alt="Gmail" />
             <img src="/logos/facebook.png" alt="Meta" />
             <img src="/logos/amazon.png" alt="Amazon" />

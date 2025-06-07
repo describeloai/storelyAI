@@ -28,10 +28,10 @@ const initialIntegrations: Integration[] = [
     lastError: null,
   },
   {
-    id: 'woocommerce',
-    name: 'WooCommerce',
-    description: 'Integrate with WooCommerce to manage your e-commerce data, automate tasks, and gain insights.',
-    logo: '/logos/woocommerce-white.png', // Assuming white logo works for both modes or you handle dynamic loading
+    id: 'linkedin',
+    name: 'Linkedin',
+    description: 'Impulsa tu presencia en LinkedIn: publica con IA, automatiza mensajes y genera más oportunidades de negocio de forma inteligente.',
+    logo: '/logos/linkedin.png', // Assuming white logo works for both modes or you handle dynamic loading
     status: 'pending',
     lastSuccessfulConnection: null,
     lastError: null,

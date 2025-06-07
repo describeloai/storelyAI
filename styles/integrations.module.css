@@ -1,0 +1,441 @@
+/* General Page Layout */
+.integrationsPageContainer {
+  min-height: 100vh;
+  background-color: #f8f9fa; /* Light gray background */
+  padding: 40px 20px; /* Base padding */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  color: #343a40; /* Dark gray for text */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+/* Dark Mode Styles */
+.integrationsPageContainer.darkMode {
+  background-color: #1a202c; /* Darker background */
+  color: #e2e8f0; /* Lighter text for contrast */
+}
+
+/* Responsive Padding for Larger Screens */
+@media (min-width: 768px) {
+  .integrationsPageContainer {
+    padding: 60px 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .integrationsPageContainer {
+    padding: 80px 60px;
+  }
+}
+
+/* Hero Section */
+.heroSection {
+  text-align: center;
+  margin-bottom: 80px;
+  padding: 0 20px;
+}
+
+.heroHeadline {
+  font-size: 2.5rem; /* 40px */
+  font-weight: 800; /* Extra bold */
+  color: #212529; /* Even darker text */
+  line-height: 1.2;
+  margin-bottom: 16px;
+  transition: color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .heroHeadline {
+  color: #edf2f7; /* Lighter text in dark mode */
+}
+
+/* Responsive line break for mobile */
+.lineBreakMobile {
+  display: none;
+}
+@media (max-width: 640px) {
+  .lineBreakMobile {
+    display: inline; /* Show the line break on small screens */
+  }
+}
+
+.heroSubheadline {
+  font-size: 1.125rem; /* 18px */
+  color: #495057; /* Medium gray */
+  max-width: 768px; /* Constrain width */
+  margin: 0 auto 32px auto;
+  line-height: 1.6;
+  transition: color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .heroSubheadline {
+  color: #a0aec0; /* Lighter gray in dark mode */
+}
+
+/* Section Titles */
+.section {
+  margin-bottom: 80px;
+}
+
+.sectionTitle {
+  font-size: 2rem; /* 32px */
+  font-weight: 700; /* Bold */
+  color: #212529;
+  margin-bottom: 40px;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .sectionTitle {
+  color: #edf2f7;
+}
+
+@media (min-width: 640px) {
+  .sectionTitle {
+    text-align: left;
+  }
+}
+
+/* Integration Cards (General) */
+.integrationCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); /* Stronger shadow for featured */
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out, background-color 0.3s ease, border-color 0.3s ease;
+  border: 1px solid #e9ecef; /* Light border */
+}
+
+.integrationsPageContainer.darkMode .integrationCard {
+  background-color: #2d3748; /* Darker card background */
+  border-color: #4a5568; /* Darker border */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Darker shadow for dark mode */
+}
+
+.integrationCard:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px); /* Subtle lift effect */
+}
+
+.integrationsPageContainer.darkMode .integrationCard:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Featured Integrations Grid */
+.featuredIntegrationsGrid {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column on small screens */
+  gap: 24px; /* Gap between cards */
+}
+
+@media (min-width: 640px) {
+  .featuredIntegrationsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 2 columns on small tablets */
+  }
+}
+
+@media (min-width: 1024px) {
+  .featuredIntegrationsGrid {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns on larger screens */
+  }
+}
+
+
+.integrationLogoWrapper {
+  position: relative;
+  width: 80px; /* Large logo size */
+  height: 80px;
+  margin-bottom: 16px;
+}
+
+.integrationName {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600; /* Semi-bold */
+  color: #212529;
+  margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .integrationName {
+  color: #f7fafc; /* Lighter name in dark mode */
+}
+
+.integrationDescription {
+  font-size: 0.9375rem; /* 15px */
+  color: #495057;
+  margin-bottom: 16px;
+  flex-grow: 1; /* Allows description to take available space */
+  transition: color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .integrationDescription {
+  color: #cbd5e0; /* Lighter description in dark mode */
+}
+
+.integrationActions {
+  width: 100%;
+  margin-top: auto; /* Push actions to the bottom */
+  display: flex;
+  flex-direction: column; /* Stack input and button vertically */
+  align-items: center;
+}
+
+
+/* All Integrations Grid */
+.allIntegrationsGrid {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column on small screens */
+  gap: 24px;
+}
+
+@media (min-width: 640px) {
+  .allIntegrationsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2 columns on small tablets */
+  }
+}
+
+@media (min-width: 1024px) {
+  .allIntegrationsGrid {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns on larger screens */
+  }
+}
+
+
+/* Styling for smaller cards in 'All Integrations' */
+.smallCard {
+  padding: 20px;
+}
+
+.integrationLogoWrapperSmall {
+  position: relative;
+  width: 64px; /* Smaller logo size */
+  height: 64px;
+  margin-bottom: 12px;
+}
+
+.integrationNameSmall {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 6px;
+  transition: color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .integrationNameSmall {
+  color: #f7fafc;
+}
+
+.integrationDescriptionSmall {
+  font-size: 0.875rem; /* 14px */
+  color: #6c757d;
+  margin-bottom: 12px;
+  flex-grow: 1;
+  transition: color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .integrationDescriptionSmall {
+  color: #a0aec0;
+}
+
+/* Status Indicator */
+.connectedStatus {
+  display: inline-block;
+  color: #28a745; /* Green */
+  font-weight: 500; /* Medium weight */
+  padding: 8px 16px;
+  border-radius: 9999px; /* Pill shape */
+  background-color: #d4edda; /* Light green background */
+  font-size: 0.875rem; /* 14px */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .connectedStatus {
+  background-color: #38a169; /* Darker green background */
+  color: #e6fffa; /* Lighter text for contrast */
+}
+
+.connectedStatusSmall {
+  display: inline-block;
+  color: #28a745;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background-color: #d4edda;
+  font-size: 0.75rem; /* 12px */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .connectedStatusSmall {
+  background-color: #38a169;
+  color: #e6fffa;
+}
+
+
+/* Connect Button */
+.connectButton {
+  width: 100%; /* Full width */
+  background-color: #007bff; /* Primary blue */
+  color: #ffffff;
+  font-weight: 500;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px; /* Slightly more rounded */
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2); /* Subtle shadow */
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  font-size: 1rem; /* 16px */
+}
+
+.connectButton:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+}
+
+.integrationsPageContainer.darkMode .connectButton {
+  background-color: #4299e1; /* Lighter blue in dark mode */
+  box-shadow: 0 4px 10px rgba(66, 153, 225, 0.3);
+}
+
+.integrationsPageContainer.darkMode .connectButton:hover {
+  background-color: #63b3ed; /* Even lighter blue on hover in dark mode */
+  box-shadow: 0 6px 15px rgba(66, 153, 225, 0.4);
+}
+
+.connectButtonSmall {
+  width: 100%;
+  background-color: #007bff;
+  color: #ffffff;
+  font-weight: 500;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 123, 255, 0.15);
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  font-size: 0.875rem; /* 14px */
+}
+
+.connectButtonSmall:hover {
+  background-color: #0056b3;
+  box-shadow: 0 5px 12px rgba(0, 123, 255, 0.25);
+}
+
+.integrationsPageContainer.darkMode .connectButtonSmall {
+  background-color: #4299e1;
+  box-shadow: 0 3px 8px rgba(66, 153, 225, 0.2);
+}
+
+.integrationsPageContainer.darkMode .connectButtonSmall:hover {
+  background-color: #63b3ed;
+  box-shadow: 0 5px 12px rgba(66, 153, 225, 0.3);
+}
+
+/* Shopify Specific Input */
+.shopifyConnectForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+}
+
+.shopifyInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da; /* Light gray border */
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 0.9375rem; /* 15px */
+  color: #495057;
+  background-color: #ffffff;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease, color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .shopifyInput {
+  background-color: #4a5568; /* Darker input background */
+  border-color: #6c757d; /* Darker border */
+  color: #e2e8f0; /* Lighter text */
+}
+
+.shopifyInput:focus {
+  border-color: #80bdff; /* Blue focus outline */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Subtle focus glow */
+  outline: none;
+}
+
+.integrationsPageContainer.darkMode .shopifyInput:focus {
+  border-color: #63b3ed;
+  box-shadow: 0 0 0 0.2rem rgba(66, 153, 225, 0.4);
+}
+
+
+/* Request Integration Section */
+.requestIntegrationSection {
+  text-align: center;
+  padding: 48px 24px;
+  background-color: #e6f2ff; /* Light blue background */
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  max-width: 800px;
+  margin: 0 auto;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .requestIntegrationSection {
+  background-color: #2c5282; /* Darker blue background */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.requestIntegrationTitle {
+  font-size: 1.75rem; /* 28px */
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 16px;
+  transition: color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .requestIntegrationTitle {
+  color: #f7fafc;
+}
+
+.requestIntegrationDescription {
+  font-size: 1rem; /* 16px */
+  color: #495057;
+  margin-bottom: 24px;
+  line-height: 1.6;
+  transition: color 0.3s ease;
+}
+
+.integrationsPageContainer.darkMode .requestIntegrationDescription {
+  color: #cbd5e0;
+}
+
+.suggestButton {
+  background-color: #6f42c1; /* Purple */
+  color: #ffffff;
+  font-weight: 500;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.25);
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  font-size: 1.0625rem; /* 17px */
+}
+
+.suggestButton:hover {
+  background-color: #59359e; /* Darker purple on hover */
+  box-shadow: 0 6px 18px rgba(111, 66, 193, 0.35);
+}
+
+.integrationsPageContainer.darkMode .suggestButton {
+  background-color: #805ad5; /* Lighter purple in dark mode */
+  box-shadow: 0 4px 12px rgba(128, 90, 213, 0.3);
+}
+
+.integrationsPageContainer.darkMode .suggestButton:hover {
+  background-color: #9f7aea; /* Even lighter purple on hover in dark mode */
+  box-shadow: 0 6px 18px rgba(128, 90, 213, 0.4);
+}
