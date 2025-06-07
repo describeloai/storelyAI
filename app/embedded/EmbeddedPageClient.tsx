@@ -1,27 +1,26 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { loadShopifyBridge } from '@/lib/shopify/shopifyBridge';
+import { useSearchParams } from 'next/navigation';
+import createApp from '@shopify/app-bridge';
+import { Redirect } from '@shopify/app-bridge/actions';
 
 export default function EmbeddedPageClient() {
   const searchParams = useSearchParams();
-  const router = useRouter();
-
   const host = searchParams.get('host') || '';
   const shop = searchParams.get('shop') || '';
 
   useEffect(() => {
     if (host) {
-      loadShopifyBridge({
+      const app = createApp({
         apiKey: process.env.NEXT_PUBLIC_SHOPIFY_API_KEY!,
         host,
+        forceRedirect: true, // clave para redirigir si está fuera del iframe
       });
 
-      // opcional: podrías redirigir automáticamente a tu dashboard
-      router.replace(`/dashboard?shop=${shop}&host=${host}&embedded=1`);
+      Redirect.create(app).dispatch(Redirect.Action.ADMIN_PATH, '/dashboard');
     }
-  }, [host, shop, router]);
+  }, [host]);
 
-  return <div>Redirigiendo al dashboard...</div>;
+  return <div>Redirigiendo a la app embebida...</div>;
 }
